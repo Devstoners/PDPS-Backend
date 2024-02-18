@@ -4,7 +4,7 @@ namespace App\Repositories;
 use App\Models\News;
 
 
-class NewsRepostory
+class NewsRepository
 {
     public function addNews($data)
     {
@@ -27,20 +27,15 @@ class NewsRepostory
 
     public function updateNews($id, $data)
     {
-
-
         $news = News::find($id);
-
         if (!$news) {
             return response(['message' => 'News not found.'], 404);
         }
-
         // Get the new updating priority value
 //        $newPriority = $data['priority'] ?? 1;
 //        $newPriority = $data['priority'];
         $newPriority = isset($data['priority']) ? $data['priority'] : $news->priority;
         $priority = News::where('id', $id)->value('priority');
-
 
         if($newPriority!=$priority) {
             // Check if the new priority exists in other records
@@ -85,10 +80,8 @@ class NewsRepostory
 //                'visibility' => $visibility,
             ]);
         }
-
         return response(['message' => 'News updated successfully.'], 200);
     }
-
 
     public function deleteNews($id)
     {
@@ -98,13 +91,22 @@ class NewsRepostory
             $news->delete();
             return true;
         }
-
         return false;
     }
 
-    public function getVisibleNewsCount()
+    public function getCount()
     {
-        return News::where('visibility', true)->count();
-//        return News::count();
+//        return News::where('visibility', true)->count();
+        return News::count();
+    }
+
+    public function getSiteView($language)
+    {
+        try {
+            $news = News::orderBy('priority', 'asc')->select("news_$language as news")->get();
+            return $news;
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 }

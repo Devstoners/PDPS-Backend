@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MemberPosition;
+use App\Repositories\MemberRepository;
 use Illuminate\Http\Request;
 
 class MemberPositionController extends Controller
@@ -12,9 +13,18 @@ class MemberPositionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    private $repository;
+    public function __construct(MemberRepository $repository)
+    {
+        $this->repository = $repository;
+    }
     public function index()
     {
-        //
+        $positions = MemberPosition::select('id', 'position_en')->get();
+        $response = [
+            "AllPositions" => $positions,
+        ];
+        return response($response, 200);
     }
 
     /**

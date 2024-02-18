@@ -9,7 +9,9 @@ class MemberPosition extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'position',
+        'position_en',
+        'position_si',
+        'position_ta',
     ];
 }
 /*

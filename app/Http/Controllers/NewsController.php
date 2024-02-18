@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\News;
-use App\Repositories\NewsRepostory;
+use App\Repositories\NewsRepository;
 use Illuminate\Http\Request;
 
 class NewsController extends Controller
@@ -14,7 +14,7 @@ class NewsController extends Controller
      * @return \Illuminate\Http\Response
      */
     private $repository;
-    public function __construct(NewsRepostory $repository)
+    public function __construct(NewsRepository $repository)
     {
         $this->repository = $repository;
     }
@@ -57,7 +57,6 @@ class NewsController extends Controller
         ]);
         $responce = $this->repository->addNews($request);
         return response($responce, 201);
-//      return response($request, 201);
     }
 
     public function update(Request $request, $id)
@@ -79,40 +78,32 @@ class NewsController extends Controller
         if ($result) {
             return response()->json(['message' => 'News deleted successfully.']);
         }
-
         return response()->json(['message' => 'News not found.'], 404);
     }
 
 
-    public function getNewsCount()
+    public function count()
     {
-        $count = $this->repository->getVisibleNewsCount();
+        $count = $this->repository->getCount();
         $response = [
             "count" => $count,
         ];
         return response($response, 200);
     }
 
-    public function siteNewsView(Request $request)
+    public function viewSite(Request $request)
     {
-        // Validate the request parameters (language)
         $request->validate([
-            'language' => 'required|in:en,si,ta', // Validate that the language is one of en, si, ta
+            'language' => 'required|in:en,si,ta',
         ]);
-
-        // Get the selected language from the request
         $language = $request->input('language');
 
         try {
-            // Fetch news based on the selected language
-            $news = News::orderBy('priority', 'asc')->select("news_$language as news")->get();
-
-
-            // Return the news data as JSON response
+            $news = $this->repository->getSiteView($language);
             return response()->json($news);
         } catch (\Exception $e) {
-            // Handle any exceptions (e.g., database errors) and return error response
             return response()->json(['error' => 'Failed to fetch news.'], 500);
         }
+
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MemberDivision;
 use Illuminate\Http\Request;
+use App\Repositories\MemberRepository;
 
 class MemberDivisionController extends Controller
 {
@@ -12,9 +13,18 @@ class MemberDivisionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    private $repository;
+    public function __construct(MemberRepository $repository)
+    {
+        $this->repository = $repository;
+    }
     public function index()
     {
-        //
+        $division = MemberDivision::select('id', 'division_en','division_si','division_ta')->get();
+        $response = [
+            "AllDivisions" => $division,
+        ];
+        return response($response, 200);
     }
 
     /**
@@ -35,7 +45,13 @@ class MemberDivisionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request = $request->validate([
+            'divisionEn' => 'required',
+            'divisionSi' => 'required',
+            'divisionTa' => 'required',
+        ]);
+        $responce = $this->repository->addDivision($request);
+        return response($responce, 201);
     }
 
     /**
@@ -67,9 +83,15 @@ class MemberDivisionController extends Controller
      * @param  \App\Models\MemberDivision  $memberDivision
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, MemberDivision $memberDivision)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'divname' => 'required',
+        ]);
+
+        $response = $this->repository->updateDivision($id, $request);
+
+        return response($response, 200);
     }
 
     /**
@@ -78,8 +100,13 @@ class MemberDivisionController extends Controller
      * @param  \App\Models\MemberDivision  $memberDivision
      * @return \Illuminate\Http\Response
      */
-    public function destroy(MemberDivision $memberDivision)
+    public function destroy($id)
     {
-        //
+        $result = $this->repository->deleteDivision($id);
+
+        if ($result) {
+            return response()->json(['message' => 'Division deleted successfully.']);
+        }
+        return response()->json(['message' => 'Division not found.'], 404);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MemberParty;
+use App\Repositories\MemberRepository;
 use Illuminate\Http\Request;
 
 class MemberPartyController extends Controller
@@ -12,9 +13,18 @@ class MemberPartyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    private $repository;
+    public function __construct(MemberRepository $repository)
+    {
+        $this->repository = $repository;
+    }
     public function index()
     {
-        //
+        $party = MemberParty::select('id', 'party_en')->get();
+        $response = [
+            "AllParties" => $party,
+        ];
+        return response($response, 200);
     }
 
     /**
@@ -35,7 +45,13 @@ class MemberPartyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request = $request->validate([
+            'partyEn' => 'required',
+            'partySi' => 'required',
+            'partyTa' => 'required',
+        ]);
+        $responce = $this->repository->addParty($request);
+        return response($responce, 201);
     }
 
     /**

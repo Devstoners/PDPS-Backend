@@ -4,14 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Member;
 use App\Http\Controllers\Controller;
-use App\Repositories\memberRepostory;
+use App\Repositories\MemberRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
 
 class MemberController extends Controller
 {
     private $repository;
 
-    public function __construct(memberRepostory $repository)
+    public function __construct(MemberRepository $repository)
     {
         $this->repository = $repository;
     }
@@ -20,7 +22,7 @@ class MemberController extends Controller
      */
     public function index()
     {
-        //
+        return Member::all();
     }
 
     /**
@@ -37,32 +39,37 @@ class MemberController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'email' => 'required|email|unique:users,email',
-            'full_name' => 'required|max:250',
-            'display_name' => 'required|max:100',
-            'profile_pic' => 'required',
-            'gender' => 'required',
-            'nic' => 'required|size:12',
-            'tel1' => 'required|size:10',
-            'tel2' => 'required|size:10',
-            'address' => 'required|max:250',
-            'is_married' => 'required|boolean',
-            'is_registered' => 'required|boolean',
-            'member_divisions_id' => 'required|integer',
-            'member_parties_id' => 'required|integer',
-            'user_id' => 'required|integer',
+//            'email' => 'required|email|unique:users,email',
+//            'name_en' => 'required|max:250',
+//            'name_si' => 'required|max:250',
+//            'name_ta' => 'required|max:250',
+//            'image' => 'required',
+//            'gender' => 'required',
+//            'nic' => 'required|size:12',
+//            'tel' => 'required|size:10',
+//            'address' => 'required|max:250',
+//            'is_married' => 'required|boolean',
+//            'member_divisions_id' => 'required|integer',
+//            'member_parties_id' => 'required|integer',
+//            'position' => 'required|integer',
         ];
 
-        $validator = Validator::make($request->all(), $rules);
+//        $validator = Validator::make($request->all(), $rules);
+//
+//        if ($validator->fails()) {
+//            return redirect()->back()
+//                ->withErrors($validator)
+//                ->withInput();
+//        }
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
+        try {
+            $response = $this->repository->createMember($request->all());
+            return response()->json($response, 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
-        $response = $this->repository->createMember($rules);
-        return response($response, 201);
     }
+
 
     /**
      * Display the specified resource.
