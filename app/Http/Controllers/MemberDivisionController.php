@@ -86,7 +86,9 @@ class MemberDivisionController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'divname' => 'required',
+            'divisionEn' => 'required',
+            'divisionSi' => 'required',
+            'divisionTa' => 'required',
         ]);
 
         $response = $this->repository->updateDivision($id, $request);

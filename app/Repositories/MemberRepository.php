@@ -1,11 +1,12 @@
 <?php
 namespace App\Repositories;
 
-
-use App\Models\Member;
 use App\Models\User;
+use App\Models\Member;
 use App\Models\MemberDivision;
 use App\Models\MemberParty;
+use App\Models\MemberPosition;
+use App\Models\MembersMemberPosition;
 class MemberRepository{
 //-----------------Division--------------------------------------------------------------------
     public function addDivision($data)
@@ -70,35 +71,42 @@ class MemberRepository{
             throw new \Exception('Email is already in use', 400);
         }
 
-            // Create user
-            $user = User::create([
-                'email' => $data['email'],
-            ]);
-            $user->assignRole('member');
+        // Create user
+        $user = User::create([
+            'email' => $data['email'],
+        ]);
+        $user->assignRole('member');
 
-            // Create member
-            $member = new Member();
-            $member->user_id = $user->id;
-            $member->name_en = $data['nameEn'];
-            $member->name_si = $data['nameSi'];
-            $member->name_ta = $data['nameTa'];
-//            $member->image = $data['image'];
-            //        $member->gender = $data['gender'];
-            //        $member->nic = $data['nic'];
-            $member->tel = $data['tel'];
-            //        $member->address = $data['address'];
-            //        $member->is_married = $data['is_married'];
-            $member->member_divisions_id = $data['division'];
-            $member->member_parties_id = $data['party'];
-            $member->position = $data['position'];
-            $member->save();
-            $user->assignRole('member');
+        // Create member
+        $member = new Member();
+        $member->user_id = $user->id;
+        $member->name_en = $data['nameEn'];
+        $member->name_si = $data['nameSi'];
+        $member->name_ta = $data['nameTa'];
+        $member->tel = $data['tel'];
+        $member->member_divisions_id = $data['division'];
+        $member->member_parties_id = $data['party'];
+        //        $member->image = $data['image'];
+        //        $member->gender = $data['gender'];
+        //        $member->nic = $data['nic'];
+        //        $member->address = $data['address'];
+        //        $member->is_married = $data['is_married'];
+        //        $member->position = $data['position'];
+        $member->save();
 
-            $response = [
-                'user' => $user,
-                'member' => $member,
-            ];
-            return response($response, 201);
+        // Attach positions to the member
+        $positionIds = [];
+        foreach ($data['position'] as $positionData) {
+            $positionIds[] = $positionData['id'];
+        }
+        $member->positions()->sync($positionIds);
+
+
+        $response = [
+            'user' => $user,
+            'member' => $member,
+        ];
+        return response($response, 201);
 
     }
 

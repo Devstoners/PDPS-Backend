@@ -12,8 +12,7 @@ class Member extends Model
 
     protected $fillable = [
         'user_id','name_en', 'name_si','name_ta', 'image', 'gender', 'nic', 'tel', 'address',
-        'is_married', 'member_divisions_id', 'member_parties_id', 'position'
-    ];
+        'is_married', 'member_divisions_id', 'member_parties_id', ];
 
     public function MemberDivision()
     {
@@ -24,4 +23,11 @@ class Member extends Model
     {
         return $this->belongsTo(MemberParty::class);
     }
+
+    public function positions()
+    {
+        return $this->belongsToMany(MemberPosition::class, 'members_member_positions', 'member_id', 'member_position_id')
+            ->using(MembersMemberPosition::class);
+    }
+
 }

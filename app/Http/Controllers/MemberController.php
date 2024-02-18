@@ -51,7 +51,6 @@ class MemberController extends Controller
 //            'is_married' => 'required|boolean',
 //            'member_divisions_id' => 'required|integer',
 //            'member_parties_id' => 'required|integer',
-//            'position' => 'required|integer',
         ];
 
 //        $validator = Validator::make($request->all(), $rules);

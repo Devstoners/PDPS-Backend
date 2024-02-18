@@ -22,6 +22,7 @@ Route::get('/siteNewsView',[\App\Http\Controllers\NewsController::class,'viewSit
 Route::apiResource('/member', \App\Http\Controllers\MemberController::class);
 Route::apiResource('/memberDivision', \App\Http\Controllers\MemberDivisionController::class);
 Route::apiResource('/memberParty', \App\Http\Controllers\MemberPartyController::class);
+Route::apiResource('/memberPosition', \App\Http\Controllers\MemberPositionController::class);
 
 
 Route::apiResource('/officer', \App\Http\Controllers\OfficerController::class);

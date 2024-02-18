@@ -20,7 +20,7 @@ class MemberPartyController extends Controller
     }
     public function index()
     {
-        $party = MemberParty::select('id', 'party_en')->get();
+        $party = MemberParty::select('id', 'party_en','party_si','party_ta')->get();
         $response = [
             "AllParties" => $party,
         ];

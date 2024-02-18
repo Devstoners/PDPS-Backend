@@ -20,7 +20,7 @@ class MemberPositionController extends Controller
     }
     public function index()
     {
-        $positions = MemberPosition::select('id', 'position_en')->get();
+        $positions = MemberPosition::select('id', 'position_en','position_si','position_ta')->get();
         $response = [
             "AllPositions" => $positions,
         ];
