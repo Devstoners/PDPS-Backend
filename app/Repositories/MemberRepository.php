@@ -62,6 +62,67 @@ class MemberRepository{
         ], 200);
     }
 
+    public function updateParty($id, $data)
+    {
+        $party = MemberParty::find($id);
+        $party->update([
+            'party_en' => $data['partyEn'],
+            'party_si' => $data['partySi'],
+            'party_ta' => $data['partyTa'],
+            'updated_at' => now(),
+            'created_at' => now(),
+        ]);
+        return response(['message' => 'Party updated successfully.'], 200);
+    }
+    public function deleteParty($id)
+    {
+        $party = MemberParty::find($id);
+
+        if ($party) {
+            $party->delete();
+            return true;
+        }
+        return false;
+    }
+
+    //-----------------Position--------------------------------------------------------------------
+    public function addPosition($data)
+    {
+        $position = MemberPosition::create([
+            'position_en' => $data['positionEn'],
+            'position_si' => $data['positionSi'],
+            'position_ta' => $data['positionTa'],
+            'updated_at' => now(),
+            'created_at' => now(),
+        ]);
+        return response([
+            'position' => $position
+        ], 200);
+    }
+
+    public function updatePosition($id, $data)
+    {
+        $position = MemberPosition::find($id);
+        $position->update([
+            'position_en' => $data['positionEn'],
+            'position_si' => $data['positionSi'],
+            'position_ta' => $data['positionTa'],
+            'updated_at' => now(),
+            'created_at' => now(),
+        ]);
+        return response(['message' => 'Position updated successfully.'], 200);
+    }
+    public function deletePosition($id)
+    {
+        $position = MemberPosition::find($id);
+
+        if ($position) {
+            $position->delete();
+            return true;
+        }
+        return false;
+    }
+
     //-----------------Member--------------------------------------------------------------------
 
     public function createMember(array $data) {

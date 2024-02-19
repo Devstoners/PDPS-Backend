@@ -83,9 +83,17 @@ class MemberPartyController extends Controller
      * @param  \App\Models\MemberParty  $memberParty
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, MemberParty $memberParty)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'partyEn' => 'required',
+            'partySi' => 'required',
+            'partyTa' => 'required',
+        ]);
+
+        $response = $this->repository->updateParty($id, $request);
+
+        return response($response, 200);
     }
 
     /**
@@ -94,8 +102,13 @@ class MemberPartyController extends Controller
      * @param  \App\Models\MemberParty  $memberParty
      * @return \Illuminate\Http\Response
      */
-    public function destroy(MemberParty $memberParty)
+    public function destroy($id)
     {
-        //
+        $result = $this->repository->deleteParty($id);
+
+        if ($result) {
+            return response()->json(['message' => 'Party deleted successfully.']);
+        }
+        return response()->json(['message' => 'Party not found.'], 404);
     }
 }
