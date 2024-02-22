@@ -14,9 +14,11 @@ class MemberDivision extends Model
         'division_ta',
     ];
 
-    public function Member()
+    public function members()
     {
-        return $this->hasMany(Member::class);
+        return $this->hasMany(Member::class, 'member_divisions_id');
     }
+
+
 }
 

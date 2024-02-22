@@ -7,9 +7,10 @@ use App\Models\MemberDivision;
 use App\Models\MemberParty;
 use App\Models\MemberPosition;
 use App\Models\MembersMemberPosition;
+use Illuminate\Support\Facades\DB;
 class MemberRepository{
 //-----------------Division--------------------------------------------------------------------
-    public function addDivision($data)
+       public function addDivision($data)
     {
         $division = MemberDivision::create([
             'division_en' => $data['divisionEn'],
@@ -124,6 +125,29 @@ class MemberRepository{
     }
 
     //-----------------Member--------------------------------------------------------------------
+
+    public function getMembers()
+    {
+        $members = Member::with([
+            'memberDivision' => function ($query) {
+                $query->select('id', 'division_en');
+            },
+            'memberParty' => function ($query) {
+                $query->select('id', 'party_en');
+            },
+            'memberPositions' => function ($query) {
+                $query->select('member_positions.id', 'position_en');
+            },
+            'user' => function ($query) {
+                $query->select('id', 'email', 'is_active');
+            }
+        ])
+            ->select('members.id', 'name_en', 'name_si','name_ta', 'image', 'tel', 'member_divisions_id', 'member_parties_id', 'user_id')
+            ->get();
+
+        return response()->json($members);
+    }
+
 
     public function createMember(array $data) {
         // Check if user with the same email already exists

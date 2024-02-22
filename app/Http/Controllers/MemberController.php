@@ -22,7 +22,9 @@ class MemberController extends Controller
      */
     public function index()
     {
-        return Member::all();
+//        return Member::all();
+        $members = $this->repository->getMembers();
+        return response($members, 200);
     }
 
     /**

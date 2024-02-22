@@ -14,10 +14,12 @@ class MemberParty extends Model
         'party_si',
         'party_ta',
     ];
-    public function Member()
+
+    public function members()
     {
-        return $this->hasMany(Member::class);
+        return $this->hasMany(Member::class, 'member_parties_id');
     }
+
 }
 /*
     1 (MemberParty) : M (Member)
