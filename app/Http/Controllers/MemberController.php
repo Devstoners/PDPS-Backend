@@ -23,8 +23,9 @@ class MemberController extends Controller
     public function index()
     {
 //        return Member::all();
-        $members = $this->repository->getMembers();
-        return response($members, 200);
+        return $this->repository->getMembers();
+
+//        return response($members);
     }
 
     /**
@@ -64,7 +65,7 @@ class MemberController extends Controller
 //        }
 
         try {
-            $response = $this->repository->createMember($request->all());
+            $response = $this->repository->createMember($request);
             return response()->json($response, 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
@@ -99,8 +100,13 @@ class MemberController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Member $member)
+    public function destroy($id)
     {
-        //
+        $result = $this->repository->deleteMember($id);
+
+        if ($result) {
+            return response()->json(['message' => 'Member deleted successfully.']);
+        }
+        return response()->json(['message' => 'Member not found.'], 404);
     }
 }

@@ -22,7 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'is_active',
+        'status',//0 = Unregistered, 1 = Active, 2= Disabled
     ];
 
     /**

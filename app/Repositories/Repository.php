@@ -28,7 +28,7 @@ class Repository{
             'nic' => $data['nic'],
             'email' => $data['email'],
             'name' => $data['name'],
-            'is_active' => $data['is_active'],
+            'status' => $data['status'],
             'type' => $data['type'],
             'requesttype' => $data['requesttype'],
         ]);
@@ -171,7 +171,7 @@ class Repository{
         if (!$user || !Hash::check($fields['password'], $user->password)) {
             throw new NotFoundHttpException('Please check email or Password !');
         } else {
-            if ($user->is_active === 0) {
+            if ($user->status === 0) {
                 throw new UnauthorizedHttpException(
                     "Account Is Disabled! Please Contact Administrator.",
                     "Account Is Disabled! Please Contact Administrator."

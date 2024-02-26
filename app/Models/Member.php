@@ -11,8 +11,19 @@ class Member extends Model
     protected $table = 'members';
 
     protected $fillable = [
-        'user_id','name_en', 'name_si','name_ta', 'image', 'gender', 'nic', 'tel', 'address',
-        'is_married', 'member_divisions_id', 'member_parties_id', ];
+        'user_id',
+        'name_en',
+        'name_si',
+        'name_ta',
+        'image',
+        'tel',
+//        'gender',
+//        'nic',
+//        'address',
+//        'is_married',
+        'member_divisions_id',
+        'member_parties_id',
+        ];
 
     public function user()
     {
