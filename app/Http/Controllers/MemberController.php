@@ -41,6 +41,17 @@ class MemberController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'nameEn' => 'required|max:250',
+            'nameSi' => 'required|max:250',
+            'nameTa' => 'required|max:250',
+            'email' => 'required|email|unique:users,email',
+//            'division' => 'required|array',
+//            'party' => 'required|array',
+//            'position' => 'required|array',
+            'tel' => 'required|size:10',
+//            'img' => 'required|image|mimes:jpeg|max:5048',
+        ]);
         $rules = [
 //            'email' => 'required|email|unique:users,email',
 //            'name_en' => 'required|max:250',
@@ -66,7 +77,7 @@ class MemberController extends Controller
 
         try {
             $response = $this->repository->createMember($request);
-            return response()->json($response, 201);
+            return response($response, 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }

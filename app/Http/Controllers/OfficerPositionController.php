@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Repositories\OfficerRepository;
+
 use App\Models\OfficerPosition;
+use App\Repositories\OfficerRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class OfficerPositionController extends Controller
 {
@@ -12,18 +14,18 @@ class OfficerPositionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
-
-
-    public function __construct(OfficerRepository $OfficerRepository)
+    private $repository;
+    public function __construct(OfficerRepository $repository)
     {
-        $this->OfficerRepository = $OfficerRepository;
-
+        $this->repository = $repository;
     }
-
     public function index()
     {
-        return OfficerPosition::all();
+        $positions = OfficerPosition::select('id', 'position_en','position_si','position_ta')->get();
+        $response = [
+            "AllPositions" => $positions,
+        ];
+        return response($response, 200);
     }
 
     /**
@@ -44,12 +46,28 @@ class OfficerPositionController extends Controller
      */
     public function store(Request $request)
     {
-        $fields = $request->validate([
-            'position' => 'required',
-        ]);
+        $customMessages = [
+            'positionEn' => 'The Position English is compulsory',
+            'positionSi' => 'The Position Sinhala is compulsory',
+            'positionTa' => 'The Position Tamil is compulsory',
+        ];
 
-        $responce = $this->OfficerRepository->addPosition($request);
-        return response($responce, 201);
+        $validator = Validator::make($request->all(),[
+            'positionEn' => 'required|email',
+            'positionSi' => 'required|email',
+            'positionTa' => 'required',
+        ], $customMessages);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            return response()->json(['errors' => $errors], 422);
+//            return response()->json(['errors' => $validator->errors()], 422);// with the field name
+//            $errors = collect($validator->errors()->messages())->flatten()->toArray();//without the field name
+//            return response()->json(['errors' => $errors], 422);
+        }else{
+            $responce = $this->repository->addPosition($request);
+            return response($responce, 201);
+        }
     }
 
     /**
@@ -81,9 +99,17 @@ class OfficerPositionController extends Controller
      * @param  \App\Models\OfficerPosition  $officerPosition
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, OfficerPosition $officerPosition)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'positionEn' => 'required',
+            'positionSi' => 'required',
+            'positionTa' => 'required',
+        ]);
+
+        $response = $this->repository->updatePosition($id, $request);
+
+        return response($response, 200);
     }
 
     /**
@@ -92,8 +118,13 @@ class OfficerPositionController extends Controller
      * @param  \App\Models\OfficerPosition  $officerPosition
      * @return \Illuminate\Http\Response
      */
-    public function destroy(OfficerPosition $officerPosition)
+    public function destroy($id)
     {
-        //
+        $result = $this->repository->deletePosition($id);
+
+        if ($result) {
+            return response()->json(['message' => 'Position deleted successfully.']);
+        }
+        return response()->json(['message' => 'Position not found.'], 404);
     }
 }

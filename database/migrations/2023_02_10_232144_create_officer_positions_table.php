@@ -16,7 +16,9 @@ return new class extends Migration
         Schema::create('officer_positions', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('position',200);
+            $table->string('position_en',200);
+            $table->string('position_si',200);
+            $table->string('position_ta',200);
         });
     }
 

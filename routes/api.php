@@ -26,6 +26,7 @@ Route::apiResource('/memberPosition', \App\Http\Controllers\MemberPositionContro
 
 
 Route::apiResource('/officer', \App\Http\Controllers\OfficerController::class);
+Route::apiResource('/officerPosition', \App\Http\Controllers\OfficerPositionController::class);
 
 Route::apiResource('/watersup', \App\Http\Controllers\WaterSupplyController::class);
 Route::apiResource('/addComplain', \App\Http\Controllers\ComplainController::class);
