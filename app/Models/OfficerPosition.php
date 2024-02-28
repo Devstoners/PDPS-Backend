@@ -10,7 +10,9 @@ class OfficerPosition extends Model
     use HasFactory;
     protected $table = 'officer_positions';
     protected $fillable = [
-        'position',
+        'position_en',
+        'position_si',
+        'position_ta',
     ];
     /*
         1 (OfficerPosition) : M (Officer)

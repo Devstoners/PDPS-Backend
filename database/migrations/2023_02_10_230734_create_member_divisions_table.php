@@ -16,7 +16,9 @@ return new class extends Migration
         Schema::create('member_divisions', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('division',200);
+            $table->string('division_en',150);
+            $table->string('division_si',150);
+            $table->string('division_ta',150);
         });
     }
 

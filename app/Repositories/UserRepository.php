@@ -24,8 +24,8 @@ class UserRepository
         $user = User::where('email', $fields['username'])->first();
 
         if ($user) {
-            if ($user->is_active == 0) {
-                $user->is_active = 1;
+            if ($user->status == 0) {
+                $user->status = 1;
                 $user->password = bcrypt($fields['password']);
                 $user->save();
             } else {

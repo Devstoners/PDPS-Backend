@@ -11,7 +11,38 @@ class Member extends Model
     protected $table = 'members';
 
     protected $fillable = [
-        'email', 'user_id','full_name', 'display_name', 'profile_pic', 'gender', 'nic', 'tel1', 'tel2', 'address',
-        'is_married', 'is_registered', 'member_divisions_id', 'member_parties_id'
-    ];
+        'user_id',
+        'name_en',
+        'name_si',
+        'name_ta',
+        'image',
+        'tel',
+//        'gender',
+//        'nic',
+//        'address',
+//        'is_married',
+        'member_divisions_id',
+        'member_parties_id',
+        ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function memberDivision()
+    {
+        return $this->belongsTo(MemberDivision::class, 'member_divisions_id');
+    }
+
+    public function memberParty()
+    {
+        return $this->belongsTo(MemberParty::class, 'member_parties_id');
+    }
+
+    public function memberPositions()
+    {
+        return $this->belongsToMany(MemberPosition::class, 'members_member_positions', 'members_id', 'member_positions_id');
+    }
+
 }

@@ -8,9 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class MemberParty extends Model
 {
     use HasFactory;
+    protected $table = 'member_parties';
     protected $fillable = [
-        'party',
+        'party_en',
+        'party_si',
+        'party_ta',
     ];
+
+    public function members()
+    {
+        return $this->hasMany(Member::class, 'member_parties_id');
+    }
+
 }
 /*
     1 (MemberParty) : M (Member)

@@ -4,14 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Member;
 use App\Http\Controllers\Controller;
-use App\Repositories\memberRepostory;
+use App\Repositories\MemberRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
 
 class MemberController extends Controller
 {
     private $repository;
 
-    public function __construct(memberRepostory $repository)
+    public function __construct(MemberRepository $repository)
     {
         $this->repository = $repository;
     }
@@ -20,7 +22,10 @@ class MemberController extends Controller
      */
     public function index()
     {
-        //
+//        return Member::all();
+        return $this->repository->getMembers();
+
+//        return response($members);
     }
 
     /**
@@ -36,33 +41,48 @@ class MemberController extends Controller
      */
     public function store(Request $request)
     {
-        $rules = [
+        $request->validate([
+            'nameEn' => 'required|max:250',
+            'nameSi' => 'required|max:250',
+            'nameTa' => 'required|max:250',
             'email' => 'required|email|unique:users,email',
-            'full_name' => 'required|max:250',
-            'display_name' => 'required|max:100',
-            'profile_pic' => 'required',
-            'gender' => 'required',
-            'nic' => 'required|size:12',
-            'tel1' => 'required|size:10',
-            'tel2' => 'required|size:10',
-            'address' => 'required|max:250',
-            'is_married' => 'required|boolean',
-            'is_registered' => 'required|boolean',
-            'member_divisions_id' => 'required|integer',
-            'member_parties_id' => 'required|integer',
-            'user_id' => 'required|integer',
+//            'division' => 'required|array',
+//            'party' => 'required|array',
+//            'position' => 'required|array',
+            'tel' => 'required|size:10',
+//            'img' => 'required|image|mimes:jpeg|max:5048',
+        ]);
+        $rules = [
+//            'email' => 'required|email|unique:users,email',
+//            'name_en' => 'required|max:250',
+//            'name_si' => 'required|max:250',
+//            'name_ta' => 'required|max:250',
+//            'image' => 'required',
+//            'gender' => 'required',
+//            'nic' => 'required|size:12',
+//            'tel' => 'required|size:10',
+//            'address' => 'required|max:250',
+//            'is_married' => 'required|boolean',
+//            'member_divisions_id' => 'required|integer',
+//            'member_parties_id' => 'required|integer',
         ];
 
-        $validator = Validator::make($request->all(), $rules);
+//        $validator = Validator::make($request->all(), $rules);
+//
+//        if ($validator->fails()) {
+//            return redirect()->back()
+//                ->withErrors($validator)
+//                ->withInput();
+//        }
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
+        try {
+            $response = $this->repository->createMember($request);
+            return response($response, 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
-        $response = $this->repository->createMember($rules);
-        return response($response, 201);
     }
+
 
     /**
      * Display the specified resource.
@@ -91,8 +111,13 @@ class MemberController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Member $member)
+    public function destroy($id)
     {
-        //
+        $result = $this->repository->deleteMember($id);
+
+        if ($result) {
+            return response()->json(['message' => 'Member deleted successfully.']);
+        }
+        return response()->json(['message' => 'Member not found.'], 404);
     }
 }

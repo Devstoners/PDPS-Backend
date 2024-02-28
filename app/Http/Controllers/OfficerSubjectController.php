@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\OfficersOfficerSubject;
+
 use App\Models\OfficerSubject;
 use Illuminate\Http\Request;
 use App\Repositories\OfficerRepository;
-
+use Illuminate\Support\Facades\Validator;
 
 class OfficerSubjectController extends Controller
 {
 
-
-    public function __construct(OfficerRepository $OfficerRepository)
+    private $repository;
+    public function __construct(OfficerRepository $repository)
     {
-        $this->OfficerRepository = $OfficerRepository;
-
+        $this->repository = $repository;
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -24,7 +24,12 @@ class OfficerSubjectController extends Controller
      */
     public function index()
     {
-        return OfficerSubject::all();
+        $subject = OfficerSubject::select('id', 'subject_en','subject_si','subject_ta')->get();
+        $response = [
+            "AllSubjects" => $subject,
+        ];
+        return response($response, 200);
+//        return OfficerSubject::all();
     }
 
     /**
@@ -45,12 +50,25 @@ class OfficerSubjectController extends Controller
      */
     public function store(Request $request)
     {
-        $fields = $request->validate([
-            'subject' => 'required',
-        ]);
+        $customMessages = [
+            'subjectEn' => 'The Subject English is compulsory',
+            'subjectSi' => 'The Subject Sinhala is compulsory',
+            'subjectTa' => 'The Subject Tamil is compulsory',
+        ];
 
-        $response = $this->OfficerRepository->addSubject($request);
-        return response($response, 201);
+        $validator = Validator::make($request->all(),[
+            'subjectEn' => 'required',
+            'subjectSi' => 'required',
+            'subjectTa' => 'required',
+        ], $customMessages);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            return response()->json(['errors' => $errors], 422);
+        }else{
+            $response = $this->repository->addSubject($request);
+            return response($response, 201);
+        }
     }
 
     /**
@@ -82,10 +100,29 @@ class OfficerSubjectController extends Controller
      * @param  \App\Models\OfficerSubject  $officerSubject
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, OfficerSubject $officerSubject)
+    public function update(Request $request, $id)
     {
-        //
+        $customMessages = [
+            'subjectEn' => 'The Subject English is compulsory',
+            'subjectSi' => 'The Subject Sinhala is compulsory',
+            'subjectTa' => 'The Subject Tamil is compulsory',
+        ];
+
+        $validator = Validator::make($request->all(),[
+            'subjectEn' => 'required',
+            'subjectSi' => 'required',
+            'subjectTa' => 'required',
+        ], $customMessages);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            return response()->json(['errors' => $errors], 422);
+        }else{
+            $response = $this->repository->updateSubject($id, $request);
+            return response($response, 200);
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -93,8 +130,16 @@ class OfficerSubjectController extends Controller
      * @param  \App\Models\OfficerSubject  $officerSubject
      * @return \Illuminate\Http\Response
      */
-    public function destroy(OfficerSubject $officerSubject)
+    public function destroy($id)
     {
-        //
+        $response = $this->repository->deleteSubject($id);
+
+        if ($response->status() === 204) {
+            return response()->json(['message' => 'Subject deleted successfully.'], 200);
+        } elseif ($response->status() === 404) {
+            return response()->json(['error' => 'Subject not found.'], 404);
+        } else {
+            return response()->json(['error' => 'Error deleting subject.'], 500); // Or any other appropriate status code
+        }
     }
 }

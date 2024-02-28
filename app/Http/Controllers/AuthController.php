@@ -30,7 +30,7 @@ class AuthController extends Controller
             $fields = $request->validate([
                 'email' => 'required|string|unique:users,email',
                 'password' => 'string|confirmed',
-                'is_active' => 'required',
+                'status' => 'required',
                 'type' => 'required',
                 'name' => 'required',
                 'nic' => 'required',

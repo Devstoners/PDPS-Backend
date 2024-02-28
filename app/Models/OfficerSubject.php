@@ -10,7 +10,9 @@ class OfficerSubject extends Model
     use HasFactory;
     protected $table = 'officer_subjects';
     protected $fillable = [
-        'subject',
+        'subject_en',
+        'subject_si',
+        'subject_ta',
     ];
 }
 /*

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MemberPosition;
+use App\Repositories\MemberRepository;
 use Illuminate\Http\Request;
 
 class MemberPositionController extends Controller
@@ -12,9 +13,18 @@ class MemberPositionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    private $repository;
+    public function __construct(MemberRepository $repository)
+    {
+        $this->repository = $repository;
+    }
     public function index()
     {
-        //
+        $positions = MemberPosition::select('id', 'position_en','position_si','position_ta')->get();
+        $response = [
+            "AllPositions" => $positions,
+        ];
+        return response($response, 200);
     }
 
     /**
@@ -35,7 +45,13 @@ class MemberPositionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request = $request->validate([
+            'positionEn' => 'required',
+            'positionSi' => 'required',
+            'positionTa' => 'required',
+        ]);
+        $responce = $this->repository->addPosition($request);
+        return response($responce, 201);
     }
 
     /**
@@ -67,9 +83,17 @@ class MemberPositionController extends Controller
      * @param  \App\Models\MemberPosition  $memberPosition
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, MemberPosition $memberPosition)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'positionEn' => 'required',
+            'positionSi' => 'required',
+            'positionTa' => 'required',
+        ]);
+
+        $response = $this->repository->updatePosition($id, $request);
+
+        return response($response, 200);
     }
 
     /**
@@ -78,8 +102,13 @@ class MemberPositionController extends Controller
      * @param  \App\Models\MemberPosition  $memberPosition
      * @return \Illuminate\Http\Response
      */
-    public function destroy(MemberPosition $memberPosition)
+    public function destroy($id)
     {
-        //
+        $result = $this->repository->deletePosition($id);
+
+        if ($result) {
+            return response()->json(['message' => 'Position deleted successfully.']);
+        }
+        return response()->json(['message' => 'Position not found.'], 404);
     }
 }

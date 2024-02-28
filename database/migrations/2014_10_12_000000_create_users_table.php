@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->boolean('is_active');
+            $table->smallInteger('status');//0 = Not registered, 1 = active, 2= Disabled
             $table->smallInteger('type');
             $table->rememberToken();
             $table->timestamps();

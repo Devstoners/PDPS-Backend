@@ -22,8 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'is_active',
-        'type'
+        'status',//0 = Unregistered, 1 = Active, 2= Disabled
     ];
 
     /**
@@ -45,4 +44,10 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function member()
+    {
+        return $this->hasOne(Member::class);
+    }
+
 }

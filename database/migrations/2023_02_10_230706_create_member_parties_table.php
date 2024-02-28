@@ -16,7 +16,9 @@ return new class extends Migration
         Schema::create('member_parties', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('party',200);
+            $table->string('party_en',250);
+            $table->string('party_si',250);
+            $table->string('party_ta',250);
         });
     }
 
