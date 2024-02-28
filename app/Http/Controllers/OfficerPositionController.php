@@ -53,20 +53,17 @@ class OfficerPositionController extends Controller
         ];
 
         $validator = Validator::make($request->all(),[
-            'positionEn' => 'required|email',
-            'positionSi' => 'required|email',
+            'positionEn' => 'required',
+            'positionSi' => 'required',
             'positionTa' => 'required',
         ], $customMessages);
 
         if ($validator->fails()) {
             $errors = $validator->errors()->all();
             return response()->json(['errors' => $errors], 422);
-//            return response()->json(['errors' => $validator->errors()], 422);// with the field name
-//            $errors = collect($validator->errors()->messages())->flatten()->toArray();//without the field name
-//            return response()->json(['errors' => $errors], 422);
         }else{
-            $responce = $this->repository->addPosition($request);
-            return response($responce, 201);
+            $response = $this->repository->addPosition($request);
+            return response($response, 201);
         }
     }
 
@@ -101,15 +98,25 @@ class OfficerPositionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $customMessages = [
+            'positionEn' => 'The Position English is compulsory',
+            'positionSi' => 'The Position Sinhala is compulsory',
+            'positionTa' => 'The Position Tamil is compulsory',
+        ];
+
+        $validator = Validator::make($request->all(),[
             'positionEn' => 'required',
             'positionSi' => 'required',
             'positionTa' => 'required',
-        ]);
+        ], $customMessages);
 
-        $response = $this->repository->updatePosition($id, $request);
-
-        return response($response, 200);
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            return response()->json(['errors' => $errors], 422);
+        }else{
+            $response = $this->repository->updatePosition($id, $request);
+            return response($response, 200);
+        }
     }
 
     /**
@@ -120,11 +127,14 @@ class OfficerPositionController extends Controller
      */
     public function destroy($id)
     {
-        $result = $this->repository->deletePosition($id);
+        $response = $this->repository->deletePosition($id);
 
-        if ($result) {
-            return response()->json(['message' => 'Position deleted successfully.']);
+        if ($response->status() === 204) {
+            return response()->json(['message' => 'Position deleted successfully.'], 200);
+        } elseif ($response->status() === 404) {
+            return response()->json(['error' => 'Position not found.'], 404);
+        } else {
+            return response()->json(['error' => 'Error deleting position.'], 500); // Or any other appropriate status code
         }
-        return response()->json(['message' => 'Position not found.'], 404);
     }
 }

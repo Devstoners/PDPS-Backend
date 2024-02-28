@@ -16,7 +16,9 @@ return new class extends Migration
         Schema::create('officer_subjects', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('subject',200);
+            $table->string('subject_en',250);
+            $table->string('subject_si',250);
+            $table->string('subject_ta',250);
         });
     }
 
