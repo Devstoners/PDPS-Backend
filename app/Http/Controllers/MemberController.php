@@ -41,46 +41,40 @@ class MemberController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $customMessages = [
+            'nameEn' => 'The Name English is compulsory',
+            'nameSi' => 'The Name Sinhala is compulsory',
+            'nameTa' => 'The Name Tamil is compulsory',
+            'img' => 'The Image is compulsory',
+            'email' => 'The Email is compulsory',
+            'tel' => 'The Telephone number is compulsory',
+            'division' => 'The Division number is compulsory',
+            'party' => 'The Party number is compulsory',
+            'position' => 'The Position number is compulsory',
+        ];
+
+        $validator = Validator::make($request->all(),[
             'nameEn' => 'required|max:250',
             'nameSi' => 'required|max:250',
             'nameTa' => 'required|max:250',
             'email' => 'required|email|unique:users,email',
-//            'division' => 'required|array',
-//            'party' => 'required|array',
+//            'division' => 'required|integer',
+//            'party' => 'required|integer',
 //            'position' => 'required|array',
             'tel' => 'required|size:10',
 //            'img' => 'required|image|mimes:jpeg|max:5048',
-        ]);
-        $rules = [
-//            'email' => 'required|email|unique:users,email',
-//            'name_en' => 'required|max:250',
-//            'name_si' => 'required|max:250',
-//            'name_ta' => 'required|max:250',
-//            'image' => 'required',
-//            'gender' => 'required',
-//            'nic' => 'required|size:12',
-//            'tel' => 'required|size:10',
-//            'address' => 'required|max:250',
-//            'is_married' => 'required|boolean',
-//            'member_divisions_id' => 'required|integer',
-//            'member_parties_id' => 'required|integer',
-        ];
+        ], $customMessages);
 
-//        $validator = Validator::make($request->all(), $rules);
-//
-//        if ($validator->fails()) {
-//            return redirect()->back()
-//                ->withErrors($validator)
-//                ->withInput();
-//        }
 
-        try {
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            return response()->json(['errors' => $errors], 422);
+        }else{
             $response = $this->repository->createMember($request);
             return response($response, 201);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
+
+
     }
 
 
