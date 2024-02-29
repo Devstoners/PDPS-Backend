@@ -157,40 +157,20 @@ class MemberRepository{
 
 
     public function createMember(Request $request) {
-        // Check if user with the same email already exists
-//        $existingUser = User::where('email', $request->email)->first();
-//        if ($existingUser) {
-//            throw new \Exception('Email is already in use', 400);
-//        }
-
-        // Validate request data
-        $request->validate([
-//            'nameEn' => 'required|string',
-//            'nameSi' => 'required|string',
-//            'nameTa' => 'required|string',
-//            'email' => 'required|email',
-//            'division' => 'required|array',
-//            'party' => 'required|array',
-//            'position' => 'required|array',
-//            'tel' => 'required|string',
-//            'img' => 'required|image|mimes:jpeg|max:5048',
-        ]);
-
-        // Create user
         $user = User::create([
             'email' => $request->email,
         ]);
         $user->assignRole('member');
 
         // Handle image upload
-//        $imgPath = null;
-//        if($request->hasFile('img') && $request->file('img')->isValid()) {
-//            $image = $request->file('img');
-//            $imageName = time().'.'.$image->getClientOriginalExtension();
-//            $path = $image->storeAs('images', $imageName, 'public');
-//            $imgPath = Storage::url($path);
-//        }
-//        dd($imgPath);
+        $imgPath = null;
+        if($request->hasFile('img') && $request->file('img')->isValid()) {
+            $image = $request->file('img');
+            $imageName = time().'.'.$image->getClientOriginalExtension();
+            $path = $image->storeAs('images', $imageName, 'public');
+            $imgPath = Storage::url($path);
+        }
+
 
         // Create member
         $member = new Member();
@@ -199,17 +179,17 @@ class MemberRepository{
         $member->name_si = $request->nameSi;
         $member->name_ta = $request->nameTa;
         $member->tel = $request->tel;
-//        $member->member_divisions_id = $request->division['value'];
-//        $member->member_parties_id = $request->party['value'];
-//        $member->image = $imgPath;
+        $member->member_divisions_id = $request->division;
+        $member->member_parties_id = $request->party;
+        $member->image = $imgPath;
         $member->save();
 
         // Handle positions
         $positionIds = [];
-//        foreach ($request->position as $positionData) {
-//            $positionIds[] = $positionData['value'];
-//        }
-//        $member->memberPositions()->sync($positionIds);
+        foreach ($request->position as $positionData) {
+            $positionIds[] = $positionData['value'];
+        }
+        $member->memberPositions()->sync($positionIds);
 
         // Return response
         $response = [
