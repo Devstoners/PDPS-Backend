@@ -45,12 +45,18 @@ class MemberController extends Controller
             'nameEn' => 'The Name English is compulsory',
             'nameSi' => 'The Name Sinhala is compulsory',
             'nameTa' => 'The Name Tamil is compulsory',
-            'img' => 'The Image is compulsory',
-            'email' => 'The Email is compulsory',
-            'tel' => 'The Telephone number is compulsory',
-            'division' => 'The Division number is compulsory',
-            'party' => 'The Party number is compulsory',
-            'position' => 'The Position number is compulsory',
+            'img.required' => 'The Image is compulsory',
+            'img.image' => 'The Image must be an image file',
+            'img.mimes' => 'The Image must be a JPEG file',
+            'img.max' => 'The Image may not be greater than 5 MB',
+            'email.required' => 'The Email is compulsory',
+            'email.email' => 'The Email must be a valid email address',
+            'email.unique' => 'The Email has already been taken',
+            'tel.required' => 'The Telephone number is compulsory',
+            'tel.size' => 'The Telephone number must be 10 digits',
+            'division' => 'The Division is compulsory',
+            'party' => 'The Party is compulsory',
+            'position' => 'The Position is compulsory',
         ];
 
         $validator = Validator::make($request->all(),[
@@ -58,11 +64,11 @@ class MemberController extends Controller
             'nameSi' => 'required|max:250',
             'nameTa' => 'required|max:250',
             'email' => 'required|email|unique:users,email',
-//            'division' => 'required|integer',
-//            'party' => 'required|integer',
-//            'position' => 'required|array',
             'tel' => 'required|size:10',
-//            'img' => 'required|image|mimes:jpeg|max:5048',
+            'division' => 'required',
+            'party' => 'required',
+            'position' => 'required|array',
+            'img' => 'required|image|mimes:jpeg|max:5048',
         ], $customMessages);
 
 
