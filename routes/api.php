@@ -19,6 +19,8 @@ Route::apiResource('/news', \App\Http\Controllers\NewsController::class);
 Route::get('/newsCount',[\App\Http\Controllers\NewsController::class,'count']);
 Route::get('/siteNewsView',[\App\Http\Controllers\NewsController::class,'viewSite']);
 
+Route::apiResource('/downloadActs', \App\Http\Controllers\DownloadActsController::class);
+
 Route::apiResource('/member', \App\Http\Controllers\MemberController::class);
 Route::apiResource('/memberDivision', \App\Http\Controllers\MemberDivisionController::class);
 Route::apiResource('/memberParty', \App\Http\Controllers\MemberPartyController::class);
@@ -37,8 +39,7 @@ Route::apiResource('/addTax', \App\Http\Controllers\TaxController::class);
 Route::post('/register', [\App\Http\Controllers\AuthController::class, 'register']);
 Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login']);
 Route::post('/activate', [\App\Http\Controllers\AuthController::class, 'activate']);
-Route::apiResource('/addPosition', \App\Http\Controllers\OfficerPositionController::class);
-Route::apiResource('/addSubject', \App\Http\Controllers\OfficerSubjectController::class);
+
 
 
 Route::get('/complaincount',[\App\Http\Controllers\ComplainController::class,'getCount']);
