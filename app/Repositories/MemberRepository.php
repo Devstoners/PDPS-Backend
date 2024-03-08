@@ -186,8 +186,8 @@ class MemberRepository{
 
         // Handle positions
         $positionIds = [];
-        foreach ($request->position as $positionData) {
-            $positionIds[] = $positionData['value'];
+        foreach ($request->input('position') as $positionId) {
+            $positionIds[] = $positionId;
         }
         $member->memberPositions()->sync($positionIds);
 

@@ -67,8 +67,9 @@ class MemberController extends Controller
             'tel' => 'required|size:10',
             'division' => 'required',
             'party' => 'required',
-            'position' => 'required|array',
-            'img' => 'required|image|mimes:jpeg|max:5048',
+//            'position' => 'required|array',
+//            'img' => 'required|image|mimes:jpeg|max:10240',
+            'img' => 'required|image|mimes:jpeg,jpg,pjpeg,x-jpeg|max:10240',
         ], $customMessages);
 
 

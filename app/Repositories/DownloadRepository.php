@@ -47,7 +47,6 @@ class DownloadRepository
             'file_path_en' => $filePathEn,
             'file_path_si' => $filePathSi,
             'file_path_ta' => $filePathTa,
-            'updated_at' => now(),
             'created_at' => now(),
         ]);
         return response([
@@ -58,15 +57,63 @@ class DownloadRepository
 
     public function updateActs($id, $data)
     {
+        $existActs = DownloadActs::find($id);
+
+
+         if ($data->hasFile('actFileEn')) {
+            if ($existActs->file_path_en) {
+                Storage::disk('public')->delete($existActs->file_path_en);
+            }
+            $file = $data->file('actFileEn');
+            $fileName = time() . '_en.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('acts', $fileName, 'public');
+            $filePathEn = str_replace('storage/', '', $path);
+        }else{
+             $filePathEn = $existActs->file_path_en;
+         }
+
+
+        if ($data->hasFile('actFileSi')) {
+            if ($existActs->file_path_si) {
+                Storage::disk('public')->delete($existActs->file_path_si);
+            }
+            $file = $data->file('actFileSi');
+            $fileName = time() . '_si.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('acts', $fileName, 'public');
+            $filePathSi = str_replace('storage/', '', $path);
+        }else{
+            $filePathSi = $existActs->file_path_si;
+        }
+
+        if ($data->hasFile('actFileTa')) {
+            if ($existActs->file_path_ta) {
+                Storage::disk('public')->delete($existActs->file_path_ta);
+            }
+            $file = $data->file('actFileTa');
+            $fileName = time() . '_ta.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('acts', $fileName, 'public');
+            $filePathTa = str_replace('storage/', '', $path);
+        }else{
+            $filePathTa = $existActs->file_path_ta;
+        }
+
         $acts = DownloadActs::find($id);
-        $acts->update([
-            'name_en' => $data['nameEn'],
-            'name_si' => $data['nameSi'],
-            'name_ta' => $data['nameTa'],
-            'updated_at' => now(),
-            'created_at' => now(),
-        ]);
-        return response(['message' => 'Acts updated successfully.'], 200);
+        if($acts) {
+            $acts->update([
+                'number' => $data['actNumber'],
+                'issue_date' => $data['actDate'],
+                'name_en' => $data['nameEn'],
+                'name_si' => $data['nameSi'],
+                'name_ta' => $data['nameTa'],
+                'file_path_en' => $filePathEn,
+                'file_path_si' => $filePathSi,
+                'file_path_ta' => $filePathTa,
+                'updated_at' => now(),
+            ]);
+            return response(['message' => 'Acts updm,nsadn,aated successfully.'], 200);
+        }else{
+            \Log::info('id eka ne:');
+        }
     }
     public function deleteActs($id)
     {

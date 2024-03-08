@@ -42,6 +42,7 @@ class DownloadActsController extends Controller
      */
     public function store(Request $request)
     {
+//        \Log::info('Data received for update:', $request->all());
         $customMessages = [
             'actNumber.required' => 'The Act Number is compulsory',
             'actDate.required' => 'The Act Date is compulsory',
@@ -114,9 +115,90 @@ class DownloadActsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateDownloadActsRequest $request, DownloadActs $downloadActs)
+
+    public function update(Request $request, DownloadActs $id)
     {
-        //
+        \Log::info('Data received for update acts:', $request->all('nameEn'));
+
+//        $customMessages = [
+//            'actNumber.required' => 'The Act Number is compulsory',
+//            'actDate.required' => 'The Act Date is compulsory',
+//            'nameEn.required' => 'The Name English is compulsory',
+//            'nameSi.required' => 'The Name Sinhala is compulsory',
+//            'nameTa.required' => 'The Name Tamil is compulsory',
+//            'actFileEn.mimetypes' => 'The file (English) must be a PDF file',
+//            'actFileEn.max' => 'The file (English) may not be greater than 25 MB',
+//            'actFileSi.mimetypes' => 'The file (Sinhala) must be a PDF file',
+//            'actFileSi.max' => 'The file (Sinhala) may not be greater than 25 MB',
+//            'actFileTa.mimetypes' => 'The file (Tamil) must be a PDF file',
+//            'actFileTa.max' => 'The file (Tamil) may not be greater than 25 MB',
+//        ];
+//
+//        $validator = Validator::make($request->all(), [
+//            'actNumber' => 'required|string',
+//            'actDate' => 'required|string',
+//            'nameEn' => 'required|string',
+//            'nameSi' => 'required|string',
+//            'nameTa' => 'required|string',
+//        ], $customMessages);
+//
+//        if ($validator->fails()) {
+//            $errors = $validator->errors()->all();
+//            return response()->json(['errors' => $errors], 422);
+//        }else{
+//            $response = $this->repository->updateActs($id, $request);
+//            return response($response, 200);
+//        }
+//        $customMessages = [
+//            'actNumber.required' => 'The Act Number is compulsory',
+//            'actDate.required' => 'The Act Date is compulsory',
+//            'nameEn.required' => 'The Name English is compulsory',
+//            'nameSi.required' => 'The Name Sinhala is compulsory',
+//            'nameTa.required' => 'The Name Tamil is compulsory',
+//            'actFileEn.mimetypes' => 'The file (English) must be a PDF file',
+//            'actFileEn.max' => 'The file (English) may not be greater than 25 MB',
+//            'actFileSi.mimetypes' => 'The file (Sinhala) must be a PDF file',
+//            'actFileSi.max' => 'The file (Sinhala) may not be greater than 25 MB',
+//            'actFileTa.mimetypes' => 'The file (Tamil) must be a PDF file',
+//            'actFileTa.max' => 'The file (Tamil) may not be greater than 25 MB',
+//        ];
+//
+//        $validator = Validator::make($request->input(), [
+//            'actNumber' => 'required|string',
+//            'actDate' => 'required|string',
+//            'nameEn' => 'required|string',
+//            'nameSi' => 'required|string',
+//            'nameTa' => 'required|string',
+//        ], $customMessages);
+//
+//        // Validate English file if it's uploaded
+//        if ($request->hasFile('actFileEn')) {
+//            $validator->sometimes('actFileEn', 'mimetypes:application/pdf,application/x-pdf,application/octet-stream,application/x-download,application/acrobat|max:25600', function ($input) {
+//                return $input->hasFile('actFileEn');
+//            });
+//        }
+//
+//        // Validate Sinhala file if it's uploaded
+//        if ($request->hasFile('actFileSi')) {
+//            $validator->sometimes('actFileSi', 'mimetypes:application/pdf,application/x-pdf,application/octet-stream,application/x-download,application/acrobat|max:25600', function ($input) {
+//                return $input->hasFile('actFileSi');
+//            });
+//        }
+//
+//        // Validate Tamil file if it's uploaded
+//        if ($request->hasFile('actFileTa')) {
+//            $validator->sometimes('actFileTa', 'mimetypes:application/pdf,application/x-pdf,application/octet-stream,application/x-download,application/acrobat|max:25600', function ($input) {
+//                return $input->hasFile('actFileTa');
+//            });
+//        }
+//
+//        if ($validator->fails()) {
+//            $errors = $validator->errors()->all();
+//            return response()->json(['errors' => $errors], 422);
+//        } else {
+//            $response = $this->repository->updateActs($id, $request);
+//            return response($response, 201);
+//        }
     }
 
     /**
