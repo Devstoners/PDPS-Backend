@@ -55,66 +55,73 @@ class DownloadRepository
 
     }
 
-    public function updateActs($id, $data)
+
+    public function updateActs($id, $request)
     {
-        $existActs = DownloadActs::find($id);
+        // Retrieve the existing DownloadActs model
+        $existActs = DownloadActs::findOrFail($id);
 
-
-         if ($data->hasFile('actFileEn')) {
-            if ($existActs->file_path_en) {
-                Storage::disk('public')->delete($existActs->file_path_en);
-            }
-            $file = $data->file('actFileEn');
-            $fileName = time() . '_en.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('acts', $fileName, 'public');
-            $filePathEn = str_replace('storage/', '', $path);
-        }else{
-             $filePathEn = $existActs->file_path_en;
-         }
-
-
-        if ($data->hasFile('actFileSi')) {
-            if ($existActs->file_path_si) {
-                Storage::disk('public')->delete($existActs->file_path_si);
-            }
-            $file = $data->file('actFileSi');
-            $fileName = time() . '_si.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('acts', $fileName, 'public');
-            $filePathSi = str_replace('storage/', '', $path);
-        }else{
-            $filePathSi = $existActs->file_path_si;
+        // Delete existing files if new files are uploaded
+        if ($request->hasFile('actFileEn')) {
+            Storage::delete('public/' . $existActs->file_path_en);
         }
 
-        if ($data->hasFile('actFileTa')) {
-            if ($existActs->file_path_ta) {
-                Storage::disk('public')->delete($existActs->file_path_ta);
-            }
-            $file = $data->file('actFileTa');
-            $fileName = time() . '_ta.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('acts', $fileName, 'public');
-            $filePathTa = str_replace('storage/', '', $path);
-        }else{
-            $filePathTa = $existActs->file_path_ta;
+        if ($request->hasFile('actFileSi')) {
+            Storage::delete('public/' . $existActs->file_path_si);
         }
 
-        $acts = DownloadActs::find($id);
-        if($acts) {
-            $acts->update([
-                'number' => $data['actNumber'],
-                'issue_date' => $data['actDate'],
-                'name_en' => $data['nameEn'],
-                'name_si' => $data['nameSi'],
-                'name_ta' => $data['nameTa'],
-                'file_path_en' => $filePathEn,
-                'file_path_si' => $filePathSi,
-                'file_path_ta' => $filePathTa,
-                'updated_at' => now(),
-            ]);
-            return response(['message' => 'Acts updm,nsadn,aated successfully.'], 200);
-        }else{
-            \Log::info('id eka ne:');
+        if ($request->hasFile('actFileTa')) {
+            Storage::delete('public/' . $existActs->file_path_ta);
         }
+
+        // Process English file if uploaded
+        if ($request->hasFile('actFileEn')) {
+            $englishFileName = 'acts/' . time() . '_en.' . $request->file('actFileEn')->getClientOriginalExtension();
+            $request->file('actFileEn')->storeAs('public', $englishFileName);
+            $request->merge(['actFileEn' => $englishFileName]);
+        } else {
+            // Use the existing file path if no new file is uploaded
+            $request->merge(['actFileEn' => $existActs->file_path_en]);
+        }
+
+        // Process Sinhala file if uploaded
+        if ($request->hasFile('actFileSi')) {
+            $sinhalaFileName = 'acts/' . time() . '_si.' . $request->file('actFileSi')->getClientOriginalExtension();
+            $request->file('actFileSi')->storeAs('public', $sinhalaFileName);
+            $request->merge(['actFileSi' => $sinhalaFileName]);
+        } else {
+            // Use the existing file path if no new file is uploaded
+            $request->merge(['actFileSi' => $existActs->file_path_si]);
+        }
+
+        // Process Tamil file if uploaded
+        if ($request->hasFile('actFileTa')) {
+            $tamilFileName = 'acts/' . time() . '_ta.' . $request->file('actFileTa')->getClientOriginalExtension();
+            $request->file('actFileTa')->storeAs('public', $tamilFileName);
+            $request->merge(['actFileTa' => $tamilFileName]);
+        } else {
+            // Use the existing file path if no new file is uploaded
+            $request->merge(['actFileTa' => $existActs->file_path_ta]);
+        }
+
+        // Update other fields along with the file paths
+        $existActs->update([
+            'number' => $request->input('actNumber'),
+            'issue_date' => $request->input('actDate'),
+            'name_en' => $request->input('nameEn'),
+            'name_si' => $request->input('nameSi'),
+            'name_ta' => $request->input('nameTa'),
+            'file_path_en' => $request->input('actFileEn'),
+            'file_path_si' => $request->input('actFileSi'),
+            'file_path_ta' => $request->input('actFileTa'),
+            'updated_at' => now(),
+        ]);
+
+        return response(['message' => 'Acts updated successfully.'], 200);
     }
+
+
+
     public function deleteActs($id)
     {
         $acts = DownloadActs::find($id);
@@ -139,6 +146,140 @@ class DownloadRepository
 
     }
 
+
+    //-----------------Report--------------------------------------------------------------------
+
+    public function addReport($request)
+    {
+        $filePathEn = null;
+        if ($request->hasFile('reportFileEn')) {
+            $file = $request->file('reportFileEn');
+            $fileName = time() . '_en.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('report', $fileName, 'public');
+            $filePathEn = str_replace('storage/', '', $path);
+        }
+
+        $filePathSi = null;
+        if ($request->hasFile('reportFileSi')) {
+            $file = $request->file('reportFileSi');
+            $fileName = time() . '_si.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('report', $fileName, 'public');
+            $filePathSi = str_replace('storage/', '', $path);
+        }
+
+        $filePathTa = null;
+        if ($request->hasFile('reportFileTa')) {
+            $file = $request->file('reportFileTa');
+            $fileName = time() . '_ta.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('report', $fileName, 'public');
+            $filePathTa = str_replace('storage/', '', $path);
+        }
+
+        $report = DownloadCommitteeReport::create([
+            'report_year' => $request['reportYear'],
+            'report_month' => $request['reportMonth'],
+            'name_en' => $request['nameEn'],
+            'name_si' => $request['nameSi'],
+            'name_ta' => $request['nameTa'],
+            'file_path_en' => $filePathEn,
+            'file_path_si' => $filePathSi,
+            'file_path_ta' => $filePathTa,
+        ]);
+        return response([
+            'report' => $report
+        ], 200);
+
+    }
+
+
+    public function updateReport($id, $request)
+    {
+        // Retrieve the existing DownloadCommitteeReport model
+        $existReport = DownloadCommitteeReport::findOrFail($id);
+
+        // Delete existing files if new files are uploaded
+        if ($request->hasFile('reportFileEn')) {
+            Storage::delete('public/' . $existReport->file_path_en);
+        }
+
+        if ($request->hasFile('reportFileSi')) {
+            Storage::delete('public/' . $existReport->file_path_si);
+        }
+
+        if ($request->hasFile('reportFileTa')) {
+            Storage::delete('public/' . $existReport->file_path_ta);
+        }
+
+        // Process English file if uploaded
+        if ($request->hasFile('reportFileEn')) {
+            $englishFileName = 'report/' . time() . '_en.' . $request->file('reportFileEn')->getClientOriginalExtension();
+            $request->file('reportFileEn')->storeAs('public', $englishFileName);
+            $request->merge(['reportFileEn' => $englishFileName]);
+        } else {
+            // Use the existing file path if no new file is uploaded
+            $request->merge(['reportFileEn' => $existReport->file_path_en]);
+        }
+
+        // Process Sinhala file if uploaded
+        if ($request->hasFile('reportFileSi')) {
+            $sinhalaFileName = 'report/' . time() . '_si.' . $request->file('reportFileSi')->getClientOriginalExtension();
+            $request->file('reportFileSi')->storeAs('public', $sinhalaFileName);
+            $request->merge(['reportFileSi' => $sinhalaFileName]);
+        } else {
+            // Use the existing file path if no new file is uploaded
+            $request->merge(['reportFileSi' => $existReport->file_path_si]);
+        }
+
+        // Process Tamil file if uploaded
+        if ($request->hasFile('reportFileTa')) {
+            $tamilFileName = 'report/' . time() . '_ta.' . $request->file('reportFileTa')->getClientOriginalExtension();
+            $request->file('reportFileTa')->storeAs('public', $tamilFileName);
+            $request->merge(['reportFileTa' => $tamilFileName]);
+        } else {
+            // Use the existing file path if no new file is uploaded
+            $request->merge(['reportFileTa' => $existReport->file_path_ta]);
+        }
+
+        // Update other fields along with the file paths
+        $existReport->update([
+            'report_year' => $request->input('reportYear'),
+            'report_month' => $request->input('reportMonth'),
+            'name_en' => $request->input('nameEn'),
+            'name_si' => $request->input('nameSi'),
+            'name_ta' => $request->input('nameTa'),
+            'file_path_en' => $request->input('reportFileEn'),
+            'file_path_si' => $request->input('reportFileSi'),
+            'file_path_ta' => $request->input('reportFileTa'),
+        ]);
+
+        return response(['message' => 'Report updated successfully.'], 200);
+    }
+
+
+
+    public function deleteReport($id)
+    {
+        $report = DownloadCommitteeReport::find($id);
+
+        if ($report) {
+            if ($report->file_path_en) {
+                Storage::disk('public')->delete($report->file_path_en);
+            }
+            if ($report->file_path_si) {
+                Storage::disk('public')->delete($report->file_path_si);
+            }
+            if ($report->file_path_ta) {
+                Storage::disk('public')->delete($report->file_path_ta);
+            }
+
+            $report->delete();
+
+            return response()->noContent(); // Send 204 upon successful delete
+        }
+
+        return response()->noContent()->setStatusCode(404); // Send 404 if act not found
+
+    }
 
 }
 

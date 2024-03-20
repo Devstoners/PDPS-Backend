@@ -8,11 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class Gallery extends Model
 {
     use HasFactory;
+    protected $table = 'galleries';
     protected $fillable = [
-        'gallery_locales_id',
-        'img',
+        'topic_en',
+        'topic_si',
+        'topic_ta',
     ];
+
+    public function images()
+    {
+        return $this->hasMany(GalleryImage::class, 'gallery_id');
+    }
 }
 /*
-    1(GalleryLocale) : M (Gallery)
+    m(GalleryImage) : 1 (Gallery)
 */

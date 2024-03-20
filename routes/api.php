@@ -14,12 +14,16 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-//Me vidiyata (apiResource) anith ewageth hadanna e.g.-officer, officerPosition. ewata crud set kranna
 Route::apiResource('/news', \App\Http\Controllers\NewsController::class);
 Route::get('/newsCount',[\App\Http\Controllers\NewsController::class,'count']);
 Route::get('/siteNewsView',[\App\Http\Controllers\NewsController::class,'viewSite']);
 
 Route::apiResource('/downloadActs', \App\Http\Controllers\DownloadActsController::class);
+Route::apiResource('/downloadReport', \App\Http\Controllers\DownloadCommitteeReportController::class);
+
+Route::apiResource('/gallery', \App\Http\Controllers\GalleryController::class);
+
+Route::apiResource('/project', \App\Http\Controllers\ProjectController::class);
 
 Route::apiResource('/member', \App\Http\Controllers\MemberController::class);
 Route::apiResource('/memberDivision', \App\Http\Controllers\MemberDivisionController::class);

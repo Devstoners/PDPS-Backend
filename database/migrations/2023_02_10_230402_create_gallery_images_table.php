@@ -13,13 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('gallery_locales', function (Blueprint $table) {
+        Schema::create('gallery_images', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('album_desc_si',500);
-            $table->string('album_desc_en',500);
-            $table->string('album_desc_ta',500);
-
+            $table->integer('gallery_id');
+            $table->char('image_path',255);
         });
     }
 
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('gallery_locales');
+        Schema::dropIfExists('gallery_images');
     }
 };

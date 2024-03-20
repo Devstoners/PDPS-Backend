@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\GalleryLocale;
+use App\Models\GalleryImage;
 use Illuminate\Http\Request;
 
-class GalleryLocaleController extends Controller
+class GalleryImageController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,10 +41,10 @@ class GalleryLocaleController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\GalleryLocale  $galleryLocale
+     * @param  \App\Models\GalleryImage  $galleryImage
      * @return \Illuminate\Http\Response
      */
-    public function show(GalleryLocale $galleryLocale)
+    public function show(GalleryImage $galleryImage)
     {
         //
     }
@@ -52,10 +52,10 @@ class GalleryLocaleController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\GalleryLocale  $galleryLocale
+     * @param  \App\Models\GalleryImage  $galleryImage
      * @return \Illuminate\Http\Response
      */
-    public function edit(GalleryLocale $galleryLocale)
+    public function edit(GalleryImage $galleryImage)
     {
         //
     }
@@ -64,10 +64,10 @@ class GalleryLocaleController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\GalleryLocale  $galleryLocale
+     * @param  \App\Models\GalleryImage  $galleryImage
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, GalleryLocale $galleryLocale)
+    public function update(Request $request, GalleryImage $galleryImage)
     {
         //
     }
@@ -75,10 +75,10 @@ class GalleryLocaleController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\GalleryLocale  $galleryLocale
+     * @param  \App\Models\GalleryImage  $galleryImage
      * @return \Illuminate\Http\Response
      */
-    public function destroy(GalleryLocale $galleryLocale)
+    public function destroy(GalleryImage $galleryImage)
     {
         //
     }
