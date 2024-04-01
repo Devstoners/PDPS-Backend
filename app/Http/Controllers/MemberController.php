@@ -42,24 +42,22 @@ class MemberController extends Controller
     public function store(Request $request)
     {
         $customMessages = [
-            'nameEn' => 'The Name English is compulsory',
-            'nameSi' => 'The Name Sinhala is compulsory',
-            'nameTa' => 'The Name Tamil is compulsory',
-            'img.required' => 'The Image is compulsory',
-            'img.image' => 'The Image must be an image file',
-            'img.mimes' => 'The Image must be a JPEG file',
-            'img.max' => 'The Image may not be greater than 5 MB',
+            'nameEn.required' => 'The Name English is compulsory',
+            'nameSi.required' => 'The Name Sinhala is compulsory',
+            'nameTa.required' => 'The Name Tamil is compulsory',
             'email.required' => 'The Email is compulsory',
             'email.email' => 'The Email must be a valid email address',
             'email.unique' => 'The Email has already been taken',
             'tel.required' => 'The Telephone number is compulsory',
             'tel.size' => 'The Telephone number must be 10 digits',
-            'division' => 'The Division is compulsory',
-            'party' => 'The Party is compulsory',
-            'position' => 'The Position is compulsory',
+            'division.required' => 'The Division is compulsory',
+            'party.required' => 'The Party is compulsory',
+            'position.required' => 'The Position is compulsory',
+            'position.array' => 'The Position is not an array',
         ];
 
-        $validator = Validator::make($request->all(),[
+        // Define the base validation rules
+        $baseRules = [
             'nameEn' => 'required|max:250',
             'nameSi' => 'required|max:250',
             'nameTa' => 'required|max:250',
@@ -67,22 +65,28 @@ class MemberController extends Controller
             'tel' => 'required|size:10',
             'division' => 'required',
             'party' => 'required',
-//            'position' => 'required|array',
-//            'img' => 'required|image|mimes:jpeg|max:10240',
-            'img' => 'required|image|mimes:jpeg,jpg,pjpeg,x-jpeg|max:10240',
-        ], $customMessages);
+            'position' => 'required|array',
+        ];
 
+        // If 'img' exists in the request, apply additional validation rules
+        if ($request->has('img')&& $request->file('img') !== null) {
+            $baseRules['img'] = 'image|mimes:jpeg,jpg,pjpeg,x-jpeg|max:10240';
+            $customMessages['img.image'] = 'The Image must be an image file';
+            $customMessages['img.mimes'] = 'The Image must be a JPEG file';
+            $customMessages['img.max'] = 'The Image may not be greater than 5 MB';
+        }
+
+        $validator = Validator::make($request->all(), $baseRules, $customMessages);
 
         if ($validator->fails()) {
             $errors = $validator->errors()->all();
             return response()->json(['errors' => $errors], 422);
-        }else{
+        } else {
             $response = $this->repository->createMember($request);
             return response($response, 201);
         }
-
-
     }
+
 
 
     /**

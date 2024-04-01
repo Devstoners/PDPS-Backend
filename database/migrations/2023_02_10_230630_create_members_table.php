@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->integer('user_id');
+            $table->integer('title');
             $table->string('name_en',250);
             $table->string('name_si',250);
             $table->string('name_ta',250);

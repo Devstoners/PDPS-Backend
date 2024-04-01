@@ -12,6 +12,7 @@ class Member extends Model
 
     protected $fillable = [
         'user_id',
+        'title',//1 = Mr, 2 = Mrs, 3 = Miss, 4 = Rev
         'name_en',
         'name_si',
         'name_ta',

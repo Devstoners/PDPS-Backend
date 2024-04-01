@@ -145,7 +145,7 @@ class MemberRepository{
                 $query->select('id', 'email', 'status');
             }
         ])
-            ->select('members.id', 'name_en', 'name_si','name_ta', 'image', 'tel', 'member_divisions_id', 'member_parties_id', 'user_id')
+            ->select('members.id', 'title','name_en', 'name_si','name_ta', 'image', 'tel', 'member_divisions_id', 'member_parties_id', 'user_id')
             ->get();
 
         $response = [
@@ -167,7 +167,7 @@ class MemberRepository{
         if($request->hasFile('img') && $request->file('img')->isValid()) {
             $image = $request->file('img');
             $imageName = time().'.'.$image->getClientOriginalExtension();
-            $path = $image->storeAs('images', $imageName, 'public');
+            $path = $image->storeAs('images/member', $imageName, 'public');
             $imgPath = Storage::url($path);
         }
 
@@ -175,6 +175,7 @@ class MemberRepository{
         // Create member
         $member = new Member();
         $member->user_id = $user->id;
+        $member->title = $request->title;
         $member->name_en = $request->nameEn;
         $member->name_si = $request->nameSi;
         $member->name_ta = $request->nameTa;
