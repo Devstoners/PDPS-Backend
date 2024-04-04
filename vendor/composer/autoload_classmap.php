@@ -55,7 +55,7 @@ return array(
     'App\\Models\\Grama' => $baseDir . '/app/Models/Grama.php',
     'App\\Models\\GramaDivision' => $baseDir . '/app/Models/GramaDivision.php',
     'App\\Models\\Member' => $baseDir . '/app/Models/Member.php',
-    'App\\Models\\MemberDivision' => $baseDir . '/app/Models/MemberDivision.php',
+    'App\\Models\\Division' => $baseDir . '/app/Models/Division.php',
     'App\\Models\\MemberParty' => $baseDir . '/app/Models/MemberParty.php',
     'App\\Models\\MemberPosition' => $baseDir . '/app/Models/MemberPosition.php',
     'App\\Models\\MembersMemberPosition' => $baseDir . '/app/Models/MembersMemberPosition.php',

@@ -22,7 +22,7 @@ class Member extends Model
 //        'nic',
 //        'address',
 //        'is_married',
-        'member_divisions_id',
+        'divisions_id',
         'member_parties_id',
         ];
 
@@ -31,9 +31,9 @@ class Member extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function memberDivision()
+    public function division()
     {
-        return $this->belongsTo(MemberDivision::class, 'member_divisions_id');
+        return $this->belongsTo(Division::class, 'divisions_id');
     }
 
     public function memberParty()

@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('taxes', function (Blueprint $table) {
+        Schema::create('water_schemes', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->integer('division_id');
+            $table->string('name',255);
+            $table->date('start_date');
         });
     }
 
@@ -22,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('taxes');
+        Schema::dropIfExists('water_schemes');
     }
 };

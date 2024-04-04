@@ -624,7 +624,7 @@ class ComposerStaticInitd8dbdc1bb5f073d3cb19ebe3a0864f02
         'App\\Models\\Grama' => __DIR__ . '/../..' . '/app/Models/Grama.php',
         'App\\Models\\GramaDivision' => __DIR__ . '/../..' . '/app/Models/GramaDivision.php',
         'App\\Models\\Member' => __DIR__ . '/../..' . '/app/Models/Member.php',
-        'App\\Models\\MemberDivision' => __DIR__ . '/../..' . '/app/Models/MemberDivision.php',
+        'App\\Models\\Division' => __DIR__ . '/../..' . '/app/Models/Division.php',
         'App\\Models\\MemberParty' => __DIR__ . '/../..' . '/app/Models/MemberParty.php',
         'App\\Models\\MemberPosition' => __DIR__ . '/../..' . '/app/Models/MemberPosition.php',
         'App\\Models\\MembersMemberPosition' => __DIR__ . '/../..' . '/app/Models/MembersMemberPosition.php',

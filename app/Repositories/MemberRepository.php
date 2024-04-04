@@ -3,7 +3,7 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\Models\Member;
-use App\Models\MemberDivision;
+use App\Models\Division;
 use App\Models\MemberParty;
 use App\Models\MemberPosition;
 use App\Models\MembersMemberPosition;
@@ -15,7 +15,7 @@ class MemberRepository{
 //-----------------Division--------------------------------------------------------------------
        public function addDivision($data)
     {
-        $division = MemberDivision::create([
+        $division = Division::create([
             'division_en' => $data['divisionEn'],
             'division_si' => $data['divisionSi'],
             'division_ta' => $data['divisionTa'],
@@ -29,7 +29,7 @@ class MemberRepository{
 
     public function deleteDivision($id)
     {
-        $division = MemberDivision::find($id);
+        $division = Division::find($id);
 
         if ($division) {
             $division->delete();
@@ -40,7 +40,7 @@ class MemberRepository{
 
     public function updateDivision($id, $data)
     {
-        $division = MemberDivision::find($id);
+        $division = Division::find($id);
         $division->update([
             'division_en' => $data['divisionEn'],
             'division_si' => $data['divisionSi'],
@@ -132,7 +132,7 @@ class MemberRepository{
     public function getMembers()
     {
         $members = Member::with([
-            'memberDivision' => function ($query) {
+            'division' => function ($query) {
                 $query->select('id', 'division_en');
             },
             'memberParty' => function ($query) {
@@ -145,7 +145,7 @@ class MemberRepository{
                 $query->select('id', 'email', 'status');
             }
         ])
-            ->select('members.id', 'title','name_en', 'name_si','name_ta', 'image', 'tel', 'member_divisions_id', 'member_parties_id', 'user_id')
+            ->select('members.id', 'title','name_en', 'name_si','name_ta', 'image', 'tel', 'divisions_id', 'member_parties_id', 'user_id')
             ->get();
 
         $response = [
@@ -180,7 +180,7 @@ class MemberRepository{
         $member->name_si = $request->nameSi;
         $member->name_ta = $request->nameTa;
         $member->tel = $request->tel;
-        $member->member_divisions_id = $request->division;
+        $member->divisions_id = $request->division;
         $member->member_parties_id = $request->party;
         $member->image = $imgPath;
         $member->save();

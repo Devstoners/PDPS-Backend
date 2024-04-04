@@ -8,37 +8,28 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('members', function (Blueprint $table) {
+        Schema::create('water_meter_readers', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->integer('user_id');
             $table->integer('title');
-            $table->string('name_en',250);
-            $table->string('name_si',250);
-            $table->string('name_ta',250);
+            $table->string('name',250);
             $table->string('image');
-            $table->boolean('gender');
             $table->string('nic',12);
             $table->string('tel',10);
             $table->string('address',250);
-            $table->boolean('is_married');
-            $table->integer('divisions_id');
-            $table->integer('member_parties_id');
+            $table->integer('water_schemes_id');
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('members');
+        Schema::dropIfExists('water_meter_readers');
     }
 };

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MemberDivision;
+use App\Models\Division;
 use Illuminate\Http\Request;
 use App\Repositories\MemberRepository;
 
-class MemberDivisionController extends Controller
+class DivisionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,7 +20,7 @@ class MemberDivisionController extends Controller
     }
     public function index()
     {
-        $division = MemberDivision::select('id', 'division_en','division_si','division_ta')->get();
+        $division = Division::select('id', 'division_en','division_si','division_ta')->get();
         $response = [
             "AllDivisions" => $division,
         ];
@@ -57,10 +57,10 @@ class MemberDivisionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\MemberDivision  $memberDivision
+     * @param  \App\Models\Division  $memberDivision
      * @return \Illuminate\Http\Response
      */
-    public function show(MemberDivision $memberDivision)
+    public function show(Division $memberDivision)
     {
         //
     }
@@ -68,10 +68,10 @@ class MemberDivisionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\MemberDivision  $memberDivision
+     * @param  \App\Models\Division  $memberDivision
      * @return \Illuminate\Http\Response
      */
-    public function edit(MemberDivision $memberDivision)
+    public function edit(Division $memberDivision)
     {
         //
     }
@@ -80,7 +80,7 @@ class MemberDivisionController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\MemberDivision  $memberDivision
+     * @param  \App\Models\Division  $memberDivision
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -99,7 +99,7 @@ class MemberDivisionController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\MemberDivision  $memberDivision
+     * @param  \App\Models\Division  $memberDivision
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

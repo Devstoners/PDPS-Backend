@@ -26,7 +26,7 @@ Route::apiResource('/gallery', \App\Http\Controllers\GalleryController::class);
 Route::apiResource('/project', \App\Http\Controllers\ProjectController::class);
 
 Route::apiResource('/member', \App\Http\Controllers\MemberController::class);
-Route::apiResource('/memberDivision', \App\Http\Controllers\MemberDivisionController::class);
+Route::apiResource('/division', \App\Http\Controllers\DivisionController::class);
 Route::apiResource('/memberParty', \App\Http\Controllers\MemberPartyController::class);
 Route::apiResource('/memberPosition', \App\Http\Controllers\MemberPositionController::class);
 

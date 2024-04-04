@@ -33,4 +33,19 @@ class Officer extends Model
     {
         return $this->belongsTo(OfficerPosition::class, 'officer_position_id');
     }
+
+    public function waterBills()
+    {
+        return $this->hasMany(WaterBill::class, 'officer_id');
+    }
+
+    public function taxAssessments()
+    {
+        return $this->hasMany(TaxAssessment::class, 'officer_id');
+    }
+
+    public function taxPayments()
+    {
+        return $this->hasMany(TaxPayment::class, 'officer_id');
+    }
 }
