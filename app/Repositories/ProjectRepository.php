@@ -74,6 +74,11 @@ class ProjectRepository
         }
         return response()->noContent()->setStatusCode(404);
     }
+
+    public function getCount()
+    {
+        return Project::count();
+    }
 }
 
 

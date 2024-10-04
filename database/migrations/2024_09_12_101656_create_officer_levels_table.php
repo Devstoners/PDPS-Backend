@@ -8,26 +8,23 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('complain_actions', function (Blueprint $table) {
+        Schema::create('officer_levels', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->integer('complain_id');
-            $table->string('action',500);
+            $table->string('level_en',50);
+            $table->string('level_si',50);
+            $table->string('level_ta',50);
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('complain_actions');
+        Schema::dropIfExists('officer_levels');
     }
 };

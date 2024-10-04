@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\GalleryImage;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Repositories\GalleryRepository;
+use Illuminate\Support\Facades\Validator;
 
 class GalleryImageController extends Controller
 {
@@ -12,6 +15,14 @@ class GalleryImageController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+     private $repository;
+
+     public function __construct(GalleryRepository $repository)
+     {
+         $this->repository = $repository;
+     }
+
     public function index()
     {
         //
@@ -81,5 +92,14 @@ class GalleryImageController extends Controller
     public function destroy(GalleryImage $galleryImage)
     {
         //
+    }
+
+    public function count()
+    {
+        $count = $this->repository->getCount();
+        $response = [
+            "count" => $count,
+        ];
+        return response($response, 200);
     }
 }

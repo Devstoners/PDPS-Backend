@@ -13,7 +13,19 @@ class OfficerSubject extends Model
         'subject_en',
         'subject_si',
         'subject_ta',
+        'officer_levels_id',
     ];
+
+    public function level()
+    {
+        return $this->belongsTo(OfficerLevel::class, 'officer_levels_id');
+    }
+
+    public function officers()
+    {
+        return $this->belongsToMany(Officer::class, 'officers_officer_subjects', 'officers_id','officer_subjects_id');
+    }
+
 }
 /*
     M (OfficerSubject) : M (Officer)

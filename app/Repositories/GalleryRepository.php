@@ -77,6 +77,11 @@ class GalleryRepository
 
     }
 
+    public function getCount()
+    {
+        return GalleryImage::count();
+    }
+
 }
 
 

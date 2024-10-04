@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Complain;
 use App\Repositories\ComplainRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ComplainController extends Controller
 {
@@ -19,7 +20,8 @@ class ComplainController extends Controller
      */
     public function index()
     {
-        return Complain::all();
+        return $this->repository->getComplain();
+        // return Complain::all();
 
     }
 
@@ -36,15 +38,25 @@ class ComplainController extends Controller
      */
     public function store(Request $request)
     {
-        //return($request);
-        $fields = $request->validate([
-            'complain' => 'required',
-            //'complain_date' => 'required',
-            'cname' => 'string',
-        ]);
+        $customMessages = [
+            'action.required' => 'The action is compulsory',
+            'action.max' => 'The action must be maximum of 500 characters',
+        ];
 
-        $responce = $this->repository->addComplain($request);
-        return response($responce, 201);
+        $baseRules = [
+            'action' => 'required|max:500',
+        ];
+
+
+        $validator = Validator::make($request->all(), $baseRules, $customMessages);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            return response()->json(['errors' => $errors], 422);
+        } else {
+            $response = $this->repository->addAction($request);
+            return response($response, 201);
+        }
     }
 
     /**
@@ -66,18 +78,41 @@ class ComplainController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Complain $Complain)
+    public function update(Request $request, $id)
     {
-        //
+        $customMessages = [
+            'action.required' => 'The action is compulsory',
+            'action.max' => 'The action must be maximum of 500 characters',
+        ];
+
+        $baseRules = [
+            'action' => 'required|max:500',
+        ];
+
+        $validator = Validator::make($request->all(), $baseRules, $customMessages);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            return response()->json(['errors' => $errors], 422);
+        } else {
+            $response = $this->repository->updateAction($id, $request);
+            return response($response, 200);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Complain $Complain)
+    public function destroy($id)
     {
-        //
+        $result = $this->repository->deleteComplain($id);
+
+        if ($result) {
+            return response()->json(['message' => 'Complain deleted successfully.']);
+        }
+        return response()->json(['message' => 'Complain not found.'], 404);
     }
+
     public function getCount()
     {
         $count = Complain::count();

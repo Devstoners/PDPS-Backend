@@ -173,4 +173,13 @@ class ProjectController extends Controller
             return response()->json(['error' => 'Error deleting project.'], 500); // Or any other appropriate status code
         }
     }
+
+    public function count()
+    {
+        $count = $this->repository->getCount();
+        $response = [
+            "count" => $count,
+        ];
+        return response($response, 200);
+    }
 }

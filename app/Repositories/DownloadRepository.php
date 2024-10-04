@@ -281,6 +281,15 @@ class DownloadRepository
 
     }
 
+    //----------------------------------------------------------
+
+    public function getCount()
+    {
+        $countAct = DownloadActs::count();
+        $countReport = DownloadCommitteeReport::count();
+        return [$countAct, $countReport];
+    }
+
 }
 
 
