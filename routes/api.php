@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::apiResource('/complains', \App\Http\Controllers\ComplainController::class);
+Route::apiResource('/complainActions', \App\Http\Controllers\ComplainActionController::class);
 Route::get('/complaincount',[\App\Http\Controllers\ComplainController::class,'getCount']);
 
 Route::apiResource('/news', \App\Http\Controllers\NewsController::class);

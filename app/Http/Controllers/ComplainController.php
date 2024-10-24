@@ -39,14 +39,25 @@ class ComplainController extends Controller
     public function store(Request $request)
     {
         $customMessages = [
-            'action.required' => 'The action is compulsory',
-            'action.max' => 'The action must be maximum of 500 characters',
+            'tele.size' => 'The Telephone number must be 10 digits',
+            'complain.required' => 'The complain is compulsory',
+            'complain.max' => 'The complain must be maximum of 1000 characters',
+            'imageList.image' => 'Each file must be an image file',
+            'imageList.mimes' => 'Each file must be a JPEG image',
+            'imageList.max' => 'Each image may not be greater than 10 MB',
+            'imageList.array' => 'You can only upload a maximum of 3 images',
+            'imageList.*.max' => 'Each image may not be greater than 10 MB', // For individual file size
         ];
 
         $baseRules = [
-            'action' => 'required|max:500',
+            'complain' => 'required|max:1000',
+            'tele' => 'size:10',
         ];
 
+        if ($request->has('imageList') && $request->file('imageList') !== null) {
+            $baseRules['imageList'] = 'array|max:3'; // Limit to a maximum of 3 images
+            $baseRules['imageList.*'] = 'image|mimes:jpeg|max:10240'; // Each image should be jpeg and max 10MB
+        }
 
         $validator = Validator::make($request->all(), $baseRules, $customMessages);
 
@@ -54,10 +65,11 @@ class ComplainController extends Controller
             $errors = $validator->errors()->all();
             return response()->json(['errors' => $errors], 422);
         } else {
-            $response = $this->repository->addAction($request);
+            $response = $this->repository->addComplain($request);
             return response($response, 201);
         }
     }
+
 
     /**
      * Display the specified resource.
@@ -80,24 +92,7 @@ class ComplainController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $customMessages = [
-            'action.required' => 'The action is compulsory',
-            'action.max' => 'The action must be maximum of 500 characters',
-        ];
 
-        $baseRules = [
-            'action' => 'required|max:500',
-        ];
-
-        $validator = Validator::make($request->all(), $baseRules, $customMessages);
-
-        if ($validator->fails()) {
-            $errors = $validator->errors()->all();
-            return response()->json(['errors' => $errors], 422);
-        } else {
-            $response = $this->repository->updateAction($id, $request);
-            return response($response, 200);
-        }
     }
 
     /**

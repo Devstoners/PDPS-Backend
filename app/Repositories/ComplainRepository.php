@@ -6,7 +6,8 @@ use App\Models\Complain;
 use App\Models\ComplainAction;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ComplainRepository
 {
@@ -14,22 +15,36 @@ class ComplainRepository
 
     public function addComplain($data)
     {
-        //  return $data;
+        // Create the complain record first
         $complain = Complain::create([
             'cname' => $data['cname'],
             'tele' => $data['tele'],
             'complain' => $data['complain'],
-             'complain_date' => $data['complain_date'],
-//            'img1'=> $data['img1'],
-//            'img2'=> $data['img2'],
-//            'img3'=> $data['img3'],
         ]);
-        // return $complain;
-        $responce = [
+
+        // Handle the uploaded images if available
+        if ($data->hasFile('imageList')) {
+            $images = $data->file('imageList'); // Get the array of uploaded images
+
+            // Store each image and associate it with the complain record
+            foreach ($images as $index => $image) {
+                $imagePath = $image->store('complains', 'public'); // Store the image in the 'complains' folder under 'storage/app/public'
+
+                // Update the complain record for each image (img1, img2, img3)
+                $complain->update([
+                    'img' . ($index + 1) => $imagePath,
+                ]);
+            }
+        }
+
+        // Return the response
+        $response = [
             'Complain' => $complain,
         ];
-        return $responce;
+
+        return $response;
     }
+
 
     public function getComplain()
     {
@@ -70,8 +85,11 @@ class ComplainRepository
 
     public function deleteComplain($id)
     {
-        $complain = Complain::find($id);
 
+        \Log::info('xxxx: ' . $id);
+        \Log::info('All Complains:', Complain::all()->toArray());
+        $complain = Complain::find($id);
+        \Log::info('xxxx2: ' . $complain);
         if ($complain) {
             try{
                 DB::beginTransaction();
@@ -94,7 +112,8 @@ class ComplainRepository
                     Storage::disk('public')->delete($imagePath3);
                 }
 
-                $complain->ComplainAction()->detach();
+                // $complain->complainAction()->detach();
+                $complain->complainAction->delete();
                 $complain->delete();
                 DB::commit();
                 return true;
