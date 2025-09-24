@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Member;
 use App\Http\Controllers\Controller;
-use App\Repositories\MemberRepository;
+use App\Repositories\Contracts\MemberRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -13,7 +13,7 @@ class MemberController extends Controller
 {
     private $repository;
 
-    public function __construct(MemberRepository $repository)
+    public function __construct(MemberRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }
@@ -22,10 +22,10 @@ class MemberController extends Controller
      */
     public function index()
     {
-//        return Member::all();
-        return $this->repository->getMembers();
-
-//        return response($members);
+        $members = $this->repository->getMembers();
+        return response([
+            "AllMembers" => $members,
+        ]);
     }
 
     /**
@@ -76,7 +76,7 @@ class MemberController extends Controller
         if ($validator->fails()) {
             $errors = $validator->errors()->all();
             return response()->json(['errors' => $errors], 422);
-        }else{
+        } else {
             $response = $this->repository->createMember($request);
             return response($response, 201);
         }

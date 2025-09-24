@@ -7,13 +7,24 @@ use App\Models\MemberDivision;
 use App\Models\MemberParty;
 use App\Models\MemberPosition;
 use App\Models\MembersMemberPosition;
+use App\Repositories\BaseRepository;
+use App\Repositories\Contracts\MemberRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
-class MemberRepository{
+class MemberRepository extends BaseRepository implements MemberRepositoryInterface
+{
+    public function __construct(Member $model)
+    {
+        parent::__construct($model);
+    }
 //-----------------Division--------------------------------------------------------------------
-       public function addDivision($data)
+    /**
+     * Add division
+     */
+    public function addDivision(array $data): array
     {
         $division = MemberDivision::create([
             'division_en' => $data['divisionEn'],
@@ -22,12 +33,15 @@ class MemberRepository{
             'updated_at' => now(),
             'created_at' => now(),
         ]);
-        return response([
+        return [
             'division' => $division
-        ], 200);
+        ];
     }
 
-    public function deleteDivision($id)
+    /**
+     * Delete division
+     */
+    public function deleteDivision(int $id): bool
     {
         $division = MemberDivision::find($id);
 
@@ -38,7 +52,10 @@ class MemberRepository{
         return false;
     }
 
-    public function updateDivision($id, $data)
+    /**
+     * Update division
+     */
+    public function updateDivision(int $id, array $data): array
     {
         $division = MemberDivision::find($id);
         $division->update([
@@ -46,13 +63,15 @@ class MemberRepository{
             'division_si' => $data['divisionSi'],
             'division_ta' => $data['divisionTa'],
             'updated_at' => now(),
-            'created_at' => now(),
         ]);
-        return response(['message' => 'Division updated successfully.'], 200);
+        return ['message' => 'Division updated successfully.'];
     }
 
 //-----------------Party--------------------------------------------------------------------
-    public function addParty($data)
+    /**
+     * Add party
+     */
+    public function addParty(array $data): array
     {
         $party = MemberParty::create([
             'party_en' => $data['partyEn'],
@@ -61,12 +80,15 @@ class MemberRepository{
             'updated_at' => now(),
             'created_at' => now(),
         ]);
-        return response([
+        return [
             'party' => $party
-        ], 200);
+        ];
     }
 
-    public function updateParty($id, $data)
+    /**
+     * Update party
+     */
+    public function updateParty(int $id, array $data): array
     {
         $party = MemberParty::find($id);
         $party->update([
@@ -74,11 +96,14 @@ class MemberRepository{
             'party_si' => $data['partySi'],
             'party_ta' => $data['partyTa'],
             'updated_at' => now(),
-            'created_at' => now(),
         ]);
-        return response(['message' => 'Party updated successfully.'], 200);
+        return ['message' => 'Party updated successfully.'];
     }
-    public function deleteParty($id)
+
+    /**
+     * Delete party
+     */
+    public function deleteParty(int $id): bool
     {
         $party = MemberParty::find($id);
 
@@ -90,7 +115,10 @@ class MemberRepository{
     }
 
     //-----------------Position--------------------------------------------------------------------
-    public function addPosition($data)
+    /**
+     * Add position
+     */
+    public function addPosition(array $data): array
     {
         $position = MemberPosition::create([
             'position_en' => $data['positionEn'],
@@ -99,12 +127,15 @@ class MemberRepository{
             'updated_at' => now(),
             'created_at' => now(),
         ]);
-        return response([
+        return [
             'position' => $position
-        ], 200);
+        ];
     }
 
-    public function updatePosition($id, $data)
+    /**
+     * Update position
+     */
+    public function updatePosition(int $id, array $data): array
     {
         $position = MemberPosition::find($id);
         $position->update([
@@ -112,11 +143,14 @@ class MemberRepository{
             'position_si' => $data['positionSi'],
             'position_ta' => $data['positionTa'],
             'updated_at' => now(),
-            'created_at' => now(),
         ]);
-        return response(['message' => 'Position updated successfully.'], 200);
+        return ['message' => 'Position updated successfully.'];
     }
-    public function deletePosition($id)
+
+    /**
+     * Delete position
+     */
+    public function deletePosition(int $id): bool
     {
         $position = MemberPosition::find($id);
 
@@ -129,9 +163,12 @@ class MemberRepository{
 
     //-----------------Member--------------------------------------------------------------------
 
-    public function getMembers()
+    /**
+     * Get all members with relationships
+     */
+    public function getMembers(): Collection
     {
-        $members = Member::with([
+        return $this->model->with([
             'memberDivision' => function ($query) {
                 $query->select('id', 'division_en');
             },
@@ -147,16 +184,14 @@ class MemberRepository{
         ])
             ->select('members.id', 'name_en', 'name_si','name_ta', 'image', 'tel', 'member_divisions_id', 'member_parties_id', 'user_id')
             ->get();
-
-        $response = [
-            "AllMembers" => $members,
-        ];
-        return response($response);
-//        return response()->json($response);
     }
 
 
-    public function createMember(Request $request) {
+    /**
+     * Create a new member
+     */
+    public function createMember(Request $request): array
+    {
         $user = User::create([
             'email' => $request->email,
         ]);
@@ -171,60 +206,101 @@ class MemberRepository{
             $imgPath = Storage::url($path);
         }
 
-
         // Create member
-        $member = new Member();
-        $member->user_id = $user->id;
-        $member->name_en = $request->nameEn;
-        $member->name_si = $request->nameSi;
-        $member->name_ta = $request->nameTa;
-        $member->tel = $request->tel;
-        $member->member_divisions_id = $request->division;
-        $member->member_parties_id = $request->party;
-        $member->image = $imgPath;
-        $member->save();
+        $member = $this->create([
+            'user_id' => $user->id,
+            'name_en' => $request->nameEn,
+            'name_si' => $request->nameSi,
+            'name_ta' => $request->nameTa,
+            'tel' => $request->tel,
+            'member_divisions_id' => $request->division,
+            'member_parties_id' => $request->party,
+            'image' => $imgPath,
+        ]);
 
         // Handle positions
-        $positionIds = [];
-        foreach ($request->input('position') as $positionId) {
-            $positionIds[] = $positionId;
+        if ($request->has('position')) {
+            $positionIds = is_array($request->input('position')) 
+                ? $request->input('position') 
+                : [$request->input('position')];
+            $member->memberPositions()->sync($positionIds);
         }
-        $member->memberPositions()->sync($positionIds);
 
-        // Return response
-        $response = [
+        return [
             'user' => $user,
             'member' => $member,
         ];
-        return response($response, 201);
     }
 
 
-    public function deleteMember($id)
+    /**
+     * Delete member and associated user
+     */
+    public function deleteMember(int $id): bool
     {
-        $member = Member::find($id);
+        $member = $this->find($id);
 
-        if ($member) {
-            $userId = $member->user_id;
-//            $userId = Member::where('id', $id)->value('user_id');
-            try{
-                DB::beginTransaction();
-                $member->delete();
-                $user = User::find($userId);
-                if($user){
-                    $user->tokens()->delete();
-                    $user->roles()->detach();
-                    $user->permissions()->detach();
-                    $user->delete();
-                }
-                DB::commit();
-                return true;
-            }catch(\Exception $e){
-                DB::rollBack();
-                return false;
-            }
+        if (!$member) {
+            return false;
         }
-        return false;
+
+        $userId = $member->user_id;
+        
+        try {
+            DB::beginTransaction();
+            
+            // Delete member
+            $member->delete();
+            
+            // Delete associated user
+            $user = User::find($userId);
+            if ($user) {
+                $user->tokens()->delete();
+                $user->roles()->detach();
+                $user->permissions()->detach();
+                $user->delete();
+            }
+            
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * Update member
+     */
+    public function updateMember(int $id, array $data): bool
+    {
+        return $this->update($id, $data);
+    }
+
+    /**
+     * Get members by division
+     */
+    public function getMembersByDivision(int $divisionId): Collection
+    {
+        return $this->model->where('member_divisions_id', $divisionId)->get();
+    }
+
+    /**
+     * Get members by party
+     */
+    public function getMembersByParty(int $partyId): Collection
+    {
+        return $this->model->where('member_parties_id', $partyId)->get();
+    }
+
+    /**
+     * Get members by position
+     */
+    public function getMembersByPosition(int $positionId): Collection
+    {
+        return $this->model->whereHas('memberPositions', function ($query) use ($positionId) {
+            $query->where('member_positions.id', $positionId);
+        })->get();
     }
 
 
