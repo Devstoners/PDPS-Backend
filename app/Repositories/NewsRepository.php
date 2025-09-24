@@ -1,112 +1,233 @@
 <?php
 
 namespace App\Repositories;
+
 use App\Models\News;
+use App\Repositories\BaseRepository;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
-
-class NewsRepository
+class NewsRepository extends BaseRepository
 {
-    public function addNews($data)
+    /**
+     * Specify Model class name
+     * @return string
+     */
+    public function model(): string
     {
-        $news = News::create([
-            'news_si' => $data['newsSinhala'],
-            'news_en' => $data['newsEnglish'],
-            'news_ta' => $data['newsTamil'],
-            //'visibility' => $data['isChecked'],
-            //'priority' => $data['isPriority'],
-            'updated_at' => now(),
-            'created_at' => now(),
+        return News::class;
+    }
+
+    /**
+     * Create news with multilingual content
+     * @param array $data
+     * @return News
+     */
+    public function createNews(array $data): News
+    {
+        return $this->create([
+            'news_si' => $data['newsSinhala'] ?? $data['news_si'] ?? null,
+            'news_en' => $data['newsEnglish'] ?? $data['news_en'] ?? null,
+            'news_ta' => $data['newsTamil'] ?? $data['news_ta'] ?? null,
+            'visibility' => $data['visibility'] ?? true,
+            'priority' => $data['priority'] ?? null,
+            'status' => $data['status'] ?? 'published',
+            'is_featured' => $data['is_featured'] ?? false,
         ]);
-//        $newsId = News::latest()->first()->id;;
-//        $detailNews = NewsLocale::create([
-//            'news_id' => $newsId,
-        return response([
-            'news' => $news
-        ], 200);
     }
 
-    public function updateNews($id, $data)
+    /**
+     * Update news with priority management
+     * @param int $newsId
+     * @param array $data
+     * @return News
+     */
+    public function updateNewsWithPriority(int $newsId, array $data): News
     {
-        $news = News::find($id);
-        if (!$news) {
-            return response(['message' => 'News not found.'], 404);
-        }
-        // Get the new updating priority value
-//        $newPriority = $data['priority'] ?? 1;
-//        $newPriority = $data['priority'];
-        $newPriority = isset($data['priority']) ? $data['priority'] : $news->priority;
-        $priority = News::where('id', $id)->value('priority');
+        return DB::transaction(function () use ($newsId, $data) {
+            $news = $this->findOrFail($newsId);
+            $newPriority = $data['priority'] ?? $news->priority;
 
-        if($newPriority!=$priority) {
-            // Check if the new priority exists in other records
-            $existingNews = News::where('priority', $newPriority)->first();
-
-            if ($existingNews) {
-                // Update the existing news record with the new priority and adjust other records' priorities
-                if ($newPriority == 1) {
-                    News::where('priority', 1)->update(['priority' => null]);
-                } elseif ($newPriority == 2) {
-                    News::where('priority', 2)->update(['priority' => null]);
-                } elseif ($newPriority == 3) {
-                    News::where('priority', 3)->update(['priority' => null]);
-                }
-
-                $visibility = isset($data['visibility']) ? $data['visibility'] : $news->visibility;
-
-                $news->update([
-                    'news_si' => $data['newsSinhala'],
-                    'news_en' => $data['newsEnglish'],
-                    'news_ta' => $data['newsTamil'],
-//                    'visibility' => $visibility,
-                    'priority' => $newPriority,
-                ]);
-            } else {
-                // Update the existing news record with the new priority
-                $visibility = isset($data['visibility']) ? $data['visibility'] : $news->visibility;
-                $news->update([
-                    'news_si' => $data['newsSinhala'],
-                    'news_en' => $data['newsEnglish'],
-                    'news_ta' => $data['newsTamil'],
-//                    'visibility' => $visibility,
-                    'priority' => $newPriority,
-                ]);
+            // Handle priority conflicts
+            if ($newPriority != $news->priority) {
+                $this->handlePriorityConflict($newPriority);
             }
-        }else{
-            $visibility = isset($data['visibility']) ? $data['visibility'] : $news->visibility;
-            $news->update([
-                'news_si' => $data['newsSinhala'],
-                'news_en' => $data['newsEnglish'],
-                'news_ta' => $data['newsTamil'],
-//                'visibility' => $visibility,
-            ]);
-        }
-        return response(['message' => 'News updated successfully.'], 200);
+
+            $updateData = [
+                'news_si' => $data['newsSinhala'] ?? $data['news_si'] ?? $news->news_si,
+                'news_en' => $data['newsEnglish'] ?? $data['news_en'] ?? $news->news_en,
+                'news_ta' => $data['newsTamil'] ?? $data['news_ta'] ?? $news->news_ta,
+                'visibility' => $data['visibility'] ?? $news->visibility,
+                'priority' => $newPriority,
+            ];
+
+            return $this->update($newsId, $updateData);
+        });
     }
 
-    public function deleteNews($id)
+    /**
+     * Get news by priority
+     * @param int $priority
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
+     */
+    public function getByPriority(int $priority, array $columns = ['*'], array $relations = []): Collection
     {
-        $news = News::find($id);
-
-        if ($news) {
-            $news->delete();
-            return true;
-        }
-        return false;
+        return $this->findByCriteria(['priority' => $priority], $columns, $relations);
     }
 
-    public function getCount()
+    /**
+     * Get visible news
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
+     */
+    public function getVisibleNews(array $columns = ['*'], array $relations = []): Collection
     {
-//        return News::where('visibility', true)->count();
-        return News::count();
+        return $this->findByCriteria(['visibility' => true], $columns, $relations);
     }
 
-    public function getSiteView($language)
+    /**
+     * Get news ordered by priority
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
+     */
+    public function getOrderedByPriority(array $columns = ['*'], array $relations = []): Collection
     {
-        try {
-            $news = News::orderBy('priority', 'asc')->select("news_$language as news")->get();
-            return $news;
-        } catch (\Exception $e) {
-            throw $e;
+        return $this->orderBy('priority', 'asc')
+                    ->getQuery()
+                    ->with($relations)
+                    ->get($columns);
+    }
+
+    /**
+     * Get news for site view by language
+     * @param string $language
+     * @return Collection
+     */
+    public function getSiteViewByLanguage(string $language): Collection
+    {
+        $column = "news_{$language} as news";
+        return $this->orderBy('priority', 'asc')
+                    ->getQuery()
+                    ->where('visibility', true)
+                    ->select($column)
+                    ->get();
+    }
+
+    /**
+     * Get published news
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
+     */
+    public function getPublishedNews(array $columns = ['*'], array $relations = []): Collection
+    {
+        return $this->findByCriteria(['status' => 'published'], $columns, $relations);
+    }
+
+    /**
+     * Get featured news
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
+     */
+    public function getFeaturedNews(array $columns = ['*'], array $relations = []): Collection
+    {
+        return $this->findByCriteria(['is_featured' => true], $columns, $relations);
+    }
+
+    /**
+     * Search news by content
+     * @param string $searchTerm
+     * @param string $language
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
+     */
+    public function searchByContent(string $searchTerm, string $language = 'en', array $columns = ['*'], array $relations = []): Collection
+    {
+        $searchColumn = "news_{$language}";
+        return $this->where_callback(function($query) use ($searchColumn, $searchTerm) {
+            return $query->where($searchColumn, 'LIKE', "%{$searchTerm}%");
+        })->getQuery()->with($relations)->get($columns);
+    }
+
+    /**
+     * Get total news count
+     * @return int
+     */
+    public function getTotalNewsCount(): int
+    {
+        return $this->count();
+    }
+
+    /**
+     * Get visible news count
+     * @return int
+     */
+    public function getVisibleNewsCount(): int
+    {
+        return $this->count(['visibility' => true]);
+    }
+
+    /**
+     * Toggle news visibility
+     * @param int $newsId
+     * @return News
+     */
+    public function toggleVisibility(int $newsId): News
+    {
+        $news = $this->findOrFail($newsId);
+        return $this->update($newsId, ['visibility' => !$news->visibility]);
+    }
+
+    /**
+     * Set news priority
+     * @param int $newsId
+     * @param int $priority
+     * @return News
+     */
+    public function setPriority(int $newsId, int $priority): News
+    {
+        $this->handlePriorityConflict($priority);
+        return $this->update($newsId, ['priority' => $priority]);
+    }
+
+    /**
+     * Handle priority conflicts
+     * @param int $priority
+     * @return void
+     */
+    private function handlePriorityConflict(int $priority): void
+    {
+        if (in_array($priority, [1, 2, 3])) {
+            $this->model->where('priority', $priority)->update(['priority' => null]);
         }
+    }
+
+    /**
+     * Clear all priorities
+     * @return bool
+     */
+    public function clearAllPriorities(): bool
+    {
+        return $this->model->whereNotNull('priority')->update(['priority' => null]);
+    }
+
+    /**
+     * Get news with highest priority
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
+     */
+    public function getTopPriorityNews(array $columns = ['*'], array $relations = []): Collection
+    {
+        return $this->where_callback(function($query) {
+            return $query->whereNotNull('priority')
+                        ->orderBy('priority', 'asc');
+        })->getQuery()->with($relations)->get($columns);
     }
 }
