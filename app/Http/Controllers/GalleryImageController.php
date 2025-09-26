@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\GalleryImage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Repositories\GalleryRepository;
+use App\Repositories\AlbumGalleryRepository;
 use Illuminate\Support\Facades\Validator;
 
 class GalleryImageController extends Controller
@@ -18,7 +18,7 @@ class GalleryImageController extends Controller
 
      private $repository;
 
-     public function __construct(GalleryRepository $repository)
+     public function __construct(AlbumGalleryRepository $repository)
      {
          $this->repository = $repository;
      }
@@ -89,17 +89,45 @@ class GalleryImageController extends Controller
      * @param  \App\Models\GalleryImage  $galleryImage
      * @return \Illuminate\Http\Response
      */
-    public function destroy(GalleryImage $galleryImage)
+    public function destroy($id)
     {
-        //
+        return $this->repository->deleteImages([$id]);
     }
 
     public function count()
     {
-        $count = $this->repository->getCount();
+        $count = $this->repository->getImageCount();
         $response = [
             "count" => $count,
         ];
         return response($response, 200);
+    }
+
+    /**
+     * Update image order
+     */
+    public function updateOrder(Request $request)
+    {
+        $request->validate([
+            'image_orders' => 'required|array',
+            'image_orders.*' => 'integer|min:0'
+        ]);
+
+        $this->repository->updateImageOrders($request->input('image_orders'));
+        
+        return response()->json(['message' => 'Image order updated successfully'], 200);
+    }
+
+    /**
+     * Delete multiple images
+     */
+    public function deleteMultiple(Request $request)
+    {
+        $request->validate([
+            'image_ids' => 'required|array',
+            'image_ids.*' => 'integer|exists:gallery_images,id'
+        ]);
+
+        return $this->repository->deleteImages($request->input('image_ids'));
     }
 }

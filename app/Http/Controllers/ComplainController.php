@@ -14,6 +14,7 @@ class ComplainController extends Controller
     public function __construct(ComplainRepository $repository)
     {
         $this->repository = $repository;
+        //$this->middleware('auth:sanctum')->except(['store']);
     }
     /**
      * Display a listing of the resource.

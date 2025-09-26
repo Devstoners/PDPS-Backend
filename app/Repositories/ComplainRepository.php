@@ -49,7 +49,7 @@ class ComplainRepository
     public function getComplain()
     {
         $complain = Complain::select('id', 'created_at', 'cname', 'tele', 'complain', 'img1', 'img2', 'img3')
-        ->with('complainAction:id,complain_id,action')
+        ->with('complainAction:id,complain_id,action,created_at')
         ->get();
 
         $response = [
