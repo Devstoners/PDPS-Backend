@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Vonage Client Library for PHP
- *
- * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
- * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
- */
-
 declare(strict_types=1);
 
 namespace Vonage\Numbers\Filter;
@@ -37,35 +30,17 @@ class OwnedNumbers implements FilterInterface
         'features' => 'string'
     ];
 
-    /**
-     * @var string
-     */
-    protected $applicationId;
+    protected ?string $applicationId = null;
 
-    /**
-     * @var string
-     */
-    protected $country;
+    protected ?string $country = null;
 
-    /**
-     * @var bool
-     */
-    protected $hasApplication;
+    protected ?bool $hasApplication = null;
 
-    /**
-     * @var int
-     */
-    protected $pageIndex = 1;
+    protected int $pageIndex = 1;
 
-    /**
-     * @var string
-     */
-    protected $pattern;
+    protected ?string $pattern = null;
 
-    /**
-     * @var int
-     */
-    protected $searchPattern = 0;
+    protected int $searchPattern = 0;
 
     protected int $pageSize = 10;
 
@@ -174,9 +149,6 @@ class OwnedNumbers implements FilterInterface
         return $this->pageIndex;
     }
 
-    /**
-     * @return $this
-     */
     public function setPageIndex(int $pageIndex): self
     {
         $this->pageIndex = $pageIndex;
@@ -189,9 +161,6 @@ class OwnedNumbers implements FilterInterface
         return $this->pattern;
     }
 
-    /**
-     * @return $this
-     */
     public function setPattern(string $pattern): self
     {
         $this->pattern = $pattern;
@@ -204,9 +173,6 @@ class OwnedNumbers implements FilterInterface
         return $this->searchPattern;
     }
 
-    /**
-     * @return $this
-     */
     public function setSearchPattern(int $searchPattern): self
     {
         $this->searchPattern = $searchPattern;
@@ -219,9 +185,6 @@ class OwnedNumbers implements FilterInterface
         return $this->pageSize;
     }
 
-    /**
-     * @return $this
-     */
     public function setPageSize(int $pageSize): self
     {
         $this->pageSize = $pageSize;
@@ -234,9 +197,6 @@ class OwnedNumbers implements FilterInterface
         return $this->applicationId;
     }
 
-    /**
-     * @return $this
-     */
     public function setApplicationId(string $applicationId): self
     {
         $this->applicationId = $applicationId;
@@ -249,9 +209,6 @@ class OwnedNumbers implements FilterInterface
         return $this->hasApplication;
     }
 
-    /**
-     * @return $this
-     */
     public function setHasApplication(bool $hasApplication): self
     {
         $this->hasApplication = $hasApplication;

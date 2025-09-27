@@ -6,6 +6,7 @@ use App\Models\Supplier;
 use Illuminate\Http\Request;
 use App\Repositories\SupplierRepository;
 use Illuminate\Support\Facades\Validator;
+use OpenApi\Annotations as OA;
 
 class SupplierController extends Controller
 {
@@ -17,7 +18,24 @@ class SupplierController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/supplier",
+     *     tags={"Suppliers"},
+     *     summary="Get all suppliers",
+     *     description="Retrieve a list of all suppliers",
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Suppliers retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
      */
     public function index()
     {

@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Vonage Client Library for PHP
- *
- * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
- * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
- */
-
 declare(strict_types=1);
 
 namespace Vonage\Account;
@@ -41,7 +34,7 @@ class Client implements APIClient
      *
      * @return array<PrefixPrice>
      */
-    public function getPrefixPricing($prefix): array
+    public function getPrefixPricing(string $prefix): array
     {
         $api = $this->getAPIResource();
         $api->setBaseUri('/account/get-prefix-pricing/outbound');
@@ -145,7 +138,7 @@ class Client implements APIClient
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
      */
-    public function topUp($trx): void
+    public function topUp(string $trx): void
     {
         $api = $this->getAPIResource();
         $api->setBaseUri('/account/top-up');

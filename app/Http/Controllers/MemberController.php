@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Repositories\MemberRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use OpenApi\Annotations as OA;
 
 
 class MemberController extends Controller
@@ -18,7 +19,24 @@ class MemberController extends Controller
         $this->repository = $repository;
     }
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/member",
+     *     tags={"Members"},
+     *     summary="Get all members",
+     *     description="Retrieve a list of all members",
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Members retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
      */
     public function index()
     {
@@ -37,7 +55,37 @@ class MemberController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/member",
+     *     tags={"Members"},
+     *     summary="Create a new member",
+     *     description="Add a new member to the system",
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"nameEn", "nameSi", "nameTa"},
+     *             @OA\Property(property="nameEn", type="string", example="John Doe"),
+     *             @OA\Property(property="nameSi", type="string", example="ජෝන් ඩෝ"),
+     *             @OA\Property(property="nameTa", type="string", example="ஜான் டோ"),
+     *             @OA\Property(property="email", type="string", format="email", example="john@example.com"),
+     *             @OA\Property(property="mobileNo", type="string", example="0771234567"),
+     *             @OA\Property(property="address", type="string", example="123 Main Street")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Member created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Member created successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
      */
     public function store(Request $request)
     {
@@ -90,7 +138,31 @@ class MemberController extends Controller
 
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/member/{id}",
+     *     tags={"Members"},
+     *     summary="Get a specific member",
+     *     description="Retrieve details of a specific member",
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Member ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Member retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Member not found"
+     *     )
+     * )
      */
     public function show(Member $member)
     {
@@ -106,7 +178,51 @@ class MemberController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/member/{id}",
+     *     tags={"Members"},
+     *     summary="Update a member",
+     *     description="Update an existing member",
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Member ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"nameEn", "nameSi", "nameTa", "email", "tel", "division", "party", "position"},
+     *             @OA\Property(property="nameEn", type="string", example="Updated John Doe"),
+     *             @OA\Property(property="nameSi", type="string", example="යාවත්කාලීන ජෝන් ඩෝ"),
+     *             @OA\Property(property="nameTa", type="string", example="புதுப்பிக்கப்பட்ட ஜான் டோ"),
+     *             @OA\Property(property="email", type="string", format="email", example="john.updated@example.com"),
+     *             @OA\Property(property="tel", type="string", example="0771234567"),
+     *             @OA\Property(property="division", type="string", example="Division 1"),
+     *             @OA\Property(property="party", type="string", example="Party A"),
+     *             @OA\Property(property="position", type="array", @OA\Items(type="string"), example={"Position 1", "Position 2"}),
+     *             @OA\Property(property="img", type="string", format="binary", description="Member image")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Member updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Member updated successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Member not found"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
      */
     public function update(Request $request, $id)
     {

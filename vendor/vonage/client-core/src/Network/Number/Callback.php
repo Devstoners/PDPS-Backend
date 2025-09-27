@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Vonage Client Library for PHP
- *
- * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
- * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
- */
-
 declare(strict_types=1);
 
 namespace Vonage\Network\Number;
@@ -38,8 +31,8 @@ use function substr;
  */
 class Callback extends BaseCallback
 {
-    protected $expected = ['request_id', 'callback_part', 'callback_total_parts', 'number', 'status'];
-    protected $optional = [
+    protected array $expected = ['request_id', 'callback_part', 'callback_total_parts', 'number', 'status'];
+    protected array $optional = [
         'Type' => 'number_type',
         'Network' => 'carrier_network_code',
         'NetworkName' => 'carrier_network_name',
@@ -71,14 +64,10 @@ class Callback extends BaseCallback
         return $this->data['number'];
     }
 
-    /**
-     * @param $name
-     * @param $args
-     */
     public function __call($name, $args)
     {
-        $type = substr($name, 0, 3);
-        $property = substr($name, 3);
+        $type = substr((string) $name, 0, 3);
+        $property = substr((string) $name, 3);
 
         if (!isset($this->optional[$property])) {
             throw new BadMethodCallException('property does not exist: ' . $property);

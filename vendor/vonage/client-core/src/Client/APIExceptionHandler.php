@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Vonage Client Library for PHP
- *
- * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
- * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
- */
-
 declare(strict_types=1);
 
 namespace Vonage\Client;
@@ -30,6 +23,11 @@ class APIExceptionHandler
     public function setRfc7807Format(string $format): void
     {
         $this->rfc7807Format = $format;
+    }
+
+    public function getRfc7807Format(): string
+    {
+        return $this->rfc7807Format;
     }
 
     /**

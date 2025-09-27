@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Vonage Client Library for PHP
- *
- * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
- * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
- */
-
 declare(strict_types=1);
 
 namespace Vonage\Account;
@@ -16,23 +9,20 @@ use Vonage\Entity\Hydrator\ArrayHydrateInterface;
 class Balance implements
     ArrayHydrateInterface
 {
-    /**
-     * @var array
-     */
     protected array $data;
 
-    public function __construct($balance, $autoReload)
+    public function __construct(float $balance, bool $autoReload)
     {
         $this->data['balance'] = $balance;
         $this->data['auto_reload'] = $autoReload;
     }
 
-    public function getBalance()
+    public function getBalance(): float
     {
         return $this->data['balance'];
     }
 
-    public function getAutoReload()
+    public function getAutoReload(): bool
     {
         return $this->data['auto_reload'];
     }

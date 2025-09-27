@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\SmsNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use OpenApi\Annotations as OA;
 
 class SmsNotificationController extends Controller
 {
@@ -16,7 +17,34 @@ class SmsNotificationController extends Controller
     }
 
     /**
-     * Send test SMS
+     * @OA\Post(
+     *     path="/sms/test",
+     *     tags={"SMS Notifications"},
+     *     summary="Send test SMS",
+     *     description="Send a test SMS message",
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"phone"},
+     *             @OA\Property(property="phone", type="string", example="+94771234567"),
+     *             @OA\Property(property="message", type="string", example="Test SMS from PDPS system", maxLength=160)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="SMS sent successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="SMS sent successfully"),
+     *             @OA\Property(property="message_sid", type="string", example="SM1234567890abcdef")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
      */
     public function sendTestSms(Request $request): JsonResponse
     {
@@ -34,7 +62,35 @@ class SmsNotificationController extends Controller
     }
 
     /**
-     * Send payment confirmation SMS
+     * @OA\Post(
+     *     path="/sms/payment-confirmation",
+     *     tags={"SMS Notifications"},
+     *     summary="Send payment confirmation SMS",
+     *     description="Send SMS confirmation for payment",
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"phone", "amount", "receipt_no", "service"},
+     *             @OA\Property(property="phone", type="string", example="+94771234567"),
+     *             @OA\Property(property="amount", type="number", format="float", example=1500.00),
+     *             @OA\Property(property="receipt_no", type="string", example="RCP123456"),
+     *             @OA\Property(property="service", type="string", example="Water Bill Payment")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Payment confirmation SMS sent successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Payment confirmation SMS sent successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
      */
     public function sendPaymentConfirmation(Request $request): JsonResponse
     {

@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Vonage Client Library for PHP
- *
- * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
- * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
- */
-
 declare(strict_types=1);
 
 namespace Vonage\Voice\NCCO\Action;
@@ -17,30 +10,24 @@ use function is_null;
 
 class Stream implements ActionInterface
 {
-    /**
-     * @var bool
-     */
-    protected $bargeIn;
+    protected ?bool $bargeIn = null;
 
-    /**
-     * @var float
-     */
-    protected $level;
+    protected ?float $level = null;
 
-    /**
-     * @var int
-     */
-    protected $loop;
+    protected ?int $loop = null;
 
     public function __construct(protected string $streamUrl)
     {
     }
 
     /**
-     * @param array{streamUrl: string, bargeIn?: bool, level?: float, loop?: int, voiceName?: string} $data
+     * @param array{streamUrl: string|array, bargeIn?: bool, level?: float, loop?: int, voiceName?: string} $data
      */
-    public static function factory(string $streamUrl, array $data): Stream
+    public static function factory(string|array $streamUrl, array $data): Stream
     {
+        if (is_array($streamUrl)) {
+            $streamUrl = $streamUrl[0];
+        }
         $stream = new Stream($streamUrl);
 
         if (array_key_exists('bargeIn', $data)) {

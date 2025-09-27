@@ -5,11 +5,39 @@ namespace App\Http\Controllers;
 use App\Models\TaxPayee;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use OpenApi\Annotations as OA;
 
 class TaxPayeeController extends Controller
 {
     /**
-     * Display a listing of tax payees
+     * @OA\Get(
+     *     path="/tax-payees",
+     *     tags={"Tax Management"},
+     *     summary="Get all tax payees",
+     *     description="Retrieve a paginated list of tax payees with optional search",
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="search",
+     *         in="query",
+     *         description="Search by NIC or name",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Tax payees retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="current_page", type="integer"),
+     *             @OA\Property(property="per_page", type="integer"),
+     *             @OA\Property(property="total", type="integer")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
      */
     public function index(Request $request): JsonResponse
     {
@@ -30,7 +58,37 @@ class TaxPayeeController extends Controller
     }
 
     /**
-     * Store a newly created tax payee
+     * @OA\Post(
+     *     path="/tax-payees",
+     *     tags={"Tax Management"},
+     *     summary="Create a new tax payee",
+     *     description="Add a new tax payee to the system",
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"title", "name", "nic", "tel", "address", "email"},
+     *             @OA\Property(property="title", type="integer", example=1, description="Title: 1=Mr, 2=Mrs, 3=Miss, 4=Dr"),
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="nic", type="string", example="123456789V"),
+     *             @OA\Property(property="tel", type="string", example="0771234567"),
+     *             @OA\Property(property="address", type="string", example="123 Main Street, Colombo"),
+     *             @OA\Property(property="email", type="string", format="email", example="john@example.com")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Tax payee created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Tax payee created successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
      */
     public function store(Request $request): JsonResponse
     {

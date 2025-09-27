@@ -6,6 +6,7 @@ use App\Models\Complain;
 use App\Repositories\ComplainRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use OpenApi\Annotations as OA;
 
 class ComplainController extends Controller
 {
@@ -17,7 +18,24 @@ class ComplainController extends Controller
         //$this->middleware('auth:sanctum')->except(['store']);
     }
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/complains",
+     *     tags={"Complaints"},
+     *     summary="Get all complaints",
+     *     description="Retrieve a list of all complaints",
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Complaints retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
      */
     public function index()
     {
@@ -35,7 +53,33 @@ class ComplainController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/complains",
+     *     tags={"Complaints"},
+     *     summary="Create a new complaint",
+     *     description="Submit a new complaint to the system",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"complain"},
+     *             @OA\Property(property="complain", type="string", example="Water supply issue in our area"),
+     *             @OA\Property(property="tele", type="string", example="0771234567"),
+     *             @OA\Property(property="imageList", type="array", @OA\Items(type="string", format="binary"), description="Upload up to 3 images")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Complaint submitted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Complaint submitted successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
      */
     public function store(Request $request)
     {
@@ -73,7 +117,31 @@ class ComplainController extends Controller
 
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/complains/{id}",
+     *     tags={"Complaints"},
+     *     summary="Get a specific complaint",
+     *     description="Retrieve details of a specific complaint",
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Complaint ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Complaint retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Complaint not found"
+     *     )
+     * )
      */
     public function show(Complain $Complain)
     {
@@ -89,7 +157,40 @@ class ComplainController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/complains/{id}",
+     *     tags={"Complaints"},
+     *     summary="Update a complaint",
+     *     description="Update an existing complaint",
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Complaint ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="complain", type="string", example="Updated complaint description"),
+     *             @OA\Property(property="tele", type="string", example="0771234567"),
+     *             @OA\Property(property="status", type="string", example="resolved")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Complaint updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Complaint updated successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Complaint not found"
+     *     )
+     * )
      */
     public function update(Request $request, $id)
     {
@@ -97,7 +198,34 @@ class ComplainController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/complains/{id}",
+     *     tags={"Complaints"},
+     *     summary="Delete a complaint",
+     *     description="Delete an existing complaint",
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Complaint ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Complaint deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Complaint deleted successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Complaint not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Complaint not found")
+     *         )
+     *     )
+     * )
      */
     public function destroy($id)
     {

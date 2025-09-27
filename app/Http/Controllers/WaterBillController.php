@@ -6,6 +6,7 @@ use App\Models\WaterBill;
 use Illuminate\Http\Request;
 use App\Repositories\WaterBillRepository;
 use Illuminate\Support\Facades\Validator;
+use OpenApi\Annotations as OA;
 
 class WaterBillController extends Controller
 {
@@ -19,7 +20,24 @@ class WaterBillController extends Controller
     // ==================== WATER SCHEME MANAGEMENT ====================
 
     /**
-     * Display a listing of water schemes
+     * @OA\Get(
+     *     path="/water-schemes",
+     *     tags={"Water Bill Management"},
+     *     summary="Get all water schemes",
+     *     description="Retrieve a list of all water schemes",
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Water schemes retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
      */
     public function getWaterSchemes()
     {
@@ -27,7 +45,34 @@ class WaterBillController extends Controller
     }
 
     /**
-     * Store a newly created water scheme
+     * @OA\Post(
+     *     path="/water-schemes",
+     *     tags={"Water Bill Management"},
+     *     summary="Create a new water scheme",
+     *     description="Add a new water scheme to the system",
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"division_id", "name", "start_date"},
+     *             @OA\Property(property="division_id", type="integer", example=1),
+     *             @OA\Property(property="name", type="string", example="Main Water Scheme"),
+     *             @OA\Property(property="start_date", type="string", format="date", example="2024-01-01")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Water scheme created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Water scheme created successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
      */
     public function addWaterScheme(Request $request)
     {

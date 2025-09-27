@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Vonage Client Library for PHP
- *
- * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
- * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
- */
-
 declare(strict_types=1);
 
 namespace Vonage\Voice\Endpoint;
@@ -18,15 +11,12 @@ class Websocket implements EndpointInterface
     public const TYPE_16000 = 'audio/116;rate=16000';
     public const TYPE_8000 = 'audio/116;rate=8000';
 
-    /**
-     * @var string
-     */
-    protected $contentType;
+    protected string $contentType;
 
     /**
      * @var array<string, string>
      */
-    protected $headers = [];
+    protected array $headers = [];
 
     public function __construct(protected string $id, string $rate = self::TYPE_8000, array $headers = [])
     {
@@ -85,9 +75,6 @@ class Websocket implements EndpointInterface
         return $this->contentType;
     }
 
-    /**
-     * @return $this
-     */
     public function setContentType(string $contentType): self
     {
         $this->contentType = $contentType;
@@ -100,9 +87,6 @@ class Websocket implements EndpointInterface
         return $this->headers;
     }
 
-    /**
-     * @return $this
-     */
     public function addHeader(string $key, string $value): self
     {
         $this->headers[$key] = $value;
@@ -110,9 +94,6 @@ class Websocket implements EndpointInterface
         return $this;
     }
 
-    /**
-     * @return $this
-     */
     public function setHeaders(array $headers): self
     {
         $this->headers = $headers;

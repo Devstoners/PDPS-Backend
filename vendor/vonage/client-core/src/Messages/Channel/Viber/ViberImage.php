@@ -12,6 +12,7 @@ class ViberImage extends BaseMessage
 
     protected string $channel = 'viber_service';
     protected string $subType = BaseMessage::MESSAGES_SUBTYPE_IMAGE;
+    protected bool $validatesE164 = true;
 
     public function __construct(
         string $to,
@@ -30,16 +31,21 @@ class ViberImage extends BaseMessage
         $this->action = $viberActionObject;
     }
 
+    public function validatesE164(): bool
+    {
+        return $this->validatesE164;
+    }
+
     public function toArray(): array
     {
         $returnArray = $this->getBaseMessageUniversalOutputArray();
         $returnArray['image'] = $this->image->toArray();
 
         if ($this->requiresViberServiceObject()) {
-            $this->getCategory() ? $returnArray['viber_service']['category'] = $this->getCategory(): null;
-            $this->getTtl() ? $returnArray['viber_service']['ttl'] = $this->getTtl(): null;
-            $this->getType() ? $returnArray['viber_service']['type'] = $this->getType(): null;
-            $this->getAction() ? $returnArray['viber_service']['action'] = $this->getAction()->toArray(): null;
+            $this->getCategory() ? $returnArray['viber_service']['category'] = $this->getCategory() : null;
+            $this->getTtl() ? $returnArray['viber_service']['ttl'] = $this->getTtl() : null;
+            $this->getType() ? $returnArray['viber_service']['type'] = $this->getType() : null;
+            $this->getAction() ? $returnArray['viber_service']['action'] = $this->getAction()->toArray() : null;
         }
 
         return array_filter($returnArray);

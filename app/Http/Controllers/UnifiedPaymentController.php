@@ -13,6 +13,7 @@ use App\Models\TaxAssessment;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use OpenApi\Annotations as OA;
 
 class UnifiedPaymentController extends Controller
 {
@@ -26,7 +27,42 @@ class UnifiedPaymentController extends Controller
     }
 
     /**
-     * Process online payment for any payment type
+     * @OA\Post(
+     *     path="/payments/online",
+     *     tags={"Payments"},
+     *     summary="Process online payment",
+     *     description="Process online payment for any payment type using PayHere",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"payment_type", "payment_id", "amount", "customer_data"},
+     *             @OA\Property(property="payment_type", type="string", enum={"water_bill", "hall_reservation", "tax_payment"}, example="water_bill"),
+     *             @OA\Property(property="payment_id", type="integer", example=1),
+     *             @OA\Property(property="amount", type="number", format="float", example=1500.00),
+     *             @OA\Property(property="customer_data", type="object",
+     *                 @OA\Property(property="first_name", type="string", example="John"),
+     *                 @OA\Property(property="last_name", type="string", example="Doe"),
+     *                 @OA\Property(property="email", type="string", format="email", example="john@example.com"),
+     *                 @OA\Property(property="phone", type="string", example="+94771234567"),
+     *                 @OA\Property(property="address", type="string", example="123 Main Street"),
+     *                 @OA\Property(property="city", type="string", example="Colombo")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Payment processed successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Payment processed successfully"),
+     *             @OA\Property(property="payment_url", type="string", example="https://sandbox.payhere.lk/pay/checkout")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
      */
     public function processOnlinePayment(Request $request): JsonResponse
     {

@@ -6,6 +6,7 @@ use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Repositories\ProjectRepository;
+use OpenApi\Annotations as OA;
 class ProjectController extends Controller
 {
     private $repository;
@@ -14,9 +15,33 @@ class ProjectController extends Controller
         $this->repository = $repository;
     }
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @OA\Get(
+     *     path="/project",
+     *     tags={"Projects"},
+     *     summary="Get all projects",
+     *     description="Retrieve a list of all projects",
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Projects retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="AllProjects", type="array", @OA\Items(
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name_en", type="string", example="Road Development Project"),
+     *                 @OA\Property(property="name_si", type="string", example="මාර්ග සංවර්ධන ව්‍යාපෘතිය"),
+     *                 @OA\Property(property="name_ta", type="string", example="சாலை மேம்பாட்டுத் திட்டம்"),
+     *                 @OA\Property(property="budget", type="number", format="float", example=5000000.00),
+     *                 @OA\Property(property="start_date", type="string", format="date", example="2024-01-01"),
+     *                 @OA\Property(property="finish_date", type="string", format="date", example="2024-12-31"),
+     *                 @OA\Property(property="status", type="string", example="active")
+     *             ))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
      */
     public function index()
     {

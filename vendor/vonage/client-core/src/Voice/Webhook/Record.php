@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Vonage Client Library for PHP
- *
- * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
- * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
- */
-
 declare(strict_types=1);
 
 namespace Vonage\Voice\Webhook;
@@ -16,40 +9,19 @@ use Exception;
 
 class Record
 {
-    /**
-     * @var DateTimeImmutable
-     */
-    protected $startTime;
+    protected ?DateTimeImmutable $startTime = null;
 
-    /**
-     * @var string
-     */
-    protected $recordingUrl;
+    protected ?string $recordingUrl = null;
 
-    /**
-     * @var int
-     */
-    protected $size;
+    protected ?int $size = null;
 
-    /**
-     * @var string
-     */
-    protected $recordingUuid;
+    protected ?string $recordingUuid = null;
 
-    /**
-     * @var DateTimeImmutable
-     */
-    protected $endTime;
+    protected ?DateTimeImmutable $endTime = null;
 
-    /**
-     * @var string
-     */
-    protected $conversationUuid;
+    protected ?string $conversationUuid = null;
 
-    /**
-     * @var DateTimeImmutable
-     */
-    protected $timestamp;
+    protected ?DateTimeImmutable $timestamp = null;
 
     /**
      * @throws Exception

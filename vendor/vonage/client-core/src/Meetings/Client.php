@@ -18,8 +18,15 @@ class Client implements APIClient
 {
     public const IMAGE_TYPES = ['white', 'colored', 'favicon'];
 
+    /**
+     * @deprecated The Meetings API is being sunset and this will be removed in the next major version
+     */
     public function __construct(protected APIResource $api)
     {
+        trigger_error(
+            'The Meetings API is being sunset and this will be removed in the next major version',
+            E_USER_DEPRECATED
+        );
     }
 
     public function getAPIResource(): APIResource
@@ -83,7 +90,7 @@ class Client implements APIClient
         return $room;
     }
 
-    public function getAllListedRooms(string $start_id = null, string $end_id = null, int $size = 20): array
+    public function getAllListedRooms(?string $start_id = null, ?string $end_id = null, int $size = 20): array
     {
         $filterParams = [];
 
@@ -226,7 +233,7 @@ class Client implements APIClient
         return $applicationTheme;
     }
 
-    public function getRoomsByThemeId(string $themeId, string $startId = null, string $endId = null, int $size = 20): array
+    public function getRoomsByThemeId(string $themeId, ?string $startId = null, ?string $endId = null, int $size = 20): array
     {
         $this->api->setIsHAL(true);
         $this->api->setCollectionName('rooms');

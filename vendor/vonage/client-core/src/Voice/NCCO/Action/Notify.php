@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Vonage Client Library for PHP
- *
- * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
- * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
- */
-
 declare(strict_types=1);
 
 namespace Vonage\Voice\NCCO\Action;
@@ -28,6 +21,9 @@ class Notify implements ActionInterface
     public static function factory(array $payload, array $data): Notify
     {
         if (array_key_exists('eventUrl', $data)) {
+            if (is_array($data['eventUrl'])) {
+                $data['eventUrl'] = $data['eventUrl'][0];
+            }
             if (array_key_exists('eventMethod', $data)) {
                 $webhook = new Webhook($data['eventUrl'], $data['eventMethod']);
             } else {

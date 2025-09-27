@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Division;
 use Illuminate\Http\Request;
 use App\Repositories\MemberRepository;
+use OpenApi\Annotations as OA;
 
 class DivisionController extends Controller
 {
@@ -18,6 +19,31 @@ class DivisionController extends Controller
     {
         $this->repository = $repository;
     }
+    /**
+     * @OA\Get(
+     *     path="/division",
+     *     tags={"Divisions"},
+     *     summary="Get all divisions",
+     *     description="Retrieve a list of all divisions",
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Divisions retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="AllDivisions", type="array", @OA\Items(
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="division_en", type="string", example="Division 1"),
+     *                 @OA\Property(property="division_si", type="string", example="විධාන 1"),
+     *                 @OA\Property(property="division_ta", type="string", example="பிரிவு 1")
+     *             ))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
+     */
     public function index()
     {
         $division = Division::select('id', 'division_en','division_si','division_ta')->get();

@@ -1,0 +1,1954 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "PDPS Backend API",
+        "description": "API documentation for PDPS (Pradeshiya Sabha Development Project System) Backend",
+        "contact": {
+            "email": "admin@pdps.lk"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api",
+            "description": "Development Server"
+        }
+    ],
+    "paths": {
+        "/register": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Register a new user",
+                "description": "Register a new user in the system",
+                "operationId": "0903f2e0df1a8857bee538fc055417f0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "requesttype"
+                                ],
+                                "properties": {
+                                    "requesttype": {
+                                        "description": "Request type: 1 for Admin",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "admin@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "active"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "example": "admin"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "nic": {
+                                        "type": "string",
+                                        "example": "123456789V"
+                                    },
+                                    "mobileNo": {
+                                        "type": "string",
+                                        "example": "+94771234567"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User registered successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User registered successfully"
+                                        },
+                                        "user": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "User login",
+                "description": "Authenticate user and return access token",
+                "operationId": "2dd578ff7aba2721293dac66833b27d1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "admin@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login successful"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|abcdef123456"
+                                        },
+                                        "user": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid credentials"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/complains": {
+            "get": {
+                "tags": [
+                    "Complaints"
+                ],
+                "summary": "Get all complaints",
+                "description": "Retrieve a list of all complaints",
+                "operationId": "d93a91954ecd0caff208791db4d6b8ba",
+                "responses": {
+                    "200": {
+                        "description": "Complaints retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Complaints"
+                ],
+                "summary": "Create a new complaint",
+                "description": "Submit a new complaint to the system",
+                "operationId": "171bbc3033b96badae855936f7e68a60",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "complain"
+                                ],
+                                "properties": {
+                                    "complain": {
+                                        "type": "string",
+                                        "example": "Water supply issue in our area"
+                                    },
+                                    "tele": {
+                                        "type": "string",
+                                        "example": "0771234567"
+                                    },
+                                    "imageList": {
+                                        "description": "Upload up to 3 images",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Complaint submitted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Complaint submitted successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/complains/{id}": {
+            "get": {
+                "tags": [
+                    "Complaints"
+                ],
+                "summary": "Get a specific complaint",
+                "description": "Retrieve details of a specific complaint",
+                "operationId": "2e20bccb6564f1dc24c9eb5bca299de6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Complaint ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Complaint retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Complaint not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Complaints"
+                ],
+                "summary": "Update a complaint",
+                "description": "Update an existing complaint",
+                "operationId": "a4f2082f3471b12a27e46bbe108bdcfa",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Complaint ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "complain": {
+                                        "type": "string",
+                                        "example": "Updated complaint description"
+                                    },
+                                    "tele": {
+                                        "type": "string",
+                                        "example": "0771234567"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "resolved"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Complaint updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Complaint updated successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Complaint not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Complaints"
+                ],
+                "summary": "Delete a complaint",
+                "description": "Delete an existing complaint",
+                "operationId": "7720dd74bc5f05dc4ea7bc63e86a1000",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Complaint ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Complaint deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Complaint deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Complaint not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Complaint not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/division": {
+            "get": {
+                "tags": [
+                    "Divisions"
+                ],
+                "summary": "Get all divisions",
+                "description": "Retrieve a list of all divisions",
+                "operationId": "5f15a65caf3d0af8d87d727699ed783f",
+                "responses": {
+                    "200": {
+                        "description": "Divisions retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "AllDivisions": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "division_en": {
+                                                        "type": "string",
+                                                        "example": "Division 1"
+                                                    },
+                                                    "division_si": {
+                                                        "type": "string",
+                                                        "example": "විධාන 1"
+                                                    },
+                                                    "division_ta": {
+                                                        "type": "string",
+                                                        "example": "பிரிவு 1"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/hall": {
+            "get": {
+                "tags": [
+                    "Hall Management"
+                ],
+                "summary": "Get all halls",
+                "description": "Retrieve a list of all halls",
+                "operationId": "1f0ecb0fea05330b26aebeb3ed33cb03",
+                "responses": {
+                    "200": {
+                        "description": "Halls retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Hall Management"
+                ],
+                "summary": "Create a new hall",
+                "description": "Add a new hall to the system",
+                "operationId": "32f1e755280b40b1718be440a009ab32",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "location",
+                                    "tel",
+                                    "capacity"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Main Hall"
+                                    },
+                                    "location": {
+                                        "type": "string",
+                                        "example": "City Center"
+                                    },
+                                    "tel": {
+                                        "type": "string",
+                                        "example": "0112345678"
+                                    },
+                                    "capacity": {
+                                        "type": "integer",
+                                        "example": 100
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Large hall for events"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Hall created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Hall created successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/member": {
+            "get": {
+                "tags": [
+                    "Members"
+                ],
+                "summary": "Get all members",
+                "description": "Retrieve a list of all members",
+                "operationId": "1937cebfb899e61404b10ccac91c2ff0",
+                "responses": {
+                    "200": {
+                        "description": "Members retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Members"
+                ],
+                "summary": "Create a new member",
+                "description": "Add a new member to the system",
+                "operationId": "caf907ab40abe78111573fac76a4991c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nameEn",
+                                    "nameSi",
+                                    "nameTa"
+                                ],
+                                "properties": {
+                                    "nameEn": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "nameSi": {
+                                        "type": "string",
+                                        "example": "ජෝන් ඩෝ"
+                                    },
+                                    "nameTa": {
+                                        "type": "string",
+                                        "example": "ஜான் டோ"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "mobileNo": {
+                                        "type": "string",
+                                        "example": "0771234567"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "123 Main Street"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Member created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Member created successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/member/{id}": {
+            "get": {
+                "tags": [
+                    "Members"
+                ],
+                "summary": "Get a specific member",
+                "description": "Retrieve details of a specific member",
+                "operationId": "aefb8fa386df11a8f0ac4ffa33e531d4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Member ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Member retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Member not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Members"
+                ],
+                "summary": "Update a member",
+                "description": "Update an existing member",
+                "operationId": "8714fc0defe618942b69205c32faa370",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Member ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nameEn",
+                                    "nameSi",
+                                    "nameTa",
+                                    "email",
+                                    "tel",
+                                    "division",
+                                    "party",
+                                    "position"
+                                ],
+                                "properties": {
+                                    "nameEn": {
+                                        "type": "string",
+                                        "example": "Updated John Doe"
+                                    },
+                                    "nameSi": {
+                                        "type": "string",
+                                        "example": "යාවත්කාලීන ජෝන් ඩෝ"
+                                    },
+                                    "nameTa": {
+                                        "type": "string",
+                                        "example": "புதுப்பிக்கப்பட்ட ஜான் டோ"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john.updated@example.com"
+                                    },
+                                    "tel": {
+                                        "type": "string",
+                                        "example": "0771234567"
+                                    },
+                                    "division": {
+                                        "type": "string",
+                                        "example": "Division 1"
+                                    },
+                                    "party": {
+                                        "type": "string",
+                                        "example": "Party A"
+                                    },
+                                    "position": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "example": [
+                                            "Position 1",
+                                            "Position 2"
+                                        ]
+                                    },
+                                    "img": {
+                                        "description": "Member image",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Member updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Member updated successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Member not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/news": {
+            "get": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Get all news",
+                "description": "Retrieve a list of all news articles",
+                "operationId": "21b84dbdd75fd20b9c9ddb9b9e68f0a1",
+                "responses": {
+                    "200": {
+                        "description": "News retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "AllNews": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "news_en": {
+                                                        "type": "string",
+                                                        "example": "English news content"
+                                                    },
+                                                    "news_si": {
+                                                        "type": "string",
+                                                        "example": "Sinhala news content"
+                                                    },
+                                                    "news_ta": {
+                                                        "type": "string",
+                                                        "example": "Tamil news content"
+                                                    },
+                                                    "priority": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Create a new news article",
+                "description": "Add a new news article to the system",
+                "operationId": "d6a12c2e3b4ea9ab588ba9b1cb14748f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "newsSinhala",
+                                    "newsEnglish",
+                                    "newsTamil"
+                                ],
+                                "properties": {
+                                    "newsSinhala": {
+                                        "type": "string",
+                                        "example": "සිංහල පුවත් අන්තර්ගතය"
+                                    },
+                                    "newsEnglish": {
+                                        "type": "string",
+                                        "example": "English news content"
+                                    },
+                                    "newsTamil": {
+                                        "type": "string",
+                                        "example": "தமிழ் செய்தி உள்ளடக்கம்"
+                                    },
+                                    "priority": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "News article created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "News article created successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/news/{id}": {
+            "put": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Update a news article",
+                "description": "Update an existing news article",
+                "operationId": "25ea273290c6cb379ab85e08ff4fadfc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "News article ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "newsSinhala",
+                                    "newsEnglish",
+                                    "newsTamil"
+                                ],
+                                "properties": {
+                                    "newsSinhala": {
+                                        "type": "string",
+                                        "example": "Updated Sinhala news content"
+                                    },
+                                    "newsEnglish": {
+                                        "type": "string",
+                                        "example": "Updated English news content"
+                                    },
+                                    "newsTamil": {
+                                        "type": "string",
+                                        "example": "Updated Tamil news content"
+                                    },
+                                    "priority": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "News article updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "News article updated successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "News article not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Delete a news article",
+                "description": "Delete an existing news article",
+                "operationId": "bbe79a918bfbb58bc46ed74b43e9b986",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "News article ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "News article deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "News deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "News article not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "News not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/newsCount": {
+            "get": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Get news count",
+                "description": "Get the total count of news articles",
+                "operationId": "e004b4fd10134748181401268a358bac",
+                "responses": {
+                    "200": {
+                        "description": "News count retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "count": {
+                                            "type": "integer",
+                                            "example": 25
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/siteNewsView": {
+            "get": {
+                "tags": [
+                    "News"
+                ],
+                "summary": "Get news for site view",
+                "description": "Get news articles for public site view in specified language",
+                "operationId": "1b6b3ebb1165d3dd28ec27c15a76e0a6",
+                "parameters": [
+                    {
+                        "name": "language",
+                        "in": "query",
+                        "description": "Language code",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "en",
+                                "si",
+                                "ta"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "News retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/project": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Get all projects",
+                "description": "Retrieve a list of all projects",
+                "operationId": "3f7f71d225f8770410e2b47e59f44866",
+                "responses": {
+                    "200": {
+                        "description": "Projects retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "AllProjects": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name_en": {
+                                                        "type": "string",
+                                                        "example": "Road Development Project"
+                                                    },
+                                                    "name_si": {
+                                                        "type": "string",
+                                                        "example": "මාර්ග සංවර්ධන ව්‍යාපෘතිය"
+                                                    },
+                                                    "name_ta": {
+                                                        "type": "string",
+                                                        "example": "சாலை மேம்பாட்டுத் திட்டம்"
+                                                    },
+                                                    "budget": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 5000000
+                                                    },
+                                                    "start_date": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "2024-01-01"
+                                                    },
+                                                    "finish_date": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "2024-12-31"
+                                                    },
+                                                    "status": {
+                                                        "type": "string",
+                                                        "example": "active"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/sms/test": {
+            "post": {
+                "tags": [
+                    "SMS Notifications"
+                ],
+                "summary": "Send test SMS",
+                "description": "Send a test SMS message",
+                "operationId": "635fdab60c119d7d2c52484034b09c41",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "phone"
+                                ],
+                                "properties": {
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "+94771234567"
+                                    },
+                                    "message": {
+                                        "type": "string",
+                                        "maxLength": 160,
+                                        "example": "Test SMS from PDPS system"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "SMS sent successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "SMS sent successfully"
+                                        },
+                                        "message_sid": {
+                                            "type": "string",
+                                            "example": "SM1234567890abcdef"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/sms/payment-confirmation": {
+            "post": {
+                "tags": [
+                    "SMS Notifications"
+                ],
+                "summary": "Send payment confirmation SMS",
+                "description": "Send SMS confirmation for payment",
+                "operationId": "600808f8c43a7087dfc72ac93ade5003",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "phone",
+                                    "amount",
+                                    "receipt_no",
+                                    "service"
+                                ],
+                                "properties": {
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "+94771234567"
+                                    },
+                                    "amount": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 1500
+                                    },
+                                    "receipt_no": {
+                                        "type": "string",
+                                        "example": "RCP123456"
+                                    },
+                                    "service": {
+                                        "type": "string",
+                                        "example": "Water Bill Payment"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Payment confirmation SMS sent successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Payment confirmation SMS sent successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/supplier": {
+            "get": {
+                "tags": [
+                    "Suppliers"
+                ],
+                "summary": "Get all suppliers",
+                "description": "Retrieve a list of all suppliers",
+                "operationId": "c29db95450168487cd0d797292c58d09",
+                "responses": {
+                    "200": {
+                        "description": "Suppliers retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/tax-payees": {
+            "get": {
+                "tags": [
+                    "Tax Management"
+                ],
+                "summary": "Get all tax payees",
+                "description": "Retrieve a paginated list of tax payees with optional search",
+                "operationId": "bdbb8a32d80ac4d5c679e34fbfe28529",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search by NIC or name",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tax payees retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "current_page": {
+                                            "type": "integer"
+                                        },
+                                        "per_page": {
+                                            "type": "integer"
+                                        },
+                                        "total": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Tax Management"
+                ],
+                "summary": "Create a new tax payee",
+                "description": "Add a new tax payee to the system",
+                "operationId": "41671770a23bcb56144570e86fc762d6",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "name",
+                                    "nic",
+                                    "tel",
+                                    "address",
+                                    "email"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "description": "Title: 1=Mr, 2=Mrs, 3=Miss, 4=Dr",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "nic": {
+                                        "type": "string",
+                                        "example": "123456789V"
+                                    },
+                                    "tel": {
+                                        "type": "string",
+                                        "example": "0771234567"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "123 Main Street, Colombo"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tax payee created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tax payee created successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/payments/online": {
+            "post": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Process online payment",
+                "description": "Process online payment for any payment type using PayHere",
+                "operationId": "dc0b49c8536052fb93d2c989204aa862",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "payment_type",
+                                    "payment_id",
+                                    "amount",
+                                    "customer_data"
+                                ],
+                                "properties": {
+                                    "payment_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "water_bill",
+                                            "hall_reservation",
+                                            "tax_payment"
+                                        ],
+                                        "example": "water_bill"
+                                    },
+                                    "payment_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "amount": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 1500
+                                    },
+                                    "customer_data": {
+                                        "properties": {
+                                            "first_name": {
+                                                "type": "string",
+                                                "example": "John"
+                                            },
+                                            "last_name": {
+                                                "type": "string",
+                                                "example": "Doe"
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "format": "email",
+                                                "example": "john@example.com"
+                                            },
+                                            "phone": {
+                                                "type": "string",
+                                                "example": "+94771234567"
+                                            },
+                                            "address": {
+                                                "type": "string",
+                                                "example": "123 Main Street"
+                                            },
+                                            "city": {
+                                                "type": "string",
+                                                "example": "Colombo"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Payment processed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Payment processed successfully"
+                                        },
+                                        "payment_url": {
+                                            "type": "string",
+                                            "example": "https://sandbox.payhere.lk/pay/checkout"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/water-schemes": {
+            "get": {
+                "tags": [
+                    "Water Bill Management"
+                ],
+                "summary": "Get all water schemes",
+                "description": "Retrieve a list of all water schemes",
+                "operationId": "5fa9191cb151300d48f5f4c9d2835aa1",
+                "responses": {
+                    "200": {
+                        "description": "Water schemes retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Water Bill Management"
+                ],
+                "summary": "Create a new water scheme",
+                "description": "Add a new water scheme to the system",
+                "operationId": "1d730402f94f80b0e7149b7fd65ab591",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "division_id",
+                                    "name",
+                                    "start_date"
+                                ],
+                                "properties": {
+                                    "division_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Main Water Scheme"
+                                    },
+                                    "start_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2024-01-01"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Water scheme created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Water scheme created successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "description": "Enter your API token in the format: Bearer {token}",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Authentication",
+            "description": "Authentication related endpoints"
+        },
+        {
+            "name": "Members",
+            "description": "Member management endpoints"
+        },
+        {
+            "name": "Complaints",
+            "description": "Complaint management endpoints"
+        },
+        {
+            "name": "News",
+            "description": "News management endpoints"
+        },
+        {
+            "name": "Hall Management",
+            "description": "Hall reservation and management endpoints"
+        },
+        {
+            "name": "Water Bill Management",
+            "description": "Water bill and customer management endpoints"
+        },
+        {
+            "name": "Tax Management",
+            "description": "Tax system management endpoints"
+        },
+        {
+            "name": "SMS Notifications",
+            "description": "SMS notification endpoints"
+        },
+        {
+            "name": "Payments",
+            "description": "Payment processing endpoints"
+        },
+        {
+            "name": "Divisions",
+            "description": "Divisions"
+        },
+        {
+            "name": "Projects",
+            "description": "Projects"
+        },
+        {
+            "name": "Suppliers",
+            "description": "Suppliers"
+        }
+    ],
+    "security": [
+        {
+            "sanctum": []
+        }
+    ]
+}

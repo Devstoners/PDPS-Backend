@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Vonage Client Library for PHP
- *
- * @copyright Copyright (c) 2016-2022 Vonage, Inc. (http://vonage.com)
- * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
- */
-
 declare(strict_types=1);
 
 namespace Vonage\Numbers;
@@ -22,14 +15,12 @@ use Vonage\Entity\JsonSerializableTrait;
 use Vonage\Entity\JsonUnserializableInterface;
 use Vonage\Entity\NoRequestResponseTrait;
 
-use function get_class;
 use function in_array;
 use function is_null;
 use function json_decode;
 use function json_last_error;
 use function preg_match;
 use function stripos;
-use function strpos;
 use function trigger_error;
 
 class Number implements EntityInterface, JsonSerializableInterface, JsonUnserializableInterface, ArrayHydrateInterface, \Stringable
@@ -52,16 +43,14 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
 
     public const WEBHOOK_MESSAGE = 'moHttpUrl';
     public const WEBHOOK_VOICE_STATUS = 'voiceStatusCallback';
+    public const WEBHOOK_VOICE_STATUS_URL = 'voiceStatusCallbackUrl';
 
     public const ENDPOINT_SIP = 'sip';
     public const ENDPOINT_TEL = 'tel';
     public const ENDPOINT_VXML = 'vxml';
     public const ENDPOINT_APP = 'app';
 
-    /**
-     * @var array
-     */
-    protected $data = [];
+    protected array $data = [];
 
     public function __construct($number = null, $country = null)
     {
@@ -69,39 +58,36 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         $this->data['country'] = $country;
     }
 
-    public function getId()
+    public function getId(): mixed
     {
         return $this->fromData('msisdn');
     }
 
-    public function getMsisdn()
+    public function getMsisdn(): mixed
     {
         return $this->getId();
     }
 
-    public function getNumber()
+    public function getNumber(): mixed
     {
         return $this->getId();
     }
 
-    public function getCountry()
+    public function getCountry(): mixed
     {
         return $this->fromData('country');
     }
 
-    public function getType()
+    public function getType(): mixed
     {
         return $this->fromData('type');
     }
 
-    public function getCost()
+    public function getCost(): mixed
     {
         return $this->fromData('cost');
     }
 
-    /**
-     * @param $feature
-     */
     public function hasFeature($feature): bool
     {
         if (!isset($this->data['features'])) {
@@ -111,15 +97,11 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         return in_array($feature, $this->data['features'], true);
     }
 
-    public function getFeatures()
+    public function getFeatures(): mixed
     {
         return $this->fromData('features');
     }
 
-    /**
-     * @param $type
-     * @param $url
-     */
     public function setWebhook($type, $url): self
     {
         if (!in_array($type, [self::WEBHOOK_MESSAGE, self::WEBHOOK_VOICE_STATUS], true)) {
@@ -130,26 +112,16 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         return $this;
     }
 
-    /**
-     * @param $type
-     */
     public function getWebhook($type)
     {
         return $this->fromData($type);
     }
 
-    /**
-     * @param $type
-     */
     public function hasWebhook($type): bool
     {
         return isset($this->data[$type]);
     }
 
-    /**
-     * @param $endpoint
-     * @param $type
-     */
     public function setVoiceDestination($endpoint, $type = null): self
     {
         if (is_null($type)) {
@@ -166,46 +138,37 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         return $this;
     }
 
-    /**
-     * @param $endpoint
-     */
     protected function autoType($endpoint): string
     {
         if ($endpoint instanceof Application) {
             return self::ENDPOINT_APP;
         }
 
-        if (false !== strpos($endpoint, '@')) {
+        if (str_contains((string) $endpoint, '@')) {
             return self::ENDPOINT_SIP;
         }
 
-        if (0 === stripos($endpoint, 'http')) {
+        if (0 === stripos((string) $endpoint, 'http')) {
             return self::ENDPOINT_VXML;
         }
 
-        if (preg_match('#[a-z]+#', $endpoint)) {
+        if (preg_match('#[a-z]+#', (string) $endpoint)) {
             return self::ENDPOINT_APP;
         }
 
         return self::ENDPOINT_TEL;
     }
 
-    public function getVoiceDestination()
+    public function getVoiceDestination(): mixed
     {
         return $this->fromData('voiceCallbackValue');
     }
 
-    /**
-     * @return mixed|null
-     */
-    public function getVoiceType()
+    public function getVoiceType(): mixed
     {
         return $this->data['voiceCallbackType'] ?? null;
     }
 
-    /**
-     * @param $name
-     */
     protected function fromData($name)
     {
         if (!isset($this->data[$name])) {
@@ -221,7 +184,7 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
     public function jsonUnserialize($json): void
     {
         trigger_error(
-            $this::class . "::jsonUnserialize is deprecated, please fromArray() instead",
+            static::class . "::jsonUnserialize is deprecated, please fromArray() instead",
             E_USER_DEPRECATED
         );
 
@@ -239,11 +202,8 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         $this->data = $data;
     }
 
-    /**
-     * @return array|mixed
-     */
     #[\ReturnTypeWillChange]
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }
@@ -271,17 +231,11 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
         return $json;
     }
 
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
         return (string)$this->getId();
     }
 
-    /**
-     * @return $this
-     */
     public function setAppId(string $appId): self
     {
         $this->data['messagesCallbackType'] = self::ENDPOINT_APP;
@@ -296,6 +250,6 @@ class Number implements EntityInterface, JsonSerializableInterface, JsonUnserial
     public function getAppId(): ?string
     {
         // These should never be different, but might not both be set
-        return $this->data['voiceCallbackValue'] ?? $this->data['messagesCallbackValue'];
+        return $this->data['voiceCallbackValue'] ?? $this->data['messagesCallbackValue'] ?? null;
     }
 }

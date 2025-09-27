@@ -6,6 +6,7 @@ use App\Models\Hall;
 use Illuminate\Http\Request;
 use App\Repositories\HallRepository;
 use Illuminate\Support\Facades\Validator;
+use OpenApi\Annotations as OA;
 
 class HallController extends Controller
 {
@@ -18,11 +19,63 @@ class HallController extends Controller
 
     // ==================== HALL MANAGEMENT ====================
 
+    /**
+     * @OA\Get(
+     *     path="/hall",
+     *     tags={"Hall Management"},
+     *     summary="Get all halls",
+     *     description="Retrieve a list of all halls",
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Halls retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
+     */
     public function index()
     {
         return $this->repository->getAllHalls();
     }
 
+    /**
+     * @OA\Post(
+     *     path="/hall",
+     *     tags={"Hall Management"},
+     *     summary="Create a new hall",
+     *     description="Add a new hall to the system",
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name", "location", "tel", "capacity"},
+     *             @OA\Property(property="name", type="string", example="Main Hall"),
+     *             @OA\Property(property="location", type="string", example="City Center"),
+     *             @OA\Property(property="tel", type="string", example="0112345678"),
+     *             @OA\Property(property="capacity", type="integer", example=100),
+     *             @OA\Property(property="description", type="string", example="Large hall for events")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Hall created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Hall created successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
+     */
     public function store(Request $request)
     {
         $rules = [
