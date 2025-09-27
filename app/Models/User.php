@@ -55,4 +55,24 @@ class User extends Authenticatable
         return $this->hasOne(Officer::class, 'user_id');
     }
 
+    public function supplier()
+    {
+        return $this->hasOne(Supplier::class, 'user_id');
+    }
+
+    public function waterCustomer()
+    {
+        return $this->hasOne(WaterCustomer::class, 'user_id');
+    }
+
+    public function taxCustomer()
+    {
+        return $this->hasOne(TaxCustomer::class, 'user_id');
+    }
+
+    public function hallReserveCustomer()
+    {
+        return $this->hasOne(HallCustomer::class, 'user_id');
+    }
+
 }

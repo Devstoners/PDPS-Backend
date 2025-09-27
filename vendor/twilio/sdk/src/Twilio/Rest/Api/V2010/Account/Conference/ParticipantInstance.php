@@ -39,6 +39,7 @@ use Twilio\Deserialize;
  * @property bool|null $hold
  * @property bool|null $startConferenceOnEnter
  * @property string $status
+ * @property string|null $queueTime
  * @property string|null $uri
  */
 class ParticipantInstance extends InstanceResource
@@ -52,7 +53,7 @@ class ParticipantInstance extends InstanceResource
      * @param string $conferenceSid The SID of the participant's conference.
      * @param string $callSid The [Call](https://www.twilio.com/docs/voice/api/call-resource) SID or label of the participant to delete. Non URL safe characters in a label must be percent encoded, for example, a space character is represented as %20.
      */
-    public function __construct(Version $version, array $payload, string $accountSid, string $conferenceSid, string $callSid = null)
+    public function __construct(Version $version, array $payload, string $accountSid, string $conferenceSid, ?string $callSid = null)
     {
         parent::__construct($version);
 
@@ -71,6 +72,7 @@ class ParticipantInstance extends InstanceResource
             'hold' => Values::array_get($payload, 'hold'),
             'startConferenceOnEnter' => Values::array_get($payload, 'start_conference_on_enter'),
             'status' => Values::array_get($payload, 'status'),
+            'queueTime' => Values::array_get($payload, 'queue_time'),
             'uri' => Values::array_get($payload, 'uri'),
         ];
 

@@ -14,27 +14,18 @@ namespace Twilio\Rest;
 
 use Twilio\Domain;
 use Twilio\Exceptions\TwilioException;
-use Twilio\Rest\Preview\DeployedDevices;
 use Twilio\Rest\Preview\HostedNumbers;
-use Twilio\Rest\Preview\Sync;
 use Twilio\Rest\Preview\Marketplace;
-use Twilio\Rest\Preview\Understand;
 use Twilio\Rest\Preview\Wireless;
 
 /**
- * @property \Twilio\Rest\Preview\DeployedDevices $deployedDevices
  * @property \Twilio\Rest\Preview\HostedNumbers $hostedNumbers
- * @property \Twilio\Rest\Preview\Sync $sync
  * @property \Twilio\Rest\Preview\Marketplace $marketplace
- * @property \Twilio\Rest\Preview\Understand $understand
  * @property \Twilio\Rest\Preview\Wireless $wireless
  */
 class PreviewBase extends Domain {
-    protected $_deployedDevices;
     protected $_hostedNumbers;
-    protected $_sync;
     protected $_marketplace;
-    protected $_understand;
     protected $_wireless;
 
     /**
@@ -50,16 +41,6 @@ class PreviewBase extends Domain {
 
 
     /**
-     * @return DeployedDevices Version deployedDevices of preview
-     */
-    protected function getDeployedDevices(): DeployedDevices {
-        if (!$this->_deployedDevices) {
-            $this->_deployedDevices = new DeployedDevices($this);
-        }
-        return $this->_deployedDevices;
-    }
-
-    /**
      * @return HostedNumbers Version hostedNumbers of preview
      */
     protected function getHostedNumbers(): HostedNumbers {
@@ -70,16 +51,6 @@ class PreviewBase extends Domain {
     }
 
     /**
-     * @return Sync Version sync of preview
-     */
-    protected function getSync(): Sync {
-        if (!$this->_sync) {
-            $this->_sync = new Sync($this);
-        }
-        return $this->_sync;
-    }
-
-    /**
      * @return Marketplace Version marketplace of preview
      */
     protected function getMarketplace(): Marketplace {
@@ -87,16 +58,6 @@ class PreviewBase extends Domain {
             $this->_marketplace = new Marketplace($this);
         }
         return $this->_marketplace;
-    }
-
-    /**
-     * @return Understand Version understand of preview
-     */
-    protected function getUnderstand(): Understand {
-        if (!$this->_understand) {
-            $this->_understand = new Understand($this);
-        }
-        return $this->_understand;
     }
 
     /**

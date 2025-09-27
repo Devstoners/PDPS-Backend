@@ -10,13 +10,14 @@ class WaterCustomer extends Model
     use HasFactory;
     protected $table = 'water_customers';
     protected $fillable = [
+        'account_no',
         'title',
         'name',
         'nic',
         'tel',
         'address',
         'email',
-        'con_date',
+        'dateJoin',
         'water_schemes_id',
     ];
     public function waterScheme()
@@ -27,5 +28,10 @@ class WaterCustomer extends Model
     public function waterBills()
     {
         return $this->hasMany(WaterBill::class, 'water_customer_id');
+    }
+
+    public function meterReadings()
+    {
+        return $this->hasMany(WaterMeterReading::class, 'water_customer_id');
     }
 }

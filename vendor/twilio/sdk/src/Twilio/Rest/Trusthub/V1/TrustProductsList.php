@@ -47,8 +47,8 @@ class TrustProductsList extends ListResource
      * Create the TrustProductsInstance
      *
      * @param string $friendlyName The string that you assigned to describe the resource.
-     * @param string $email The email address that will receive updates when the Customer-Profile resource changes status.
-     * @param string $policySid The unique string of a policy that is associated to the Customer-Profile resource.
+     * @param string $email The email address that will receive updates when the Trust Product resource changes status.
+     * @param string $policySid The unique string of a policy that is associated to the Trust Product resource.
      * @param array|Options $options Optional Arguments
      * @return TrustProductsInstance Created TrustProductsInstance
      * @throws TwilioException When an HTTP error occurs.
@@ -69,7 +69,8 @@ class TrustProductsList extends ListResource
                 $options['statusCallback'],
         ]);
 
-        $payload = $this->version->create('POST', $this->uri, [], $data);
+        $headers = Values::of(['Content-Type' => 'application/x-www-form-urlencoded', 'Accept' => 'application/json' ]);
+        $payload = $this->version->create('POST', $this->uri, [], $data, $headers);
 
         return new TrustProductsInstance(
             $this->version,
@@ -94,7 +95,7 @@ class TrustProductsList extends ListResource
      *                        efficient page size, i.e. min(limit, 1000)
      * @return TrustProductsInstance[] Array of results
      */
-    public function read(array $options = [], int $limit = null, $pageSize = null): array
+    public function read(array $options = [], ?int $limit = null, $pageSize = null): array
     {
         return \iterator_to_array($this->stream($options, $limit, $pageSize), false);
     }
@@ -118,7 +119,7 @@ class TrustProductsList extends ListResource
      *                        efficient page size, i.e. min(limit, 1000)
      * @return Stream stream of results
      */
-    public function stream(array $options = [], int $limit = null, $pageSize = null): Stream
+    public function stream(array $options = [], ?int $limit = null, $pageSize = null): Stream
     {
         $limits = $this->version->readLimits($limit, $pageSize);
 
@@ -157,7 +158,8 @@ class TrustProductsList extends ListResource
             'PageSize' => $pageSize,
         ]);
 
-        $response = $this->version->page('GET', $this->uri, $params);
+        $headers = Values::of(['Content-Type' => 'application/x-www-form-urlencoded', 'Accept' => 'application/json']);
+        $response = $this->version->page('GET', $this->uri, $params, [], $headers);
 
         return new TrustProductsPage($this->version, $response, $this->solution);
     }
@@ -183,7 +185,7 @@ class TrustProductsList extends ListResource
     /**
      * Constructs a TrustProductsContext
      *
-     * @param string $sid The unique string that we created to identify the Customer-Profile resource.
+     * @param string $sid The unique string that we created to identify the Trust Product resource.
      */
     public function getContext(
         string $sid

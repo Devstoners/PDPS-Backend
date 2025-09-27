@@ -1,0 +1,28 @@
+# Twilio SMS Configuration for PDPS
+# Copy these variables to your .env file and update with your Twilio credentials
+
+# Twilio Account Credentials
+TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+TWILIO_AUTH_TOKEN=your_auth_token_here
+TWILIO_FROM_NUMBER=+1234567890
+
+# SMS Settings
+TWILIO_SMS_ENABLED=true
+TWILIO_PAYMENT_SMS=true
+TWILIO_REMINDER_SMS=true
+TWILIO_OVERDUE_SMS=true
+TWILIO_RESERVATION_SMS=true
+
+# Rate Limiting (Free Plan Limits)
+TWILIO_RATE_LIMIT_ENABLED=true
+TWILIO_MAX_PER_HOUR=10
+TWILIO_MAX_PER_DAY=100
+
+# Message Templates (Optional - defaults in config/twilio.php)
+# TWILIO_PAYMENT_CONFIRMATION_TEMPLATE="Payment confirmed! Amount: LKR {amount}. Receipt: {receipt_no}. Thank you!"
+# TWILIO_SERVICE_REMINDER_TEMPLATE="Reminder: Your {service} is due on {due_date}. Amount: LKR {amount}."
+# TWILIO_OVERDUE_NOTICE_TEMPLATE="URGENT: Your {service} is overdue. Amount: LKR {amount}. Please pay immediately."
+
+# Country Code Settings
+TWILIO_COUNTRY_CODE=+94
+TWILIO_DEFAULT_COUNTRY=LK

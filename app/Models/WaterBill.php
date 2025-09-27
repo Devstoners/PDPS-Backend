@@ -11,24 +11,30 @@ class WaterBill extends Model
     protected $table = 'water_bills';
     protected $fillable = [
         'water_customer_id',
-        'officer_id',
-        'year',
-        'month',
-        'meter_read_date',
-        'meter_read_val',
-        'outstand_amount',//use '-' and '+'. + is there to handle extra payment
-        'bill_amount',
-        'pay_date',
-        'pay_method',//1=online, 2=cash
-        'pay_amount',
+        'meter_reader_id',
+        'billing_month',
+        'due_date',
+        'amount_due',
+        'status',
+    ];
+
+    protected $casts = [
+        'billing_month' => 'date',
+        'due_date' => 'date',
+        'amount_due' => 'decimal:2',
     ];
     public function waterCustomer()
     {
         return $this->belongsTo(WaterCustomer::class,'water_customer_id');
     }
 
-    public function officer()
+    public function meterReader()
     {
-        return $this->belongsTo(Officer::class,'officer_id');
+        return $this->belongsTo(WaterMeterReader::class,'meter_reader_id');
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(WaterPayment::class, 'water_bill_id');
     }
 }

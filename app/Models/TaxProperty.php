@@ -36,4 +36,14 @@ class TaxProperty extends Model
     {
         return $this->hasMany(TaxPayment::class, 'tax_property_id');
     }
+
+    public function prohibitionOrders()
+    {
+        return $this->hasMany(PropertyProhibitionOrder::class, 'tax_property_id');
+    }
+
+    public function getActiveProhibitionOrderAttribute()
+    {
+        return $this->prohibitionOrders()->where('status', 'active')->first();
+    }
 }

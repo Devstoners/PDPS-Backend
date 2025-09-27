@@ -82,6 +82,29 @@ class rolesaAndPermisstionSeeder extends Seeder
 
         $requestService = 'request service';
         $completeService = 'complete service';
+// Hall Management
+        $addHall = 'add hall';
+        $editHall = 'edit hall';
+        $deleteHall = 'delete hall';
+        $addFacility = 'add facility';
+        $editFacility = 'edit facility';
+        $deleteFacility = 'delete facility';
+        $addHallFacility = 'add hall facility';
+        $editHallFacility = 'edit hall facility';
+        $deleteHallFacility = 'delete hall facility';
+        $addHallRate = 'add hall rate';
+        $editHallRate = 'edit hall rate';
+        $deleteHallRate = 'delete hall rate';
+        $addHallCustomer = 'add hall customer';
+        $editHallCustomer = 'edit hall customer';
+        $deleteHallCustomer = 'delete hall customer';
+        $addHallReservation = 'add hall reservation';
+        $editHallReservation = 'edit hall reservation';
+        $deleteHallReservation = 'delete hall reservation';
+        $addHallCustomerPayment = 'add hall customer payment';
+        $addHallFacilityRate = 'add hall facility rate';
+        $editHallFacilityRate = 'edit hall facility rate';
+        $deleteHallFacilityRate = 'delete hall facility rate';      
 
 
         Permission::create(['name' => $addUser]);
@@ -145,23 +168,52 @@ class rolesaAndPermisstionSeeder extends Seeder
         Permission::create(['name' => $bidTender]);
 
 
-
+        Permission::create(['name' => $addHall]);
+        Permission::create(['name' => $editHall]);
+        Permission::create(['name' => $deleteHall]);
+        Permission::create(['name' => $addFacility]);
+        Permission::create(['name' => $editFacility]);
+        Permission::create(['name' => $deleteFacility]);
+        Permission::create(['name' => $addHallFacility]);
+        Permission::create(['name' => $editHallFacility]);
+        Permission::create(['name' => $deleteHallFacility]);
+        Permission::create(['name' => $addHallRate]);
+        Permission::create(['name' => $editHallRate]);
+        Permission::create(['name' => $deleteHallRate]);
+        Permission::create(['name' => $addHallCustomer]);
+        Permission::create(['name' => $editHallCustomer]);
+        Permission::create(['name' => $deleteHallCustomer]);
+        Permission::create(['name' => $addHallReservation]);
+        Permission::create(['name' => $editHallReservation]);
+        Permission::create(['name' => $deleteHallReservation]);
+        Permission::create(['name' => $addHallCustomerPayment]);
+        Permission::create(['name' => $addHallFacilityRate]);
+        Permission::create(['name' => $editHallFacilityRate]);
+        Permission::create(['name' => $deleteHallFacilityRate]);
 
         Permission::create(['name' => $completeService]);
         Permission::create(['name' => $requestService]);
 
         Permission::create(['name' => $addBackup]);
 
-        $superAdmin = 'admin';
+        $admin = 'admin';
+        $secretary = 'secretary';
+        $president = 'president';
+        $officerWaterBill = 'officerWaterBill';
+        $officerTax = 'officerTax';
+        $officerHallReserve = 'officerHallReserve';
+        $officerTaxAssess = 'officerTaxAssess';
+        $meterReader = 'meterReader';
         $officer = 'officer';
         $member = 'member';
-        $GS = 'gramasewaka';
-        $customer = 'customer';
+        $customerWaterBill = 'customerWaterBill';
+        $customerTax = 'customerTax';
+        $customerHallReserve = 'customerHallReserve';
         $supplier = 'supplier';
 
 
-        //Role::create(['name' => $superAdmin])->givePermissionTo(Permission::all());
-        Role::create(['name' => $superAdmin])->givePermissionTo(
+        //Role::create(['name' => $admin])->givePermissionTo(Permission::all());
+        Role::create(['name' => $admin])->givePermissionTo(
             $addUser,
             $editUser,
             $deleteUser,
@@ -195,30 +247,115 @@ class rolesaAndPermisstionSeeder extends Seeder
             $editGsDivision,
             $deleteGsDivision,
             $addBackup,
+            $addHall,
+            $editHall,
+            $deleteHall,
+            $addFacility,
+            $editFacility,
+            $deleteFacility,
+            $addHallFacility,
+            $editHallFacility,
+            $deleteHallFacility,
+            $addHallRate,
+            $editHallRate,
+            $deleteHallRate,
+            $addHallCustomer,
+            $editHallCustomer,
+            $deleteHallCustomer,
+            $addHallReservation,
+            $editHallReservation,
+            $deleteHallReservation,
+            $addHallCustomerPayment,
+            $addHallFacilityRate,
+            $editHallFacilityRate,
+            $deleteHallFacilityRate,
         );
 
+        // Secretary (Type 2)
+        Role::create(['name' => $secretary])->givePermissionTo(
+            $addComplainAction,
+            $completeService,
+            $confirmPayment,
+        );
+
+        // President (Type 3)
+        Role::create(['name' => $president])->givePermissionTo(
+            $addComplainAction,
+        );
+
+        // OfficerWaterBill (Type 4)
+        Role::create(['name' => $officerWaterBill])->givePermissionTo(
+            $addComplainAction,
+            $completeService,
+            $confirmPayment,
+        );
+
+        // OfficerTax (Type 5)
+        Role::create(['name' => $officerTax])->givePermissionTo(
+            $addComplainAction,
+            $completeService,
+            $confirmPayment,
+        );
+
+        // OfficerHallReserve (Type 6)
+        Role::create(['name' => $officerHallReserve])->givePermissionTo(
+            $addComplainAction,
+            $completeService,
+            $confirmPayment,
+        );
+
+        // OfficerTaxAssess (Type 7)
+        Role::create(['name' => $officerTaxAssess])->givePermissionTo(
+            $addComplainAction,
+            $completeService,
+            $confirmPayment,
+        );
+
+        // MeterReader (Type 8)
+        Role::create(['name' => $meterReader])->givePermissionTo(
+            $addComplainAction,
+            $completeService,
+            $confirmPayment,
+        );
+
+        // Officer (Type 9)
         Role::create(['name' => $officer])->givePermissionTo(
             $addComplainAction,
             $completeService,
             $confirmPayment,
         );
 
-        Role::create(['name' => $customer])->givePermissionTo(
+        // Member (Type 10)
+        Role::create(['name' => $member])->givePermissionTo(
+            $addComplainAction,
+        );
+
+        // CustomerWaterBill (Type 11)
+        Role::create(['name' => $customerWaterBill])->givePermissionTo(
             $addComplain,
             $addPayment,
             $requestService,
         );
 
-        Role::create(['name' => $member])->givePermissionTo(
-            $addComplainAction,
+        // CustomerTax (Type 12)
+        Role::create(['name' => $customerTax])->givePermissionTo(
+            $addComplain,
+            $addPayment,
+            $requestService,
         );
 
+        // CustomerHallReserve (Type 13)
+        Role::create(['name' => $customerHallReserve])->givePermissionTo(
+            $addComplain,
+            $addPayment,
+            $requestService,
+        );
+
+        // Supplier (Type 14)
         Role::create(['name' => $supplier])->givePermissionTo(
             $registerSupplier,
             $bidTender,
         );
-
-        Role::create(['name' => $GS]);
 
     }
 }

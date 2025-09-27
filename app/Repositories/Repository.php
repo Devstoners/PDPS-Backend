@@ -37,19 +37,45 @@ class Repository{
             case '1':
                 $user->assignRole('admin');
                 break;
-            case '5':
-                $user->assignRole('officer');
-                break;
             case '2':
-                $user->assignRole('gramasewaka');
-                break;
-            case '4':
-                $user->assignRole('member');
+                $user->assignRole('secretary');
                 break;
             case '3':
-                $user->assignRole('customer');
+                $user->assignRole('president');
                 break;
-            // Add more cases if needed
+            case '4':
+                $user->assignRole('officerWaterBill');
+                break;
+            case '5':
+                $user->assignRole('officerTax');
+                break;
+            case '6':
+                $user->assignRole('officerHallReserve');
+                break;
+            case '7':
+                $user->assignRole('officerTaxAssess');
+                break;
+            case '8':
+                $user->assignRole('meterReader');
+                break;
+            case '9':
+                $user->assignRole('officer');
+                break;
+            case '10':
+                $user->assignRole('member');
+                break;
+            case '11':
+                $user->assignRole('customerWaterBill');
+                break;
+            case '12':
+                $user->assignRole('customerTax');
+                break;
+            case '13':
+                $user->assignRole('customerHallReserve');
+                break;
+            case '14':
+                $user->assignRole('supplier');
+                break;
             default:
                 // Handle any other cases or throw an exception if needed
         }
@@ -204,5 +230,7 @@ class Repository{
     }
 
 }
+
+
 
 
