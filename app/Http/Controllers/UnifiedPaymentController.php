@@ -13,6 +13,7 @@ use App\Models\TaxAssessment;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use OpenApi\Annotations as OA;
 
 class UnifiedPaymentController extends Controller
@@ -316,7 +317,7 @@ class UnifiedPaymentController extends Controller
                     break;
             }
         } catch (\Exception $e) {
-            \Log::error('SMS notification failed', [
+            Log::error('SMS notification failed', [
                 'payment_type' => $paymentType,
                 'payment_id' => $paymentId,
                 'error' => $e->getMessage()
