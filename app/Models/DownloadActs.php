@@ -18,5 +18,6 @@ class DownloadActs extends Model
         'file_path_en',
         'file_path_si',
         'file_path_ta',
+        'updated_at',
     ];
 }

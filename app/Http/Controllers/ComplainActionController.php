@@ -3,24 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\ComplainAction;
+use App\Repositories\ComplainRepository;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
 class ComplainActionController extends Controller
 {
+    private $repository;
+
+    public function __construct(ComplainRepository $repository)
+    {
+        $this->repository = $repository;
+    }
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        //
+        return $this->repository->getComplain();
+        // return Complain::all();
+
     }
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function create()
     {
@@ -29,57 +35,90 @@ class ComplainActionController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
+        $customMessages = [
+            'action.required' => 'The action is compulsory',
+            'action.max' => 'The action must be maximum of 500 characters',
+        ];
+
+        $baseRules = [
+            'action' => 'required|max:500',
+        ];
+
+
+        $validator = Validator::make($request->all(), $baseRules, $customMessages);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            return response()->json(['errors' => $errors], 422);
+        } else {
+            $response = $this->repository->addAction($request);
+            return response($response, 201);
+        }
     }
 
     /**
      * Display the specified resource.
-     *
-     * @param  \App\Models\ComplainAction  $complainAction
-     * @return \Illuminate\Http\Response
      */
-    public function show(ComplainAction $complainAction)
+    public function show(Complain $Complain)
     {
         //
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\ComplainAction  $complainAction
-     * @return \Illuminate\Http\Response
      */
-    public function edit(ComplainAction $complainAction)
+    public function edit(Complain $Complain)
     {
         //
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\ComplainAction  $complainAction
-     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, ComplainAction $complainAction)
+    public function update(Request $request, $id)
     {
-        //
+        $customMessages = [
+            'action.required' => 'The action is compulsory',
+            'action.max' => 'The action must be maximum of 500 characters',
+        ];
+
+        $baseRules = [
+            'action' => 'required|max:500',
+        ];
+
+        $validator = Validator::make($request->all(), $baseRules, $customMessages);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            return response()->json(['errors' => $errors], 422);
+        } else {
+            $response = $this->repository->updateAction($id, $request);
+            return response($response, 200);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\ComplainAction  $complainAction
-     * @return \Illuminate\Http\Response
      */
-    public function destroy(ComplainAction $complainAction)
+    public function destroy($id)
     {
-        //
+        $result = $this->repository->deleteComplain($id);
+
+        if ($result) {
+            return response()->json(['message' => 'Complain deleted successfully.']);
+        }
+        return response()->json(['message' => 'Complain not found.'], 404);
+    }
+
+    public function getCount()
+    {
+        $count = Complain::count();
+        $response = [
+            "count" => $count,
+        ];
+        return response($response, 200);
     }
 }

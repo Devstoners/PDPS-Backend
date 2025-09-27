@@ -18,7 +18,6 @@ return new class extends Migration
             $table->timestamps();
             $table->integer('complain_id');
             $table->string('action',500);
-            $table->date('action_date');
         });
     }
 

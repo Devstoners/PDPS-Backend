@@ -18,6 +18,7 @@ namespace Twilio\Rest\FlexApi\V1\Interaction\InteractionChannel;
 
 use Twilio\Exceptions\TwilioException;
 use Twilio\ListResource;
+use Twilio\Options;
 use Twilio\Stream;
 use Twilio\Values;
 use Twilio\Version;
@@ -60,20 +61,26 @@ class InteractionChannelParticipantList extends ListResource
      *
      * @param string $type
      * @param array $mediaProperties JSON representing the Media Properties for the new Participant.
+     * @param array|Options $options Optional Arguments
      * @return InteractionChannelParticipantInstance Created InteractionChannelParticipantInstance
      * @throws TwilioException When an HTTP error occurs.
      */
-    public function create(string $type, array $mediaProperties): InteractionChannelParticipantInstance
+    public function create(string $type, array $mediaProperties, array $options = []): InteractionChannelParticipantInstance
     {
+
+        $options = new Values($options);
 
         $data = Values::of([
             'Type' =>
                 $type,
             'MediaProperties' =>
                 Serialize::jsonObject($mediaProperties),
+            'RoutingProperties' =>
+                Serialize::jsonObject($options['routingProperties']),
         ]);
 
-        $payload = $this->version->create('POST', $this->uri, [], $data);
+        $headers = Values::of(['Content-Type' => 'application/x-www-form-urlencoded', 'Accept' => 'application/json' ]);
+        $payload = $this->version->create('POST', $this->uri, [], $data, $headers);
 
         return new InteractionChannelParticipantInstance(
             $this->version,
@@ -99,7 +106,7 @@ class InteractionChannelParticipantList extends ListResource
      *                        efficient page size, i.e. min(limit, 1000)
      * @return InteractionChannelParticipantInstance[] Array of results
      */
-    public function read(int $limit = null, $pageSize = null): array
+    public function read(?int $limit = null, $pageSize = null): array
     {
         return \iterator_to_array($this->stream($limit, $pageSize), false);
     }
@@ -122,7 +129,7 @@ class InteractionChannelParticipantList extends ListResource
      *                        efficient page size, i.e. min(limit, 1000)
      * @return Stream stream of results
      */
-    public function stream(int $limit = null, $pageSize = null): Stream
+    public function stream(?int $limit = null, $pageSize = null): Stream
     {
         $limits = $this->version->readLimits($limit, $pageSize);
 
@@ -153,7 +160,8 @@ class InteractionChannelParticipantList extends ListResource
             'PageSize' => $pageSize,
         ]);
 
-        $response = $this->version->page('GET', $this->uri, $params);
+        $headers = Values::of(['Content-Type' => 'application/x-www-form-urlencoded', 'Accept' => 'application/json']);
+        $response = $this->version->page('GET', $this->uri, $params, [], $headers);
 
         return new InteractionChannelParticipantPage($this->version, $response, $this->solution);
     }

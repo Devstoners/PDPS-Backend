@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 
 use App\Models\OfficerSubject;
+use App\Models\OfficerLevel;
+use App\Models\OfficerPosition;
 use Illuminate\Http\Request;
 use App\Repositories\OfficerRepository;
 use Illuminate\Support\Facades\Validator;
@@ -24,11 +26,25 @@ class OfficerSubjectController extends Controller
      */
     public function index()
     {
-        $subject = OfficerSubject::select('id', 'subject_en','subject_si','subject_ta')->get();
+        // $subject = OfficerSubject::select('id', 'subject_en','subject_si','subject_ta')->get();
+        // $response = [
+        //     "AllSubjects" => $subject,
+        // ];
+        // return response($response, 200);
+
+        $subjects = OfficerSubject::with([
+            'level' => function ($query) {
+                $query->select('id', 'level_en');
+            },
+        ])
+            ->select('id', 'subject_en','subject_si','subject_ta','officer_levels_id')
+            ->get();
+
         $response = [
-            "AllSubjects" => $subject,
+            "AllSubjects" => $subjects,
         ];
         return response($response, 200);
+
 //        return OfficerSubject::all();
     }
 
@@ -51,15 +67,15 @@ class OfficerSubjectController extends Controller
     public function store(Request $request)
     {
         $customMessages = [
-            'subjectEn' => 'The Subject English is compulsory',
-            'subjectSi' => 'The Subject Sinhala is compulsory',
-            'subjectTa' => 'The Subject Tamil is compulsory',
+            'dutyEn' => 'The Subject English is compulsory',
+            'dutySi' => 'The Subject Sinhala is compulsory',
+            'dutyTa' => 'The Subject Tamil is compulsory',
         ];
 
         $validator = Validator::make($request->all(),[
-            'subjectEn' => 'required',
-            'subjectSi' => 'required',
-            'subjectTa' => 'required',
+            'dutyEn' => 'required',
+            'dutySi' => 'required',
+            'dutyTa' => 'required',
         ], $customMessages);
 
         if ($validator->fails()) {
@@ -103,15 +119,15 @@ class OfficerSubjectController extends Controller
     public function update(Request $request, $id)
     {
         $customMessages = [
-            'subjectEn' => 'The Subject English is compulsory',
-            'subjectSi' => 'The Subject Sinhala is compulsory',
-            'subjectTa' => 'The Subject Tamil is compulsory',
+            'dutyEn' => 'The Subject English is compulsory',
+            'dutySi' => 'The Subject Sinhala is compulsory',
+            'dutyTa' => 'The Subject Tamil is compulsory',
         ];
 
         $validator = Validator::make($request->all(),[
-            'subjectEn' => 'required',
-            'subjectSi' => 'required',
-            'subjectTa' => 'required',
+            'dutyEn' => 'required',
+            'dutySi' => 'required',
+            'dutyTa' => 'required',
         ], $customMessages);
 
         if ($validator->fails()) {
@@ -142,4 +158,23 @@ class OfficerSubjectController extends Controller
             return response()->json(['error' => 'Error deleting subject.'], 500); // Or any other appropriate status code
         }
     }
+
+    public function getDutiesByPosition($positionId) {
+        // Fetch the OfficerPosition by ID
+        $position = OfficerPosition::find($positionId);
+
+        if (!$position) {
+            return response()->json(['error' => 'Position not found'], 404);
+        }
+
+        // Get the OfficerLevel related to the position using officer_levels_id
+        $level = $position->level; // Assumes the OfficerPosition model has a relationship defined
+
+        // Fetch the OfficerSubjects (Duties) related to the OfficerLevel using officer_levels_id
+        $duties = OfficerSubject::where('officer_levels_id', $level->id)->get();
+
+        return response()->json($duties);
+    }
+
+
 }

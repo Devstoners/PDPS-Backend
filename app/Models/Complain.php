@@ -14,12 +14,16 @@ class Complain extends Model
         'cname',
         'tele',
         'complain',
-        'complain_date',
         'img1',
         'img2',
         'img3',
     ];
+
+    public function complainAction()
+    {
+        return $this->hasOne(ComplainAction::class);
+    }
 }
 /*
-    1(Complain) : M (ComplainAction)
+    1(Complain) : 1 (ComplainAction)
 */

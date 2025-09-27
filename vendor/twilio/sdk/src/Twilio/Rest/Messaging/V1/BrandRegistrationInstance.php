@@ -24,6 +24,7 @@ use Twilio\Version;
 use Twilio\Deserialize;
 use Twilio\Rest\Messaging\V1\BrandRegistration\BrandRegistrationOtpList;
 use Twilio\Rest\Messaging\V1\BrandRegistration\BrandVettingList;
+use Twilio\Rest\Messaging\V1\BrandRegistration\BrandRegistration2FaList;
 
 
 /**
@@ -37,6 +38,7 @@ use Twilio\Rest\Messaging\V1\BrandRegistration\BrandVettingList;
  * @property string $status
  * @property string|null $tcrId
  * @property string|null $failureReason
+ * @property array[]|null $errors
  * @property string|null $url
  * @property int|null $brandScore
  * @property string[]|null $brandFeedback
@@ -52,6 +54,7 @@ class BrandRegistrationInstance extends InstanceResource
 {
     protected $_brandRegistrationOtps;
     protected $_brandVettings;
+    protected $_brandRegistration2Fa;
 
     /**
      * Initialize the BrandRegistrationInstance
@@ -60,7 +63,7 @@ class BrandRegistrationInstance extends InstanceResource
      * @param mixed[] $payload The response payload
      * @param string $sid The SID of the Brand Registration resource to fetch.
      */
-    public function __construct(Version $version, array $payload, string $sid = null)
+    public function __construct(Version $version, array $payload, ?string $sid = null)
     {
         parent::__construct($version);
 
@@ -76,6 +79,7 @@ class BrandRegistrationInstance extends InstanceResource
             'status' => Values::array_get($payload, 'status'),
             'tcrId' => Values::array_get($payload, 'tcr_id'),
             'failureReason' => Values::array_get($payload, 'failure_reason'),
+            'errors' => Values::array_get($payload, 'errors'),
             'url' => Values::array_get($payload, 'url'),
             'brandScore' => Values::array_get($payload, 'brand_score'),
             'brandFeedback' => Values::array_get($payload, 'brand_feedback'),
@@ -147,6 +151,14 @@ class BrandRegistrationInstance extends InstanceResource
     protected function getBrandVettings(): BrandVettingList
     {
         return $this->proxy()->brandVettings;
+    }
+
+    /**
+     * Access the brandRegistration2Fa
+     */
+    protected function getBrandRegistration2Fa(): BrandRegistration2FaList
+    {
+        return $this->proxy()->brandRegistration2Fa;
     }
 
     /**

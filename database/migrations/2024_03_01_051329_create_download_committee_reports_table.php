@@ -14,12 +14,14 @@ return new class extends Migration
         Schema::create('download_committee_reports', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->integer('year');
-            $table->integer('month');
-            $table->string('name_en');
-            $table->string('name_si');
-            $table->string('name_ta');
-            $table->string('file_path');
+            $table->integer('report_year');
+            $table->integer('report_month');
+            $table->string('name_en',255);
+            $table->string('name_si',255);
+            $table->string('name_ta',255);
+            $table->string('file_path_en',255);
+            $table->string('file_path_si',255);
+            $table->string('file_path_ta',255);
         });
     }
 
