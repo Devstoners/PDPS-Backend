@@ -53,6 +53,11 @@ use OpenApi\Annotations as OA;
  * )
  * 
  * @OA\Tag(
+ *     name="Complaint Actions",
+ *     description="Complaint action management endpoints"
+ * )
+ * 
+ * @OA\Tag(
  *     name="News",
  *     description="News management endpoints"
  * )

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Complain;
 use App\Models\ComplainAction;
 use App\Repositories\ComplainRepository;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use OpenApi\Annotations as OA;
 
 class ComplainActionController extends Controller
 {
@@ -23,6 +25,26 @@ class ComplainActionController extends Controller
         return $this->repository->getComplain();
         // return Complain::all();
 
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/siteComplainActionsView",
+     *     tags={"Complaint Actions"},
+     *     summary="Public: Get all complaint actions",
+     *     description="Public endpoint to retrieve a list of all complaint actions",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Complaint actions retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object"))
+     *         )
+     *     )
+     * )
+     */
+    public function siteIndex()
+    {
+        return $this->repository->getComplain();
     }
 
     /**

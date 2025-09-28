@@ -190,6 +190,36 @@
                 }
             }
         },
+        "/siteComplainActionsView": {
+            "get": {
+                "tags": [
+                    "Complaint Actions"
+                ],
+                "summary": "Public: Get all complaint actions",
+                "description": "Public endpoint to retrieve a list of all complaint actions",
+                "operationId": "42f3f9b823bf0e76c263c883428bc337",
+                "responses": {
+                    "200": {
+                        "description": "Complaint actions retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/complains": {
             "get": {
                 "tags": [
@@ -287,6 +317,36 @@
                     },
                     "422": {
                         "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/siteComplainsView": {
+            "get": {
+                "tags": [
+                    "Complaints"
+                ],
+                "summary": "Public: Get all complaints",
+                "description": "Public endpoint to retrieve a list of all complaints",
+                "operationId": "f82331284c598723d4ae1c1e74fb480b",
+                "responses": {
+                    "200": {
+                        "description": "Complaints retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -2501,6 +2561,10 @@
         {
             "name": "Complaints",
             "description": "Complaint management endpoints"
+        },
+        {
+            "name": "Complaint Actions",
+            "description": "Complaint action management endpoints"
         },
         {
             "name": "News",

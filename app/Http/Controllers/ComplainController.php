@@ -45,6 +45,26 @@ class ComplainController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *     path="/siteComplainsView",
+     *     tags={"Complaints"},
+     *     summary="Public: Get all complaints",
+     *     description="Public endpoint to retrieve a list of all complaints",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Complaints retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object"))
+     *         )
+     *     )
+     * )
+     */
+    public function siteIndex()
+    {
+        return $this->repository->getComplain();
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()
