@@ -41,6 +41,12 @@ Route::post('/activate', [\App\Http\Controllers\AuthController::class, 'activate
 Route::get('/officers/directory', [\App\Http\Controllers\OfficerController::class, 'directory']);
 Route::get('/members/directory', [\App\Http\Controllers\MemberController::class, 'directory']);
 
+ 
+
+    // Public directory routes
+Route::get('/officers/directory', [\App\Http\Controllers\OfficerController::class, 'directory']);
+Route::get('/members/directory', [\App\Http\Controllers\MemberController::class, 'directory']);
+
 
 
     // Public Taxpayer Verification Route (No authentication required) 
@@ -153,6 +159,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/complaincount', [\App\Http\Controllers\ComplainController::class, 'getCount']);
         Route::get('/countOfficer', [\App\Http\Controllers\OfficerController::class, 'count']);
         Route::get('/countSupplier', [\App\Http\Controllers\SupplierController::class, 'count']);
+        
+        
+        // Public access to supporting data for directory views
+        Route::get('/officerServices', [\App\Http\Controllers\OfficerServiceController::class, 'index']);
+        Route::get('/officerLevels', [\App\Http\Controllers\OfficerLevelController::class, 'index']);
+        Route::get('/officerGrades/{serviceId}', [\App\Http\Controllers\OfficerGradeController::class, 'getGradesByService']);
+        Route::get('/officerPositions/{serviceId}', [\App\Http\Controllers\OfficerPositionController::class, 'getPositionsByService']);
+        Route::get('/officerDuties/{positionId}', [\App\Http\Controllers\OfficerSubjectController::class, 'getDutiesByPosition']);
+        Route::get('/divisions', [\App\Http\Controllers\DivisionController::class, 'index']);
+        Route::get('/memberParties', [\App\Http\Controllers\MemberPartyController::class, 'index']);
+        Route::get('/memberPositions', [\App\Http\Controllers\MemberPositionController::class, 'index']);
         
         
         // Public access to supporting data for directory views
