@@ -10,7 +10,7 @@
     },
     "servers": [
         {
-            "url": "http://localhost:8000/api",
+            "url": "http://127.0.0.1:8001/api",
             "description": "Development Server"
         }
     ],
@@ -916,6 +916,182 @@
                 ]
             }
         },
+        "/members/directory": {
+            "get": {
+                "tags": [
+                    "Members"
+                ],
+                "summary": "Get members directory (Public access)",
+                "description": "Retrieve a list of all members for directory viewing. Accessible by admin, officer, and member roles.",
+                "operationId": "c4dab4040257c09f1c5fabdd08dd0d39",
+                "responses": {
+                    "200": {
+                        "description": "Members directory retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "AllMembers": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "title": {
+                                                        "description": "1=Mr, 2=Mrs, 3=Miss, 4=Rev",
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name_en": {
+                                                        "type": "string",
+                                                        "example": "Jane Smith"
+                                                    },
+                                                    "name_si": {
+                                                        "type": "string",
+                                                        "example": "ජේන් ස්මිත්"
+                                                    },
+                                                    "name_ta": {
+                                                        "type": "string",
+                                                        "example": "ஜேன் ஸ்மித்"
+                                                    },
+                                                    "image": {
+                                                        "type": "string",
+                                                        "example": "/storage/members/image.jpg"
+                                                    },
+                                                    "tel": {
+                                                        "type": "string",
+                                                        "example": "0777654321"
+                                                    },
+                                                    "divisions_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "member_parties_id": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    },
+                                                    "user_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "division": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "division_en": {
+                                                                "type": "string",
+                                                                "example": "Colombo District"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "member_party": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 2
+                                                            },
+                                                            "party_en": {
+                                                                "type": "string",
+                                                                "example": "United National Party"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "member_positions": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": 1
+                                                                },
+                                                                "position_en": {
+                                                                    "type": "string",
+                                                                    "example": "Councillor"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "user": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "email": {
+                                                                "type": "string",
+                                                                "example": "jane@example.com"
+                                                            },
+                                                            "status": {
+                                                                "type": "string",
+                                                                "example": "active"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/countMember": {
+            "get": {
+                "tags": [
+                    "Members"
+                ],
+                "summary": "Get member count",
+                "description": "Retrieve the total number of members in the system",
+                "operationId": "8f016be7beb2de7d5b399dd9052adbd5",
+                "responses": {
+                    "200": {
+                        "description": "Member count retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "count": {
+                                            "type": "integer",
+                                            "example": 150
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/news": {
             "get": {
                 "tags": [
@@ -1276,6 +1452,415 @@
                         "description": "Server error"
                     }
                 }
+            }
+        },
+        "/officer": {
+            "get": {
+                "tags": [
+                    "Officers"
+                ],
+                "summary": "Get all officers (Admin only)",
+                "description": "Retrieve a list of all officers with their details, services, grades, positions, and subjects",
+                "operationId": "4b4a4aa9f10e6e95e52348a9f6935bc9",
+                "responses": {
+                    "200": {
+                        "description": "Officers retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "AllOfficers": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "title": {
+                                                        "description": "1=Mr, 2=Mrs, 3=Miss, 4=Rev",
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name_en": {
+                                                        "type": "string",
+                                                        "example": "John Doe"
+                                                    },
+                                                    "name_si": {
+                                                        "type": "string",
+                                                        "example": "ජෝන් ඩෝ"
+                                                    },
+                                                    "name_ta": {
+                                                        "type": "string",
+                                                        "example": "ஜான் டோ"
+                                                    },
+                                                    "image": {
+                                                        "type": "string",
+                                                        "example": "/storage/officers/image.jpg"
+                                                    },
+                                                    "tel": {
+                                                        "type": "string",
+                                                        "example": "0771234567"
+                                                    },
+                                                    "officer_services_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "officer_grades_id": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    },
+                                                    "officer_positions_id": {
+                                                        "type": "integer",
+                                                        "example": 3
+                                                    },
+                                                    "user_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "officer_service": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "sname_en": {
+                                                                "type": "string",
+                                                                "example": "Administrative Service"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "officer_grade": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 2
+                                                            },
+                                                            "grade_en": {
+                                                                "type": "string",
+                                                                "example": "Grade 2"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "officer_position": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 3
+                                                            },
+                                                            "position_en": {
+                                                                "type": "string",
+                                                                "example": "Assistant Secretary"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "officer_subjects": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "officer_subjects_id": {
+                                                                    "type": "integer",
+                                                                    "example": 1
+                                                                },
+                                                                "subject_en": {
+                                                                    "type": "string",
+                                                                    "example": "Public Administration"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "user": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "email": {
+                                                                "type": "string",
+                                                                "example": "john@example.com"
+                                                            },
+                                                            "status": {
+                                                                "type": "string",
+                                                                "example": "active"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Admin access required"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/officers/directory": {
+            "get": {
+                "tags": [
+                    "Officers"
+                ],
+                "summary": "Get officers directory (Public access)",
+                "description": "Retrieve a list of all officers for directory viewing. Accessible by admin, officer, and member roles.",
+                "operationId": "150a5cd8c23b42a15a76cdc2a5b7a049",
+                "responses": {
+                    "200": {
+                        "description": "Officers directory retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "AllOfficers": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "title": {
+                                                        "description": "1=Mr, 2=Mrs, 3=Miss, 4=Rev",
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name_en": {
+                                                        "type": "string",
+                                                        "example": "John Doe"
+                                                    },
+                                                    "name_si": {
+                                                        "type": "string",
+                                                        "example": "ජෝන් ඩෝ"
+                                                    },
+                                                    "name_ta": {
+                                                        "type": "string",
+                                                        "example": "ஜான் டோ"
+                                                    },
+                                                    "image": {
+                                                        "type": "string",
+                                                        "example": "/storage/officers/image.jpg"
+                                                    },
+                                                    "tel": {
+                                                        "type": "string",
+                                                        "example": "0771234567"
+                                                    },
+                                                    "officer_services_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "officer_grades_id": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    },
+                                                    "officer_positions_id": {
+                                                        "type": "integer",
+                                                        "example": 3
+                                                    },
+                                                    "user_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "officer_service": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "sname_en": {
+                                                                "type": "string",
+                                                                "example": "Administrative Service"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "officer_grade": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 2
+                                                            },
+                                                            "grade_en": {
+                                                                "type": "string",
+                                                                "example": "Grade 2"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "officer_position": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 3
+                                                            },
+                                                            "position_en": {
+                                                                "type": "string",
+                                                                "example": "Assistant Secretary"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "officer_subjects": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "officer_subjects_id": {
+                                                                    "type": "integer",
+                                                                    "example": 1
+                                                                },
+                                                                "subject_en": {
+                                                                    "type": "string",
+                                                                    "example": "Public Administration"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "user": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "email": {
+                                                                "type": "string",
+                                                                "example": "john@example.com"
+                                                            },
+                                                            "status": {
+                                                                "type": "string",
+                                                                "example": "active"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/countOfficer": {
+            "get": {
+                "tags": [
+                    "Officers"
+                ],
+                "summary": "Get officer count",
+                "description": "Retrieve the total number of officers in the system",
+                "operationId": "98058eb11abcba02e01de566610b6f19",
+                "responses": {
+                    "200": {
+                        "description": "Officer count retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "count": {
+                                            "type": "integer",
+                                            "example": 25
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/officerServices": {
+            "get": {
+                "tags": [
+                    "Officers"
+                ],
+                "summary": "Get all officer services",
+                "description": "Retrieve a list of all officer services for dropdowns and directory views",
+                "operationId": "916fe3a8d0d2a348fab725e3bd6d4ed2",
+                "responses": {
+                    "200": {
+                        "description": "Officer services retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "AllServices": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "sname_en": {
+                                                        "type": "string",
+                                                        "example": "Administrative Service"
+                                                    },
+                                                    "sname_si": {
+                                                        "type": "string",
+                                                        "example": "පරිපාලන සේවය"
+                                                    },
+                                                    "sname_ta": {
+                                                        "type": "string",
+                                                        "example": "நிர்வாக சேவை"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/project": {
@@ -1902,8 +2487,16 @@
             "description": "Authentication related endpoints"
         },
         {
+            "name": "Officers",
+            "description": "Officer management endpoints"
+        },
+        {
             "name": "Members",
             "description": "Member management endpoints"
+        },
+        {
+            "name": "Divisions",
+            "description": "Division management endpoints"
         },
         {
             "name": "Complaints",
@@ -1932,10 +2525,6 @@
         {
             "name": "Payments",
             "description": "Payment processing endpoints"
-        },
-        {
-            "name": "Divisions",
-            "description": "Divisions"
         },
         {
             "name": "Projects",

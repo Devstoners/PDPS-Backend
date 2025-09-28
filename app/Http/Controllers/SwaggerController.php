@@ -15,7 +15,7 @@ use OpenApi\Annotations as OA;
  * )
  * 
  * @OA\Server(
- *     url="http://localhost:8000/api",
+ *     url="http://127.0.0.1:8001/api",
  *     description="Development Server"
  * )
  * 
@@ -33,8 +33,18 @@ use OpenApi\Annotations as OA;
  * )
  * 
  * @OA\Tag(
+ *     name="Officers",
+ *     description="Officer management endpoints"
+ * )
+ * 
+ * @OA\Tag(
  *     name="Members",
  *     description="Member management endpoints"
+ * )
+ * 
+ * @OA\Tag(
+ *     name="Divisions",
+ *     description="Division management endpoints"
  * )
  * 
  * @OA\Tag(

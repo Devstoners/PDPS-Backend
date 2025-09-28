@@ -285,6 +285,93 @@ class MemberController extends Controller
         return response()->json(['message' => 'Member not found.'], 404);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/members/directory",
+     *     tags={"Members"},
+     *     summary="Get members directory (Public access)",
+     *     description="Retrieve a list of all members for directory viewing. Accessible by admin, officer, and member roles.",
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Members directory retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="AllMembers",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="title", type="integer", example=1, description="1=Mr, 2=Mrs, 3=Miss, 4=Rev"),
+     *                     @OA\Property(property="name_en", type="string", example="Jane Smith"),
+     *                     @OA\Property(property="name_si", type="string", example="ජේන් ස්මිත්"),
+     *                     @OA\Property(property="name_ta", type="string", example="ஜேன் ஸ்மித்"),
+     *                     @OA\Property(property="image", type="string", example="/storage/members/image.jpg"),
+     *                     @OA\Property(property="tel", type="string", example="0777654321"),
+     *                     @OA\Property(property="divisions_id", type="integer", example=1),
+     *                     @OA\Property(property="member_parties_id", type="integer", example=2),
+     *                     @OA\Property(property="user_id", type="integer", example=1),
+     *                     @OA\Property(
+     *                         property="division",
+     *                         type="object",
+     *                         @OA\Property(property="id", type="integer", example=1),
+     *                         @OA\Property(property="division_en", type="string", example="Colombo District")
+     *                     ),
+     *                     @OA\Property(
+     *                         property="member_party",
+     *                         type="object",
+     *                         @OA\Property(property="id", type="integer", example=2),
+     *                         @OA\Property(property="party_en", type="string", example="United National Party")
+     *                     ),
+     *                     @OA\Property(
+     *                         property="member_positions",
+     *                         type="array",
+     *                         @OA\Items(
+     *                             @OA\Property(property="id", type="integer", example=1),
+     *                             @OA\Property(property="position_en", type="string", example="Councillor")
+     *                         )
+     *                     ),
+     *                     @OA\Property(
+     *                         property="user",
+     *                         type="object",
+     *                         @OA\Property(property="id", type="integer", example=1),
+     *                         @OA\Property(property="email", type="string", example="jane@example.com"),
+     *                         @OA\Property(property="status", type="string", example="active")
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
+     */
+    public function directory()
+    {
+        return $this->repository->getMembers();
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/countMember",
+     *     tags={"Members"},
+     *     summary="Get member count",
+     *     description="Retrieve the total number of members in the system",
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Member count retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="count", type="integer", example=150)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
+     */
     public function count()
     {
         $count = $this->repository->getCount();

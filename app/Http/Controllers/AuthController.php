@@ -66,7 +66,7 @@ class AuthController extends Controller
 
         if($fields['requesttype'] == Admin){
 
-            $fields = $request->validate([
+            $additionalFields = $request->validate([
                 'email' => 'required|string|unique:users,email',
                 'password' => 'string|confirmed',
                 'status' => 'required',
@@ -75,6 +75,9 @@ class AuthController extends Controller
                 'nic' => 'required',
                 'mobileNo' => 'required'
             ]);
+            
+            // Merge the requesttype with additional fields
+            $fields = array_merge($fields, $additionalFields);
             $response = $this->repository->registerNew($fields);
           //  $response = $this->teacherRepository->updatePassword($id, $fields, $request);
             return response($response, 201);

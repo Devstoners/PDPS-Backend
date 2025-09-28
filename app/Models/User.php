@@ -23,6 +23,9 @@ class User extends Authenticatable
         'email',
         'password',
         'status',//0 = Unregistered, 1 = Active, 2= Disabled
+        'type',
+        'nic',
+        'requesttype',
     ];
 
     /**

@@ -34,7 +34,7 @@ class OfficerRepository
             $imagePath = Storage::url($path);
         }
         // Create officer
-        $officer = new officer();
+        $officer = new Officer();
         $officer->user_id = $user->id;
         $officer->title = $request->title;
         $officer->name_en = $request->nameEn;

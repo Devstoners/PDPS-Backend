@@ -43,12 +43,12 @@ class Officer extends Model
 
     public function officerService(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(officerService::class, 'officer_services_id');
+        return $this->belongsTo(OfficerService::class, 'officer_services_id');
     }
 
     public function officerGrade(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(officerGrade::class, 'officer_grades_id');
+        return $this->belongsTo(OfficerGrade::class, 'officer_grades_id');
     }
 
     public function officerPosition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
