@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Route;
     // Site routes
 Route::get('/siteNewsView', [\App\Http\Controllers\NewsController::class, 'viewSite']);
 Route::post('/siteComplainAdd', [\App\Http\Controllers\ComplainController::class, 'store']);
+Route::get('/siteComplainsView', [\App\Http\Controllers\ComplainController::class, 'siteIndex']);
+Route::get('/siteComplainActionsView', [\App\Http\Controllers\ComplainActionController::class, 'siteIndex']);
 // Public gallery and downloads routes
 Route::get('/gallery', [\App\Http\Controllers\GalleryController::class, 'index']);
 Route::get('/gallery/{id}', [\App\Http\Controllers\GalleryController::class, 'show']);
