@@ -30,6 +30,15 @@ Route::get('/downloadActs', [\App\Http\Controllers\DownloadActsController::class
 Route::get('/downloadActs/{id}', [\App\Http\Controllers\DownloadActsController::class, 'show']);
 Route::get('/downloadApplications', [\App\Http\Controllers\DownloadApplicationController::class, 'index']);
 Route::get('/downloadApplications/{id}', [\App\Http\Controllers\DownloadApplicationController::class, 'show']);
+// Public gallery and downloads routes
+Route::get('/gallery', [\App\Http\Controllers\GalleryController::class, 'index']);
+Route::get('/gallery/{id}', [\App\Http\Controllers\GalleryController::class, 'show']);
+Route::get('/downloadReport', [\App\Http\Controllers\DownloadCommitteeReportController::class, 'index']);
+Route::get('/downloadReport/{id}', [\App\Http\Controllers\DownloadCommitteeReportController::class, 'show']);
+Route::get('/downloadActs', [\App\Http\Controllers\DownloadActsController::class, 'index']);
+Route::get('/downloadActs/{id}', [\App\Http\Controllers\DownloadActsController::class, 'show']);
+Route::get('/downloadApplications', [\App\Http\Controllers\DownloadApplicationController::class, 'index']);
+Route::get('/downloadApplications/{id}', [\App\Http\Controllers\DownloadApplicationController::class, 'show']);
 
     // Authentication-related routes
 Route::post('/register', [\App\Http\Controllers\AuthController::class, 'register']);

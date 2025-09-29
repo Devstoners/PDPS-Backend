@@ -583,6 +583,761 @@
                 ]
             }
         },
+        "/downloadActs": {
+            "get": {
+                "tags": [
+                    "Downloads - Acts"
+                ],
+                "summary": "Get all Acts",
+                "operationId": "eb613f1d23fadde746c1363bfb4db54e",
+                "responses": {
+                    "200": {
+                        "description": "List of all Acts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "AllActs": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "number": {
+                                                        "type": "string"
+                                                    },
+                                                    "issue_date": {
+                                                        "type": "string"
+                                                    },
+                                                    "name_en": {
+                                                        "type": "string"
+                                                    },
+                                                    "name_si": {
+                                                        "type": "string"
+                                                    },
+                                                    "name_ta": {
+                                                        "type": "string"
+                                                    },
+                                                    "file_path_en": {
+                                                        "type": "string"
+                                                    },
+                                                    "file_path_si": {
+                                                        "type": "string"
+                                                    },
+                                                    "file_path_ta": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/downloadActs/{id}": {
+            "get": {
+                "tags": [
+                    "Downloads - Acts"
+                ],
+                "summary": "Get a specific Act by ID",
+                "operationId": "0156aaed0b1148bb9c27e4213cba7deb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Act ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Act details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "number": {
+                                            "type": "string"
+                                        },
+                                        "issue_date": {
+                                            "type": "string"
+                                        },
+                                        "name_en": {
+                                            "type": "string"
+                                        },
+                                        "name_si": {
+                                            "type": "string"
+                                        },
+                                        "name_ta": {
+                                            "type": "string"
+                                        },
+                                        "file_path_en": {
+                                            "type": "string"
+                                        },
+                                        "file_path_si": {
+                                            "type": "string"
+                                        },
+                                        "file_path_ta": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Act not found"
+                    }
+                }
+            }
+        },
+        "/downloadApplications": {
+            "get": {
+                "tags": [
+                    "Downloads - Applications"
+                ],
+                "summary": "Get all applications",
+                "operationId": "f57a267d654059bb5183b238d80c31f5",
+                "responses": {
+                    "200": {
+                        "description": "List of all applications",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer"
+                                            },
+                                            "application_year": {
+                                                "type": "string"
+                                            },
+                                            "application_month": {
+                                                "type": "string"
+                                            },
+                                            "name_en": {
+                                                "type": "string"
+                                            },
+                                            "name_si": {
+                                                "type": "string"
+                                            },
+                                            "name_ta": {
+                                                "type": "string"
+                                            },
+                                            "file_path_en": {
+                                                "type": "string"
+                                            },
+                                            "file_path_si": {
+                                                "type": "string"
+                                            },
+                                            "file_path_ta": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Downloads - Applications"
+                ],
+                "summary": "Create a new application",
+                "operationId": "55b687c915d8a0905df7ee93eb06fa33",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "applicationYear": {
+                                        "type": "string"
+                                    },
+                                    "applicationMonth": {
+                                        "type": "string"
+                                    },
+                                    "nameEn": {
+                                        "type": "string"
+                                    },
+                                    "nameSi": {
+                                        "type": "string"
+                                    },
+                                    "nameTa": {
+                                        "type": "string"
+                                    },
+                                    "applicationFileEn": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "applicationFileSi": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "applicationFileTa": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Application created successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/downloadApplications/{id}": {
+            "get": {
+                "tags": [
+                    "Downloads - Applications"
+                ],
+                "summary": "Get a specific application by ID",
+                "operationId": "69e5e4f3617eb64312226404311e6d23",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Application details"
+                    },
+                    "404": {
+                        "description": "Application not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Downloads - Applications"
+                ],
+                "summary": "Update an application",
+                "operationId": "b5fa55ce955b7fe36a5db14ba5120c9c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "applicationYear": {
+                                        "type": "string"
+                                    },
+                                    "applicationMonth": {
+                                        "type": "string"
+                                    },
+                                    "nameEn": {
+                                        "type": "string"
+                                    },
+                                    "nameSi": {
+                                        "type": "string"
+                                    },
+                                    "nameTa": {
+                                        "type": "string"
+                                    },
+                                    "applicationFileEn": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "applicationFileSi": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "applicationFileTa": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Application updated successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Downloads - Applications"
+                ],
+                "summary": "Delete an application",
+                "operationId": "4d4b261cd404c49f935feaf45d036c8d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Application deleted successfully"
+                    },
+                    "404": {
+                        "description": "Application not found"
+                    }
+                }
+            }
+        },
+        "/downloadReport": {
+            "get": {
+                "tags": [
+                    "Downloads - Committee Reports"
+                ],
+                "summary": "Get all committee reports",
+                "operationId": "c1778f4bb5de8b567755b749a88f7175",
+                "responses": {
+                    "200": {
+                        "description": "List of all committee reports",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "AllReports": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "report_year": {
+                                                        "type": "string"
+                                                    },
+                                                    "report_month": {
+                                                        "type": "string"
+                                                    },
+                                                    "name_en": {
+                                                        "type": "string"
+                                                    },
+                                                    "name_si": {
+                                                        "type": "string"
+                                                    },
+                                                    "name_ta": {
+                                                        "type": "string"
+                                                    },
+                                                    "file_path_en": {
+                                                        "type": "string"
+                                                    },
+                                                    "file_path_si": {
+                                                        "type": "string"
+                                                    },
+                                                    "file_path_ta": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/downloadReport/{id}": {
+            "get": {
+                "tags": [
+                    "Downloads - Committee Reports"
+                ],
+                "summary": "Get a specific committee report by ID",
+                "operationId": "bb5863ff29a6dcf520cca383116d5be6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Report ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Report details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "report_year": {
+                                            "type": "string"
+                                        },
+                                        "report_month": {
+                                            "type": "string"
+                                        },
+                                        "name_en": {
+                                            "type": "string"
+                                        },
+                                        "name_si": {
+                                            "type": "string"
+                                        },
+                                        "name_ta": {
+                                            "type": "string"
+                                        },
+                                        "file_path_en": {
+                                            "type": "string"
+                                        },
+                                        "file_path_si": {
+                                            "type": "string"
+                                        },
+                                        "file_path_ta": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Report not found"
+                    }
+                }
+            }
+        },
+        "/gallery": {
+            "get": {
+                "tags": [
+                    "Gallery"
+                ],
+                "summary": "Get all galleries",
+                "operationId": "9dece97956c9a5e1f24a647aac025785",
+                "responses": {
+                    "200": {
+                        "description": "List of all galleries",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "galleries": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "topic_en": {
+                                                        "type": "string"
+                                                    },
+                                                    "topic_si": {
+                                                        "type": "string"
+                                                    },
+                                                    "topic_ta": {
+                                                        "type": "string"
+                                                    },
+                                                    "images": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/gallery": {
+            "post": {
+                "tags": [
+                    "Gallery"
+                ],
+                "summary": "Create a new gallery",
+                "operationId": "d48deae860df94d08149031b5b17eeb7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "topicEn": {
+                                        "type": "string"
+                                    },
+                                    "topicSi": {
+                                        "type": "string"
+                                    },
+                                    "topicTa": {
+                                        "type": "string"
+                                    },
+                                    "images": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Gallery created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "topic_en": {
+                                            "type": "string"
+                                        },
+                                        "topic_si": {
+                                            "type": "string"
+                                        },
+                                        "topic_ta": {
+                                            "type": "string"
+                                        },
+                                        "images": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/gallery/{id}": {
+            "get": {
+                "tags": [
+                    "Gallery"
+                ],
+                "summary": "Get specific gallery by ID",
+                "operationId": "4c80fae52876cb2a6fcb7569a712e0c4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Gallery ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Gallery details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "topic_en": {
+                                            "type": "string"
+                                        },
+                                        "topic_si": {
+                                            "type": "string"
+                                        },
+                                        "topic_ta": {
+                                            "type": "string"
+                                        },
+                                        "images": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Gallery not found"
+                    }
+                }
+            }
+        },
+        "/api/gallery/{id}": {
+            "put": {
+                "tags": [
+                    "Gallery"
+                ],
+                "summary": "Update an existing gallery",
+                "operationId": "b06fec0631a9a83c3b6ecc227b00025a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Gallery ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "topicEn": {
+                                        "type": "string"
+                                    },
+                                    "topicSi": {
+                                        "type": "string"
+                                    },
+                                    "topicTa": {
+                                        "type": "string"
+                                    },
+                                    "images": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Gallery updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "topic_en": {
+                                            "type": "string"
+                                        },
+                                        "topic_si": {
+                                            "type": "string"
+                                        },
+                                        "topic_ta": {
+                                            "type": "string"
+                                        },
+                                        "images": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Gallery not found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Gallery"
+                ],
+                "summary": "Delete a gallery",
+                "operationId": "1bfe31cf6027bcf9573b7a6e73e03e1f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Gallery ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Gallery deleted successfully"
+                    },
+                    "404": {
+                        "description": "Gallery not found"
+                    }
+                }
+            }
+        },
         "/hall": {
             "get": {
                 "tags": [
@@ -2542,6 +3297,22 @@
         }
     },
     "tags": [
+        {
+            "name": "Downloads - Acts",
+            "description": "API Endpoints for Acts downloads"
+        },
+        {
+            "name": "Downloads - Applications",
+            "description": "API Endpoints for Application downloads"
+        },
+        {
+            "name": "Downloads - Committee Reports",
+            "description": "API Endpoints for Committee Report downloads"
+        },
+        {
+            "name": "Gallery",
+            "description": "API Endpoints for Gallery management"
+        },
         {
             "name": "Authentication",
             "description": "Authentication related endpoints"
