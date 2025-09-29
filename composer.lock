@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ea233dd4e852fa153876bfc803755f82",
+    "content-hash": "f73f84386bf0ce91cb02e803d607fd0d",
     "packages": [
         {
             "name": "brick/math",
@@ -5753,22 +5753,23 @@
         },
         {
             "name": "twilio/sdk",
-            "version": "7.9.0",
+            "version": "8.8.2",
             "source": {
                 "type": "git",
-                "url": "git@github.com:twilio/twilio-php.git",
-                "reference": "e23666fbe0cf8c85cb3cbd182f119f6de642c65f"
+                "url": "https://github.com/twilio/twilio-php",
+                "reference": "9f646ca53a4645ed6f2117616b8a1b8a29149ce0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/e23666fbe0cf8c85cb3cbd182f119f6de642c65f",
-                "reference": "e23666fbe0cf8c85cb3cbd182f119f6de642c65f",
+                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/9f646ca53a4645ed6f2117616b8a1b8a29149ce0",
+                "reference": "9f646ca53a4645ed6f2117616b8a1b8a29149ce0",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.1.0"
             },
             "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.0",
                 "guzzlehttp/guzzle": "^6.3 || ^7.0",
                 "phpunit/phpunit": ">=7.0 < 10"
             },
@@ -5798,7 +5799,7 @@
                 "sms",
                 "twilio"
             ],
-            "time": "2023-08-24T07:38:49+00:00"
+            "time": "2025-09-25T13:13:12+00:00"
         },
         {
             "name": "vlucas/phpdotenv",

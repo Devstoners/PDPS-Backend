@@ -19,28 +19,34 @@ namespace Twilio\Rest\Intelligence\V2;
 
 use Twilio\Exceptions\TwilioException;
 use Twilio\ListResource;
-use Twilio\Options;
 use Twilio\Values;
 use Twilio\Version;
 use Twilio\InstanceContext;
-use Twilio\Serialize;
-use Twilio\Rest\Intelligence\V2\Transcript\OperatorResultList;
 use Twilio\Rest\Intelligence\V2\Transcript\SentenceList;
+use Twilio\Rest\Intelligence\V2\Transcript\OperatorResultList;
+use Twilio\Rest\Intelligence\V2\Transcript\EncryptedSentencesList;
 use Twilio\Rest\Intelligence\V2\Transcript\MediaList;
+use Twilio\Rest\Intelligence\V2\Transcript\EncryptedOperatorResultsList;
 
 
 /**
- * @property OperatorResultList $operatorResults
  * @property SentenceList $sentences
+ * @property OperatorResultList $operatorResults
+ * @property EncryptedSentencesList $encryptedSentences
  * @property MediaList $media
- * @method \Twilio\Rest\Intelligence\V2\Transcript\OperatorResultContext operatorResults(string $operatorSid)
+ * @property EncryptedOperatorResultsList $encryptedOperatorResults
+ * @method \Twilio\Rest\Intelligence\V2\Transcript\EncryptedSentencesContext encryptedSentences()
  * @method \Twilio\Rest\Intelligence\V2\Transcript\MediaContext media()
+ * @method \Twilio\Rest\Intelligence\V2\Transcript\EncryptedOperatorResultsContext encryptedOperatorResults()
+ * @method \Twilio\Rest\Intelligence\V2\Transcript\OperatorResultContext operatorResults(string $operatorSid)
  */
 class TranscriptContext extends InstanceContext
     {
-    protected $_operatorResults;
     protected $_sentences;
+    protected $_operatorResults;
+    protected $_encryptedSentences;
     protected $_media;
+    protected $_encryptedOperatorResults;
 
     /**
      * Initialize the TranscriptContext
@@ -73,28 +79,22 @@ class TranscriptContext extends InstanceContext
     public function delete(): bool
     {
 
-        return $this->version->delete('DELETE', $this->uri);
+        $headers = Values::of(['Content-Type' => 'application/x-www-form-urlencoded' ]);
+        return $this->version->delete('DELETE', $this->uri, [], [], $headers);
     }
 
 
     /**
      * Fetch the TranscriptInstance
      *
-     * @param array|Options $options Optional Arguments
      * @return TranscriptInstance Fetched TranscriptInstance
      * @throws TwilioException When an HTTP error occurs.
      */
-    public function fetch(array $options = []): TranscriptInstance
+    public function fetch(): TranscriptInstance
     {
 
-        $options = new Values($options);
-
-        $params = Values::of([
-            'Redacted' =>
-                Serialize::booleanToString($options['redacted']),
-        ]);
-
-        $payload = $this->version->fetch('GET', $this->uri, $params);
+        $headers = Values::of(['Content-Type' => 'application/x-www-form-urlencoded', 'Accept' => 'application/json' ]);
+        $payload = $this->version->fetch('GET', $this->uri, [], [], $headers);
 
         return new TranscriptInstance(
             $this->version,
@@ -103,21 +103,6 @@ class TranscriptContext extends InstanceContext
         );
     }
 
-
-    /**
-     * Access the operatorResults
-     */
-    protected function getOperatorResults(): OperatorResultList
-    {
-        if (!$this->_operatorResults) {
-            $this->_operatorResults = new OperatorResultList(
-                $this->version,
-                $this->solution['sid']
-            );
-        }
-
-        return $this->_operatorResults;
-    }
 
     /**
      * Access the sentences
@@ -135,6 +120,36 @@ class TranscriptContext extends InstanceContext
     }
 
     /**
+     * Access the operatorResults
+     */
+    protected function getOperatorResults(): OperatorResultList
+    {
+        if (!$this->_operatorResults) {
+            $this->_operatorResults = new OperatorResultList(
+                $this->version,
+                $this->solution['sid']
+            );
+        }
+
+        return $this->_operatorResults;
+    }
+
+    /**
+     * Access the encryptedSentences
+     */
+    protected function getEncryptedSentences(): EncryptedSentencesList
+    {
+        if (!$this->_encryptedSentences) {
+            $this->_encryptedSentences = new EncryptedSentencesList(
+                $this->version,
+                $this->solution['sid']
+            );
+        }
+
+        return $this->_encryptedSentences;
+    }
+
+    /**
      * Access the media
      */
     protected function getMedia(): MediaList
@@ -147,6 +162,21 @@ class TranscriptContext extends InstanceContext
         }
 
         return $this->_media;
+    }
+
+    /**
+     * Access the encryptedOperatorResults
+     */
+    protected function getEncryptedOperatorResults(): EncryptedOperatorResultsList
+    {
+        if (!$this->_encryptedOperatorResults) {
+            $this->_encryptedOperatorResults = new EncryptedOperatorResultsList(
+                $this->version,
+                $this->solution['sid']
+            );
+        }
+
+        return $this->_encryptedOperatorResults;
     }
 
     /**

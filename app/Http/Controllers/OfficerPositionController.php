@@ -21,11 +21,24 @@ class OfficerPositionController extends Controller
     }
     public function index()
     {
-        $positions = OfficerPosition::select('id', 'position_en','position_si','position_ta')->get();
+
+        $positions = OfficerPosition::with([
+            'level' => function ($query) {
+                $query->select('id', 'level_en');
+            },
+
+            'service' => function ($query) {
+                $query->select('id', 'sname_en');
+            },
+        ])
+            ->select('id', 'position_en','position_si','position_ta','officer_services_id','officer_levels_id')
+            ->get();
+
         $response = [
             "AllPositions" => $positions,
         ];
         return response($response, 200);
+
     }
 
     /**
@@ -47,15 +60,15 @@ class OfficerPositionController extends Controller
     public function store(Request $request)
     {
         $customMessages = [
-            'positionEn' => 'The Position English is compulsory',
-            'positionSi' => 'The Position Sinhala is compulsory',
-            'positionTa' => 'The Position Tamil is compulsory',
+            'postEn' => 'The Post English is compulsory',
+            'postSi' => 'The Post Sinhala is compulsory',
+            'postTa' => 'The Post Tamil is compulsory',
         ];
 
         $validator = Validator::make($request->all(),[
-            'positionEn' => 'required',
-            'positionSi' => 'required',
-            'positionTa' => 'required',
+            'postEn' => 'required',
+            'postSi' => 'required',
+            'postTa' => 'required',
         ], $customMessages);
 
         if ($validator->fails()) {
@@ -99,15 +112,15 @@ class OfficerPositionController extends Controller
     public function update(Request $request, $id)
     {
         $customMessages = [
-            'positionEn' => 'The Position English is compulsory',
-            'positionSi' => 'The Position Sinhala is compulsory',
-            'positionTa' => 'The Position Tamil is compulsory',
+            'postEn' => 'The Post English is compulsory yakooo',
+            'postSi' => 'The Post Sinhala is compulsory',
+            'postTa' => 'The Post Tamil is compulsory',
         ];
 
         $validator = Validator::make($request->all(),[
-            'positionEn' => 'required',
-            'positionSi' => 'required',
-            'positionTa' => 'required',
+            'postEn' => 'required',
+            'postSi' => 'required',
+            'postTa' => 'required',
         ], $customMessages);
 
         if ($validator->fails()) {
@@ -130,11 +143,16 @@ class OfficerPositionController extends Controller
         $response = $this->repository->deletePosition($id);
 
         if ($response->status() === 204) {
-            return response()->json(['message' => 'Position deleted successfully.'], 200);
+            return response()->json(['message' => 'Post deleted successfully.'], 200);
         } elseif ($response->status() === 404) {
-            return response()->json(['error' => 'Position not found.'], 404);
+            return response()->json(['error' => 'Post not found.'], 404);
         } else {
-            return response()->json(['error' => 'Error deleting position.'], 500); // Or any other appropriate status code
+            return response()->json(['error' => 'Error deleting Post.'], 500); // Or any other appropriate status code
         }
+    }
+
+    public function getPositionsByService($serviceId) {
+        $positions = OfficerPosition::where('officer_services_id', $serviceId)->get();
+        return response()->json($positions);
     }
 }

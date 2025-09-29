@@ -3,7 +3,7 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\Models\Member;
-use App\Models\MemberDivision;
+use App\Models\Division;
 use App\Models\MemberParty;
 use App\Models\MemberPosition;
 use App\Models\MembersMemberPosition;
@@ -26,7 +26,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
      */
     public function addDivision(array $data): array
     {
-        $division = MemberDivision::create([
+        $division = Division::create([
             'division_en' => $data['divisionEn'],
             'division_si' => $data['divisionSi'],
             'division_ta' => $data['divisionTa'],
@@ -43,7 +43,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
      */
     public function deleteDivision(int $id): bool
     {
-        $division = MemberDivision::find($id);
+        $division = Division::find($id);
 
         if ($division) {
             $division->delete();
@@ -57,7 +57,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
      */
     public function updateDivision(int $id, array $data): array
     {
-        $division = MemberDivision::find($id);
+        $division = Division::find($id);
         $division->update([
             'division_en' => $data['divisionEn'],
             'division_si' => $data['divisionSi'],
@@ -182,7 +182,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                 $query->select('id', 'email', 'status');
             }
         ])
-            ->select('members.id', 'name_en', 'name_si','name_ta', 'image', 'tel', 'member_divisions_id', 'member_parties_id', 'user_id')
+            ->select('members.id', 'title','name_en', 'name_si','name_ta', 'image', 'tel', 'divisions_id', 'member_parties_id', 'user_id')
             ->get();
     }
 
@@ -202,8 +202,9 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
         if($request->hasFile('img') && $request->file('img')->isValid()) {
             $image = $request->file('img');
             $imageName = time().'.'.$image->getClientOriginalExtension();
-            $path = $image->storeAs('images', $imageName, 'public');
-            $imgPath = Storage::url($path);
+            $path = $image->storeAs('images/member', $imageName, 'public');
+//            $imagePath = str_replace('storage/', '', $path);
+            $imagePath = Storage::url($path);
         }
 
         // Create member
@@ -220,8 +221,8 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 
         // Handle positions
         if ($request->has('position')) {
-            $positionIds = is_array($request->input('position')) 
-                ? $request->input('position') 
+            $positionIds = is_array($request->input('position'))
+                ? $request->input('position')
                 : [$request->input('position')];
             $member->memberPositions()->sync($positionIds);
         }
@@ -232,6 +233,50 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
         ];
     }
 
+    public  function  updateMember($id, $request)
+    {
+       $existMember = Member::findOrFail($id);
+
+       // Delete existing member image if a new image uploaded
+       if ($request->hasFile('img')) {
+            // Storage::delete('public/' . $existMember->image);
+            $imagePath = $existMember->image;
+            $imagePath = str_replace('/storage/', '', $imagePath);
+            Storage::disk('public')->delete($imagePath);
+
+            $image = $request->file('img');
+            $imageName = time().'.'.$image->getClientOriginalExtension();
+            $path = $image->storeAs('images/member', $imageName, 'public');
+            $imagePathNew = Storage::url($path);
+        }else{
+            $imagePathNew = $existMember->image;
+        }
+
+        $existMember->update([
+            'title' => $request['title'],
+            'name_en' => $request['nameEn'],
+            'name_si' => $request['nameSi'],
+            'name_ta' => $request['nameTa'],
+            'tel' => $request['tel'],
+            'divisions_id' => $request['division'],
+            'member_parties_id' => $request['party'],
+            'image' => $imagePathNew
+        ]);
+
+        if ($request->has('position')) {
+            $positionIds = $request->input('position');
+            $existMember->memberPositions()->sync($positionIds);
+        }
+
+        $user = User::findOrFail($existMember->user_id);
+        $user->update([
+            // 'email' => $request['email'],
+            'status' => $request['status']
+        ]);
+
+        return response(['message' => 'Member updated successfully.'], 200);
+
+    }
 
     /**
      * Delete member and associated user
@@ -245,13 +290,13 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
         }
 
         $userId = $member->user_id;
-        
+
         try {
             DB::beginTransaction();
-            
+
             // Delete member
             $member->delete();
-            
+
             // Delete associated user
             $user = User::find($userId);
             if ($user) {
@@ -260,7 +305,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                 $user->permissions()->detach();
                 $user->delete();
             }
-            
+
             DB::commit();
             return true;
         } catch (\Exception $e) {
@@ -304,7 +349,10 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
     }
 
 
-
+    public function getCount()
+    {
+        return Member::count();
+    }
 
 }
 

@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'laravel/laravel',
-        'pretty_version' => 'dev-main',
-        'version' => 'dev-main',
-        'reference' => '3bb1533ddb77890c703997c16ff09901935ed7a1',
+        'pretty_version' => 'dev-master',
+        'version' => 'dev-master',
+        'reference' => '73021d04a27ba5a523314f82307461bf46c22fc0',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -380,9 +380,9 @@
             'dev_requirement' => false,
         ),
         'laravel/laravel' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => '3bb1533ddb77890c703997c16ff09901935ed7a1',
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
+            'reference' => '73021d04a27ba5a523314f82307461bf46c22fc0',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -777,8 +777,8 @@
         'psr/log-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0|2.0|3.0',
-                1 => '3.0.0',
+                0 => '3.0.0',
+                1 => '1.0|2.0|3.0',
             ),
         ),
         'psr/simple-cache' => array(
@@ -1319,9 +1319,9 @@
             'dev_requirement' => false,
         ),
         'twilio/sdk' => array(
-            'pretty_version' => '7.9.0',
-            'version' => '7.9.0.0',
-            'reference' => 'e23666fbe0cf8c85cb3cbd182f119f6de642c65f',
+            'pretty_version' => '8.8.2',
+            'version' => '8.8.2.0',
+            'reference' => '9f646ca53a4645ed6f2117616b8a1b8a29149ce0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../twilio/sdk',
             'aliases' => array(),

@@ -19,13 +19,14 @@ namespace Twilio\Rest\Intelligence\V2;
 
 use Twilio\Exceptions\TwilioException;
 use Twilio\InstanceResource;
-use Twilio\Options;
 use Twilio\Values;
 use Twilio\Version;
 use Twilio\Deserialize;
-use Twilio\Rest\Intelligence\V2\Transcript\OperatorResultList;
 use Twilio\Rest\Intelligence\V2\Transcript\SentenceList;
+use Twilio\Rest\Intelligence\V2\Transcript\OperatorResultList;
+use Twilio\Rest\Intelligence\V2\Transcript\EncryptedSentencesList;
 use Twilio\Rest\Intelligence\V2\Transcript\MediaList;
+use Twilio\Rest\Intelligence\V2\Transcript\EncryptedOperatorResultsList;
 
 
 /**
@@ -40,16 +41,19 @@ use Twilio\Rest\Intelligence\V2\Transcript\MediaList;
  * @property string|null $languageCode
  * @property string|null $customerKey
  * @property \DateTime|null $mediaStartTime
- * @property int|null $duration
+ * @property int $duration
  * @property string|null $url
  * @property bool|null $redaction
+ * @property string|null $encryptionCredentialSid
  * @property array|null $links
  */
 class TranscriptInstance extends InstanceResource
 {
-    protected $_operatorResults;
     protected $_sentences;
+    protected $_operatorResults;
+    protected $_encryptedSentences;
     protected $_media;
+    protected $_encryptedOperatorResults;
 
     /**
      * Initialize the TranscriptInstance
@@ -58,7 +62,7 @@ class TranscriptInstance extends InstanceResource
      * @param mixed[] $payload The response payload
      * @param string $sid A 34 character string that uniquely identifies this Transcript.
      */
-    public function __construct(Version $version, array $payload, string $sid = null)
+    public function __construct(Version $version, array $payload, ?string $sid = null)
     {
         parent::__construct($version);
 
@@ -78,6 +82,7 @@ class TranscriptInstance extends InstanceResource
             'duration' => Values::array_get($payload, 'duration'),
             'url' => Values::array_get($payload, 'url'),
             'redaction' => Values::array_get($payload, 'redaction'),
+            'encryptionCredentialSid' => Values::array_get($payload, 'encryption_credential_sid'),
             'links' => Values::array_get($payload, 'links'),
         ];
 
@@ -117,22 +122,13 @@ class TranscriptInstance extends InstanceResource
     /**
      * Fetch the TranscriptInstance
      *
-     * @param array|Options $options Optional Arguments
      * @return TranscriptInstance Fetched TranscriptInstance
      * @throws TwilioException When an HTTP error occurs.
      */
-    public function fetch(array $options = []): TranscriptInstance
+    public function fetch(): TranscriptInstance
     {
 
-        return $this->proxy()->fetch($options);
-    }
-
-    /**
-     * Access the operatorResults
-     */
-    protected function getOperatorResults(): OperatorResultList
-    {
-        return $this->proxy()->operatorResults;
+        return $this->proxy()->fetch();
     }
 
     /**
@@ -144,11 +140,35 @@ class TranscriptInstance extends InstanceResource
     }
 
     /**
+     * Access the operatorResults
+     */
+    protected function getOperatorResults(): OperatorResultList
+    {
+        return $this->proxy()->operatorResults;
+    }
+
+    /**
+     * Access the encryptedSentences
+     */
+    protected function getEncryptedSentences(): EncryptedSentencesList
+    {
+        return $this->proxy()->encryptedSentences;
+    }
+
+    /**
      * Access the media
      */
     protected function getMedia(): MediaList
     {
         return $this->proxy()->media;
+    }
+
+    /**
+     * Access the encryptedOperatorResults
+     */
+    protected function getEncryptedOperatorResults(): EncryptedOperatorResultsList
+    {
+        return $this->proxy()->encryptedOperatorResults;
     }
 
     /**

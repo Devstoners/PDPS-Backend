@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('subject_en',250);
             $table->string('subject_si',250);
             $table->string('subject_ta',250);
+            $table->bigInteger('officer_levels_id')->unsigned();
+            $table->foreign('officer_levels_id')->references('id')->on('officer_levels')->onDelete('cascade');
         });
     }
 

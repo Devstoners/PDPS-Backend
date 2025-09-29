@@ -81,13 +81,14 @@ abstract class ReservationOptions
      * @param string $recordingStatusCallbackMethod The HTTP method we should use when we call `recording_status_callback`. Can be: `GET` or `POST` and defaults to `POST`.
      * @param string $conferenceRecordingStatusCallback The URL we should call using the `conference_recording_status_callback_method` when the conference recording is available.
      * @param string $conferenceRecordingStatusCallbackMethod The HTTP method we should use to call `conference_recording_status_callback`. Can be: `GET` or `POST` and defaults to `POST`.
-     * @param string $region The [region](https://support.twilio.com/hc/en-us/articles/223132167-How-global-low-latency-routing-and-region-selection-work-for-conferences-and-Client-calls) where we should mix the recorded audio. Can be:`us1`, `ie1`, `de1`, `sg1`, `br1`, `au1`, or `jp1`.
+     * @param string $region The [region](https://support.twilio.com/hc/en-us/articles/223132167-How-global-low-latency-routing-and-region-selection-work-for-conferences-and-Client-calls) where we should mix the recorded audio. Can be:`us1`, `us2`, `ie1`, `de1`, `sg1`, `br1`, `au1`, or `jp1`.
      * @param string $sipAuthUsername The SIP username used for authentication.
      * @param string $sipAuthPassword The SIP password for authentication.
      * @param string[] $dequeueStatusCallbackEvent The call progress events sent via webhooks as a result of a Dequeue instruction.
      * @param string $postWorkActivitySid The new worker activity SID after executing a Conference instruction.
      * @param bool $endConferenceOnCustomerExit Whether to end the conference when the customer leaves.
      * @param bool $beepOnCustomerEntrance Whether to play a notification beep when the customer joins.
+     * @param string $jitterBufferSize The jitter buffer size for conference. Can be: `small`, `medium`, `large`, `off`.
      * @param string $ifMatch The If-Match HTTP request header
      * @return UpdateReservationOptions Options builder
      */
@@ -144,6 +145,7 @@ abstract class ReservationOptions
         string $postWorkActivitySid = Values::NONE,
         bool $endConferenceOnCustomerExit = Values::BOOL_NONE,
         bool $beepOnCustomerEntrance = Values::BOOL_NONE,
+        string $jitterBufferSize = Values::NONE,
         string $ifMatch = Values::NONE
 
     ): UpdateReservationOptions
@@ -200,6 +202,7 @@ abstract class ReservationOptions
             $postWorkActivitySid,
             $endConferenceOnCustomerExit,
             $beepOnCustomerEntrance,
+            $jitterBufferSize,
             $ifMatch
         );
     }
@@ -291,13 +294,14 @@ class UpdateReservationOptions extends Options
      * @param string $recordingStatusCallbackMethod The HTTP method we should use when we call `recording_status_callback`. Can be: `GET` or `POST` and defaults to `POST`.
      * @param string $conferenceRecordingStatusCallback The URL we should call using the `conference_recording_status_callback_method` when the conference recording is available.
      * @param string $conferenceRecordingStatusCallbackMethod The HTTP method we should use to call `conference_recording_status_callback`. Can be: `GET` or `POST` and defaults to `POST`.
-     * @param string $region The [region](https://support.twilio.com/hc/en-us/articles/223132167-How-global-low-latency-routing-and-region-selection-work-for-conferences-and-Client-calls) where we should mix the recorded audio. Can be:`us1`, `ie1`, `de1`, `sg1`, `br1`, `au1`, or `jp1`.
+     * @param string $region The [region](https://support.twilio.com/hc/en-us/articles/223132167-How-global-low-latency-routing-and-region-selection-work-for-conferences-and-Client-calls) where we should mix the recorded audio. Can be:`us1`, `us2`, `ie1`, `de1`, `sg1`, `br1`, `au1`, or `jp1`.
      * @param string $sipAuthUsername The SIP username used for authentication.
      * @param string $sipAuthPassword The SIP password for authentication.
      * @param string[] $dequeueStatusCallbackEvent The call progress events sent via webhooks as a result of a Dequeue instruction.
      * @param string $postWorkActivitySid The new worker activity SID after executing a Conference instruction.
      * @param bool $endConferenceOnCustomerExit Whether to end the conference when the customer leaves.
      * @param bool $beepOnCustomerEntrance Whether to play a notification beep when the customer joins.
+     * @param string $jitterBufferSize The jitter buffer size for conference. Can be: `small`, `medium`, `large`, `off`.
      * @param string $ifMatch The If-Match HTTP request header
      */
     public function __construct(
@@ -353,6 +357,7 @@ class UpdateReservationOptions extends Options
         string $postWorkActivitySid = Values::NONE,
         bool $endConferenceOnCustomerExit = Values::BOOL_NONE,
         bool $beepOnCustomerEntrance = Values::BOOL_NONE,
+        string $jitterBufferSize = Values::NONE,
         string $ifMatch = Values::NONE
 
     ) {
@@ -407,6 +412,7 @@ class UpdateReservationOptions extends Options
         $this->options['postWorkActivitySid'] = $postWorkActivitySid;
         $this->options['endConferenceOnCustomerExit'] = $endConferenceOnCustomerExit;
         $this->options['beepOnCustomerEntrance'] = $beepOnCustomerEntrance;
+        $this->options['jitterBufferSize'] = $jitterBufferSize;
         $this->options['ifMatch'] = $ifMatch;
     }
 
@@ -937,9 +943,9 @@ class UpdateReservationOptions extends Options
     }
 
     /**
-     * The [region](https://support.twilio.com/hc/en-us/articles/223132167-How-global-low-latency-routing-and-region-selection-work-for-conferences-and-Client-calls) where we should mix the recorded audio. Can be:`us1`, `ie1`, `de1`, `sg1`, `br1`, `au1`, or `jp1`.
+     * The [region](https://support.twilio.com/hc/en-us/articles/223132167-How-global-low-latency-routing-and-region-selection-work-for-conferences-and-Client-calls) where we should mix the recorded audio. Can be:`us1`, `us2`, `ie1`, `de1`, `sg1`, `br1`, `au1`, or `jp1`.
      *
-     * @param string $region The [region](https://support.twilio.com/hc/en-us/articles/223132167-How-global-low-latency-routing-and-region-selection-work-for-conferences-and-Client-calls) where we should mix the recorded audio. Can be:`us1`, `ie1`, `de1`, `sg1`, `br1`, `au1`, or `jp1`.
+     * @param string $region The [region](https://support.twilio.com/hc/en-us/articles/223132167-How-global-low-latency-routing-and-region-selection-work-for-conferences-and-Client-calls) where we should mix the recorded audio. Can be:`us1`, `us2`, `ie1`, `de1`, `sg1`, `br1`, `au1`, or `jp1`.
      * @return $this Fluent Builder
      */
     public function setRegion(string $region): self
@@ -1017,6 +1023,18 @@ class UpdateReservationOptions extends Options
     public function setBeepOnCustomerEntrance(bool $beepOnCustomerEntrance): self
     {
         $this->options['beepOnCustomerEntrance'] = $beepOnCustomerEntrance;
+        return $this;
+    }
+
+    /**
+     * The jitter buffer size for conference. Can be: `small`, `medium`, `large`, `off`.
+     *
+     * @param string $jitterBufferSize The jitter buffer size for conference. Can be: `small`, `medium`, `large`, `off`.
+     * @return $this Fluent Builder
+     */
+    public function setJitterBufferSize(string $jitterBufferSize): self
+    {
+        $this->options['jitterBufferSize'] = $jitterBufferSize;
         return $this;
     }
 
