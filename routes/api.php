@@ -21,6 +21,9 @@ Route::get('/siteNewsView', [\App\Http\Controllers\NewsController::class, 'viewS
 Route::post('/siteComplainAdd', [\App\Http\Controllers\ComplainController::class, 'store']);
 Route::get('/siteComplainsView', [\App\Http\Controllers\ComplainController::class, 'siteIndex']);
 Route::get('/siteComplainActionsView', [\App\Http\Controllers\ComplainActionController::class, 'siteIndex']);
+Route::get('/officers/directory', [\App\Http\Controllers\OfficerController::class, 'directory']);
+Route::get('/members/directory', [\App\Http\Controllers\MemberController::class, 'directory']);
+
 // Public gallery and downloads routes
 Route::get('/gallery', [\App\Http\Controllers\GalleryController::class, 'index']);
 Route::get('/gallery/{id}', [\App\Http\Controllers\GalleryController::class, 'show']);
