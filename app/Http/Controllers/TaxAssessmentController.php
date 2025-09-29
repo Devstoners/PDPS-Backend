@@ -44,7 +44,7 @@ class TaxAssessmentController extends Controller
     {
         $request->validate([
             'tax_property_id' => 'required|exists:tax_properties,id',
-            'year' => 'required|integer|min:2020|max:2030',
+            'year' => 'required|integer|min:1990|max:2030',
             'amount' => 'required|numeric|min:0',
             'due_date' => 'required|date|after:today',
             'officer_id' => 'required|exists:users,id',
@@ -52,13 +52,17 @@ class TaxAssessmentController extends Controller
 
         $assessment = TaxAssessment::create($request->all());
 
-        // Send notification
-        $notificationService = new TaxNotificationService();
-        $notificationService->sendAssessmentCreatedNotification($assessment);
+        // Send notification (with error handling)
+        try {
+            $notificationService = new TaxNotificationService();
+            $notificationService->sendAssessmentCreatedNotification($assessment);
+        } catch (\Exception $e) {
+            \Log::error('Tax notification failed: ' . $e->getMessage());
+        }
 
         return response()->json([
             'message' => 'Tax assessment created successfully',
-            'data' => $assessment->load(['taxProperty.taxPayee', 'officer'])
+            'data' => $assessment
         ], 201);
     }
 
@@ -83,7 +87,7 @@ class TaxAssessmentController extends Controller
     public function update(Request $request, TaxAssessment $taxAssessment): JsonResponse
     {
         $request->validate([
-            'year' => 'required|integer|min:2020|max:2030',
+            'year' => 'required|integer|min:1990|max:2030',
             'amount' => 'required|numeric|min:0',
             'due_date' => 'required|date',
             'status' => 'sometimes|in:unpaid,paid,overdue',

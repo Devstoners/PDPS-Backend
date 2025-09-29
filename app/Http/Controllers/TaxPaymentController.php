@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\TaxPayment;
 use App\Models\TaxAssessment;
-use App\Services\TaxNotificationService;
 use App\Services\UnifiedPayHereService;
+use App\Services\BrevoEmailService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -80,10 +80,6 @@ class TaxPaymentController extends Controller
             if ($totalPaid >= $assessment->amount) {
                 $assessment->update(['status' => 'paid']);
             }
-
-            // Send payment confirmation notification
-            $notificationService = new TaxNotificationService();
-            $notificationService->sendPaymentConfirmedNotification($payment);
 
             DB::commit();
 
@@ -256,6 +252,14 @@ class TaxPaymentController extends Controller
                 
                 if ($totalPaid >= $assessment->amount) {
                     $assessment->update(['status' => 'paid']);
+                }
+
+                // Send email confirmation for online payments
+                try {
+                    $brevoService = new BrevoEmailService();
+                    $brevoService->sendTaxPaymentConfirmation($payment);
+                } catch (\Exception $e) {
+                    \Log::error('Brevo email notification failed: ' . $e->getMessage());
                 }
             } else {
                 $payment->update(['status' => 'failed']);

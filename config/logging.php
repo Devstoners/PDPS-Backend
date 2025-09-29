@@ -46,8 +46,7 @@ return [
     | you a variety of powerful log handlers / formatters to utilize.
     |
     | Available Drivers: "single", "daily", "slack", "syslog",
-    |                    "errorlog", "monolog",
-    |                    "custom", "stack"
+    |                    "errorlog", "monolog", "custom", "stack"
     |
     */
 
@@ -125,6 +124,33 @@ return [
 
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
+        ],
+
+        // Stripe-specific logging channel
+        'stripe' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/stripe.log'),
+            'level' => env('STRIPE_LOG_LEVEL', 'info'),
+            'days' => 30,
+            'replace_placeholders' => true,
+        ],
+
+        // Payment-specific logging channel
+        'payments' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/payments.log'),
+            'level' => env('PAYMENT_LOG_LEVEL', 'info'),
+            'days' => 90,
+            'replace_placeholders' => true,
+        ],
+
+        // Security events logging
+        'security' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/security.log'),
+            'level' => 'warning',
+            'days' => 365,
+            'replace_placeholders' => true,
         ],
     ],
 

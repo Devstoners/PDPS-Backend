@@ -37,7 +37,7 @@ return [
         'smtp' => [
             'transport' => 'smtp',
             'url' => env('MAIL_URL'),
-            'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
+            'host' => env('MAIL_HOST', 'smtp-relay.brevo.com'),
             'port' => env('MAIL_PORT', 587),
             'encryption' => env('MAIL_ENCRYPTION', 'tls'),
             'username' => env('MAIL_USERNAME'),
@@ -86,8 +86,13 @@ return [
             ],
         ],
         'brevo' => [
-            'driver' => 'brevo',
-            'key' => env('BREVO_API_KEY'),
+            'transport' => 'smtp',
+            'host' => 'smtp-relay.brevo.com',
+            'port' => 587,
+            'encryption' => 'tls',
+            'username' => env('BREVO_SMTP_USERNAME', '980707001@smtp-brevo.com'),
+            'password' => env('BREVO_SMTP_PASSWORD', '5fJh8qSTMmzRUHwj'),
+            'api_key' => env('BREVO_API_KEY'),
         ],
         'vonage' => [
             'driver' => 'vonage',
