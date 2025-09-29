@@ -1,0 +1,77 @@
+<?php
+
+/**
+ * Test Updated Stripe Controller with New Validation Rules
+ */
+
+echo "🧪 Testing Updated Stripe Controller\n";
+echo "==================================\n\n";
+
+$baseUrl = 'http://127.0.0.1:8000/api';
+
+// Test data matching the frontend structure
+$testData = [
+    'tax_payee_id' => 1, // Use existing tax payee
+    'tax_property_id' => 1, // Optional
+    'tax_assessment_id' => 1, // Optional
+    'amount_paying' => 1000.00,
+    'payment' => 1000.00,
+    'pay_method' => 'online',
+    'pay_date' => '2025-09-29',
+    'currency' => 'lkr',
+    'officer_id' => 35, // Use existing officer
+    'success_url' => 'http://localhost:3000/payment/success',
+    'cancel_url' => 'http://localhost:3000/payment/cancel'
+];
+
+echo "📋 Test Data:\n";
+foreach ($testData as $key => $value) {
+    echo "- $key: $value\n";
+}
+echo "\n";
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $baseUrl . '/stripe/create-checkout-session');
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($testData));
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    'Content-Type: application/json',
+    'Accept: application/json'
+]);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+$response = curl_exec($ch);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+$error = curl_error($ch);
+curl_close($ch);
+
+echo "📡 Response:\n";
+echo "HTTP Code: $httpCode\n";
+echo "Content-Type: $contentType\n";
+echo "Response Length: " . strlen($response) . " bytes\n\n";
+
+if ($error) {
+    echo "❌ cURL Error: $error\n";
+} else {
+    echo "Response Body:\n";
+    echo $response . "\n\n";
+    
+    $data = json_decode($response, true);
+    if (json_last_error() === JSON_ERROR_NONE) {
+        echo "✅ Response is valid JSON\n";
+        if (isset($data['success']) && $data['success']) {
+            echo "✅ Stripe session created successfully\n";
+            echo "Session URL: " . ($data['data']['session_url'] ?? 'N/A') . "\n";
+        } else {
+            echo "❌ Stripe session creation failed\n";
+            echo "Error: " . ($data['message'] ?? 'Unknown error') . "\n";
+        }
+    } else {
+        echo "❌ Response is not valid JSON\n";
+        echo "JSON Error: " . json_last_error_msg() . "\n";
+    }
+}
+
+echo "\n✅ Test completed!\n";
