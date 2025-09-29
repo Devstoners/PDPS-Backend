@@ -132,7 +132,7 @@ abstract class BaseRepository implements RepositoryInterface
     public function findByCriteria(array $criteria, array $columns = ['*'], array $relations = []): Collection
     {
         $this->query = $this->query->with($relations);
-        
+
         foreach ($criteria as $field => $value) {
             if (is_array($value)) {
                 $this->query = $this->query->whereIn($field, $value);
@@ -140,7 +140,7 @@ abstract class BaseRepository implements RepositoryInterface
                 $this->query = $this->query->where($field, $value);
             }
         }
-        
+
         $result = $this->query->get($columns);
         $this->resetQuery();
         return $result;
@@ -156,7 +156,7 @@ abstract class BaseRepository implements RepositoryInterface
     public function findFirstByCriteria(array $criteria, array $columns = ['*'], array $relations = []): ?Model
     {
         $this->query = $this->query->with($relations);
-        
+
         foreach ($criteria as $field => $value) {
             if (is_array($value)) {
                 $this->query = $this->query->whereIn($field, $value);
@@ -164,7 +164,7 @@ abstract class BaseRepository implements RepositoryInterface
                 $this->query = $this->query->where($field, $value);
             }
         }
-        
+
         $result = $this->query->first($columns);
         $this->resetQuery();
         return $result;
@@ -236,7 +236,7 @@ abstract class BaseRepository implements RepositoryInterface
                 $this->query = $this->query->where($field, $value);
             }
         }
-        
+
         $result = $this->query->count();
         $this->resetQuery();
         return $result;
@@ -256,7 +256,7 @@ abstract class BaseRepository implements RepositoryInterface
                 $this->query = $this->query->where($field, $value);
             }
         }
-        
+
         $result = $this->query->exists();
         $this->resetQuery();
         return $result;

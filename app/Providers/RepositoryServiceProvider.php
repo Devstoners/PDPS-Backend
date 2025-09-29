@@ -33,7 +33,7 @@ class RepositoryServiceProvider extends ServiceProvider
     {
         // Register Repository Implementations
         $this->registerRepositories();
-        
+
         // Register Services
         $this->registerServices();
     }
@@ -141,7 +141,7 @@ class RepositoryServiceProvider extends ServiceProvider
             MemberRepository::class,
             OfficerRepository::class,
             DownloadRepository::class,
-            
+
             // Services
             UserService::class,
             ComplainService::class,

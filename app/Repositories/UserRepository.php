@@ -61,7 +61,7 @@ class UserRepository extends BaseRepository
     public function activateUser(string $email, string $password): ?User
     {
         $user = $this->findByEmail($email);
-        
+
         if (!$user) {
             throw new NotFoundHttpException('Your email address is not available. Please contact the administrator');
         }
