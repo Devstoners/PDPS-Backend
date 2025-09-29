@@ -11,9 +11,13 @@ class ComplainAction extends Model
     protected $fillable = [
         'complain_id',
         'action',
-        'action_date',
     ];
+
+    public function complain()
+    {
+        return $this->belongsTo(Complain::class);
+    }
 }
 /*
-    1(Complain) : M (ComplainAction)
+    1(Complain) : 1 (ComplainAction)
 */

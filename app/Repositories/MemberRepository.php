@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Member;
-use App\Models\MemberDivision;
+use App\Models\Division;
 use App\Models\MemberParty;
 use App\Models\MemberPosition;
 use App\Models\User;

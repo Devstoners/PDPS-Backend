@@ -19,6 +19,10 @@ return new class extends Migration
             $table->string('position_en',200);
             $table->string('position_si',200);
             $table->string('position_ta',200);
+            $table->bigInteger('officer_services_id')->unsigned();
+            $table->bigInteger('officer_levels_id')->unsigned();
+            $table->foreign('officer_services_id')->references('id')->on('officer_services')->onDelete('cascade');
+            $table->foreign('officer_levels_id')->references('id')->on('officer_levels')->onDelete('cascade');
         });
     }
 

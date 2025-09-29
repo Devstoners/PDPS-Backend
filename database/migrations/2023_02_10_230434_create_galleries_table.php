@@ -16,8 +16,9 @@ return new class extends Migration
         Schema::create('galleries', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->integer('gallery_locales_id');
-            $table->string('img');
+            $table->string('topic_en',600);
+            $table->string('topic_si',600);
+            $table->string('topic_ta',600);
         });
     }
 

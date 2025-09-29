@@ -16,7 +16,9 @@
 
 namespace Twilio\Rest\Numbers\V2;
 
+use Twilio\Exceptions\TwilioException;
 use Twilio\ListResource;
+use Twilio\Values;
 use Twilio\Version;
 
 
@@ -35,21 +37,43 @@ class BulkHostedNumberOrderList extends ListResource
         // Path Solution
         $this->solution = [
         ];
+
+        $this->uri = '/HostedNumber/Orders/Bulk';
     }
+
+    /**
+     * Create the BulkHostedNumberOrderInstance
+     *
+     * @return BulkHostedNumberOrderInstance Created BulkHostedNumberOrderInstance
+     * @throws TwilioException When an HTTP error occurs.
+     */
+    public function create(): BulkHostedNumberOrderInstance
+    {
+
+        $headers = Values::of(['Content-Type' => 'application/json', 'Accept' => 'application/json' ]);
+        $data = $body->toArray();
+        $payload = $this->version->create('POST', $this->uri, [], $data, $headers);
+
+        return new BulkHostedNumberOrderInstance(
+            $this->version,
+            $payload
+        );
+    }
+
 
     /**
      * Constructs a BulkHostedNumberOrderContext
      *
-     * @param string $sid A 34 character string that uniquely identifies this BulkHostedNumberOrder.
+     * @param string $bulkHostingSid A 34 character string that uniquely identifies this BulkHostedNumberOrder.
      */
     public function getContext(
-        string $sid
+        string $bulkHostingSid
         
     ): BulkHostedNumberOrderContext
     {
         return new BulkHostedNumberOrderContext(
             $this->version,
-            $sid
+            $bulkHostingSid
         );
     }
 

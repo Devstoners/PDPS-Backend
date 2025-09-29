@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('cname',100);
             $table->integer('tele',10);
             $table->string('complain',1000);
-            $table->date('complain_date');
             $table->string('img1');
             $table->string('img2');
             $table->string('img3');

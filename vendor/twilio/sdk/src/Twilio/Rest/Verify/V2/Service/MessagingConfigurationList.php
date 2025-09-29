@@ -52,7 +52,7 @@ class MessagingConfigurationList extends ListResource
      * Create the MessagingConfigurationInstance
      *
      * @param string $country The [ISO-3166-1](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country code of the country this configuration will be applied to. If this is a global configuration, Country will take the value `all`.
-     * @param string $messagingServiceSid The SID of the [Messaging Service](https://www.twilio.com/docs/messaging/services/api) to be used to send SMS to the country of this configuration.
+     * @param string $messagingServiceSid The SID of the [Messaging Service](https://www.twilio.com/docs/messaging/api/service-resource) to be used to send SMS to the country of this configuration.
      * @return MessagingConfigurationInstance Created MessagingConfigurationInstance
      * @throws TwilioException When an HTTP error occurs.
      */
@@ -66,7 +66,8 @@ class MessagingConfigurationList extends ListResource
                 $messagingServiceSid,
         ]);
 
-        $payload = $this->version->create('POST', $this->uri, [], $data);
+        $headers = Values::of(['Content-Type' => 'application/x-www-form-urlencoded', 'Accept' => 'application/json' ]);
+        $payload = $this->version->create('POST', $this->uri, [], $data, $headers);
 
         return new MessagingConfigurationInstance(
             $this->version,
@@ -91,7 +92,7 @@ class MessagingConfigurationList extends ListResource
      *                        efficient page size, i.e. min(limit, 1000)
      * @return MessagingConfigurationInstance[] Array of results
      */
-    public function read(int $limit = null, $pageSize = null): array
+    public function read(?int $limit = null, $pageSize = null): array
     {
         return \iterator_to_array($this->stream($limit, $pageSize), false);
     }
@@ -114,7 +115,7 @@ class MessagingConfigurationList extends ListResource
      *                        efficient page size, i.e. min(limit, 1000)
      * @return Stream stream of results
      */
-    public function stream(int $limit = null, $pageSize = null): Stream
+    public function stream(?int $limit = null, $pageSize = null): Stream
     {
         $limits = $this->version->readLimits($limit, $pageSize);
 
@@ -145,7 +146,8 @@ class MessagingConfigurationList extends ListResource
             'PageSize' => $pageSize,
         ]);
 
-        $response = $this->version->page('GET', $this->uri, $params);
+        $headers = Values::of(['Content-Type' => 'application/x-www-form-urlencoded', 'Accept' => 'application/json']);
+        $response = $this->version->page('GET', $this->uri, $params, [], $headers);
 
         return new MessagingConfigurationPage($this->version, $response, $this->solution);
     }

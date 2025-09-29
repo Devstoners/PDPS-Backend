@@ -22,19 +22,11 @@ use Twilio\Options;
 use Twilio\Stream;
 use Twilio\Values;
 use Twilio\Version;
-use Twilio\InstanceContext;
 use Twilio\Serialize;
-use Twilio\Rest\Api\V2010\Account\Call\FeedbackSummaryList;
 
 
-/**
- * @property FeedbackSummaryList $feedbackSummaries
- * @method \Twilio\Rest\Api\V2010\Account\Call\FeedbackSummaryContext feedbackSummaries(string $sid)
- */
 class CallList extends ListResource
     {
-    protected $_feedbackSummaries = null;
-
     /**
      * Construct the CallList
      *
@@ -145,7 +137,8 @@ class CallList extends ListResource
                 $options['applicationSid'],
         ]);
 
-        $payload = $this->version->create('POST', $this->uri, [], $data);
+        $headers = Values::of(['Content-Type' => 'application/x-www-form-urlencoded', 'Accept' => 'application/json' ]);
+        $payload = $this->version->create('POST', $this->uri, [], $data, $headers);
 
         return new CallInstance(
             $this->version,
@@ -171,7 +164,7 @@ class CallList extends ListResource
      *                        efficient page size, i.e. min(limit, 1000)
      * @return CallInstance[] Array of results
      */
-    public function read(array $options = [], int $limit = null, $pageSize = null): array
+    public function read(array $options = [], ?int $limit = null, $pageSize = null): array
     {
         return \iterator_to_array($this->stream($options, $limit, $pageSize), false);
     }
@@ -195,7 +188,7 @@ class CallList extends ListResource
      *                        efficient page size, i.e. min(limit, 1000)
      * @return Stream stream of results
      */
-    public function stream(array $options = [], int $limit = null, $pageSize = null): Stream
+    public function stream(array $options = [], ?int $limit = null, $pageSize = null): Stream
     {
         $limits = $this->version->readLimits($limit, $pageSize);
 
@@ -248,7 +241,8 @@ class CallList extends ListResource
             'PageSize' => $pageSize,
         ]);
 
-        $response = $this->version->page('GET', $this->uri, $params);
+        $headers = Values::of(['Content-Type' => 'application/x-www-form-urlencoded', 'Accept' => 'application/json']);
+        $response = $this->version->page('GET', $this->uri, $params, [], $headers);
 
         return new CallPage($this->version, $response, $this->solution);
     }
@@ -286,55 +280,6 @@ class CallList extends ListResource
             $this->solution['accountSid'],
             $sid
         );
-    }
-
-    /**
-     * Access the feedbackSummaries
-     */
-    protected function getFeedbackSummaries(): FeedbackSummaryList
-    {
-        if (!$this->_feedbackSummaries) {
-            $this->_feedbackSummaries = new FeedbackSummaryList(
-                $this->version,
-                $this->solution['accountSid']
-            );
-        }
-        return $this->_feedbackSummaries;
-    }
-
-    /**
-     * Magic getter to lazy load subresources
-     *
-     * @param string $name Subresource to return
-     * @return \Twilio\ListResource The requested subresource
-     * @throws TwilioException For unknown subresources
-     */
-    public function __get(string $name)
-    {
-        if (\property_exists($this, '_' . $name)) {
-            $method = 'get' . \ucfirst($name);
-            return $this->$method();
-        }
-
-        throw new TwilioException('Unknown subresource ' . $name);
-    }
-
-    /**
-     * Magic caller to get resource contexts
-     *
-     * @param string $name Resource to return
-     * @param array $arguments Context parameters
-     * @return InstanceContext The requested resource context
-     * @throws TwilioException For unknown resource
-     */
-    public function __call(string $name, array $arguments): InstanceContext
-    {
-        $property = $this->$name;
-        if (\method_exists($property, 'getContext')) {
-            return \call_user_func_array(array($property, 'getContext'), $arguments);
-        }
-
-        throw new TwilioException('Resource does not have a context');
     }
 
     /**

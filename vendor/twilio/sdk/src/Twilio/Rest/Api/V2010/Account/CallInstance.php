@@ -23,6 +23,7 @@ use Twilio\Options;
 use Twilio\Values;
 use Twilio\Version;
 use Twilio\Deserialize;
+use Twilio\Rest\Api\V2010\Account\Call\TranscriptionList;
 use Twilio\Rest\Api\V2010\Account\Call\RecordingList;
 use Twilio\Rest\Api\V2010\Account\Call\UserDefinedMessageSubscriptionList;
 use Twilio\Rest\Api\V2010\Account\Call\EventList;
@@ -31,7 +32,6 @@ use Twilio\Rest\Api\V2010\Account\Call\UserDefinedMessageList;
 use Twilio\Rest\Api\V2010\Account\Call\SiprecList;
 use Twilio\Rest\Api\V2010\Account\Call\StreamList;
 use Twilio\Rest\Api\V2010\Account\Call\PaymentList;
-use Twilio\Rest\Api\V2010\Account\Call\FeedbackList;
 
 
 /**
@@ -64,6 +64,7 @@ use Twilio\Rest\Api\V2010\Account\Call\FeedbackList;
  */
 class CallInstance extends InstanceResource
 {
+    protected $_transcriptions;
     protected $_recordings;
     protected $_userDefinedMessageSubscriptions;
     protected $_events;
@@ -72,7 +73,6 @@ class CallInstance extends InstanceResource
     protected $_siprec;
     protected $_streams;
     protected $_payments;
-    protected $_feedback;
 
     /**
      * Initialize the CallInstance
@@ -82,7 +82,7 @@ class CallInstance extends InstanceResource
      * @param string $accountSid The SID of the [Account](https://www.twilio.com/docs/iam/api/account) that will create the resource.
      * @param string $sid The Twilio-provided Call SID that uniquely identifies the Call resource to delete
      */
-    public function __construct(Version $version, array $payload, string $accountSid, string $sid = null)
+    public function __construct(Version $version, array $payload, string $accountSid, ?string $sid = null)
     {
         parent::__construct($version);
 
@@ -176,6 +176,14 @@ class CallInstance extends InstanceResource
     }
 
     /**
+     * Access the transcriptions
+     */
+    protected function getTranscriptions(): TranscriptionList
+    {
+        return $this->proxy()->transcriptions;
+    }
+
+    /**
      * Access the recordings
      */
     protected function getRecordings(): RecordingList
@@ -237,14 +245,6 @@ class CallInstance extends InstanceResource
     protected function getPayments(): PaymentList
     {
         return $this->proxy()->payments;
-    }
-
-    /**
-     * Access the feedback
-     */
-    protected function getFeedback(): FeedbackList
-    {
-        return $this->proxy()->feedback;
     }
 
     /**

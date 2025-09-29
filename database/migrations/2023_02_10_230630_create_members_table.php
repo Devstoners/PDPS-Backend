@@ -17,16 +17,17 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->integer('user_id');
+            $table->integer('title');
             $table->string('name_en',250);
             $table->string('name_si',250);
             $table->string('name_ta',250);
             $table->string('image');
-            $table->boolean('gender');
-            $table->string('nic',12);
+            $table->boolean('gender')->nullable()->default(null);
+            $table->string('nic',12)->nullable()->default(null);
             $table->string('tel',10);
-            $table->string('address',250);
-            $table->boolean('is_married');
-            $table->integer('member_divisions_id');
+            $table->string('address',250)->nullable()->default(null);
+            $table->boolean('is_married')->nullable()->default(null);
+            $table->integer('divisions_id');
             $table->integer('member_parties_id');
         });
     }

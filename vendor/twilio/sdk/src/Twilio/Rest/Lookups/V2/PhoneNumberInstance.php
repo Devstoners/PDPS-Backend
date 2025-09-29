@@ -34,12 +34,13 @@ use Twilio\Version;
  * @property array|null $callerName
  * @property array|null $simSwap
  * @property array|null $callForwarding
- * @property array|null $liveActivity
+ * @property array|null $lineStatus
  * @property array|null $lineTypeIntelligence
  * @property array|null $identityMatch
  * @property array|null $reassignedNumber
  * @property array|null $smsPumpingRisk
- * @property array|null $disposablePhoneNumberRisk
+ * @property array|null $phoneNumberQualityScore
+ * @property array|null $preFill
  * @property string|null $url
  */
 class PhoneNumberInstance extends InstanceResource
@@ -51,7 +52,7 @@ class PhoneNumberInstance extends InstanceResource
      * @param mixed[] $payload The response payload
      * @param string $phoneNumber The phone number to lookup in E.164 or national format. Default country code is +1 (North America).
      */
-    public function __construct(Version $version, array $payload, string $phoneNumber = null)
+    public function __construct(Version $version, array $payload, ?string $phoneNumber = null)
     {
         parent::__construct($version);
 
@@ -66,12 +67,13 @@ class PhoneNumberInstance extends InstanceResource
             'callerName' => Values::array_get($payload, 'caller_name'),
             'simSwap' => Values::array_get($payload, 'sim_swap'),
             'callForwarding' => Values::array_get($payload, 'call_forwarding'),
-            'liveActivity' => Values::array_get($payload, 'live_activity'),
+            'lineStatus' => Values::array_get($payload, 'line_status'),
             'lineTypeIntelligence' => Values::array_get($payload, 'line_type_intelligence'),
             'identityMatch' => Values::array_get($payload, 'identity_match'),
             'reassignedNumber' => Values::array_get($payload, 'reassigned_number'),
             'smsPumpingRisk' => Values::array_get($payload, 'sms_pumping_risk'),
-            'disposablePhoneNumberRisk' => Values::array_get($payload, 'disposable_phone_number_risk'),
+            'phoneNumberQualityScore' => Values::array_get($payload, 'phone_number_quality_score'),
+            'preFill' => Values::array_get($payload, 'pre_fill'),
             'url' => Values::array_get($payload, 'url'),
         ];
 

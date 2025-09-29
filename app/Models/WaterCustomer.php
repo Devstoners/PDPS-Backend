@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class WaterCustomer extends Model
+{
+    use HasFactory;
+    protected $table = 'water_customers';
+    protected $fillable = [
+        'account_no',
+        'title',
+        'name',
+        'nic',
+        'tel',
+        'address',
+        'email',
+        'dateJoin',
+        'water_schemes_id',
+    ];
+    public function waterScheme()
+    {
+        return $this->belongsTo(WaterScheme::class,'water_schemes_id');
+    }
+
+    public function waterBills()
+    {
+        return $this->hasMany(WaterBill::class, 'water_customer_id');
+    }
+
+    public function meterReadings()
+    {
+        return $this->hasMany(WaterMeterReading::class, 'water_customer_id');
+    }
+}

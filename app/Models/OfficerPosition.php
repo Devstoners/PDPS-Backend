@@ -13,6 +13,8 @@ class OfficerPosition extends Model
         'position_en',
         'position_si',
         'position_ta',
+        'officer_services_id',
+        'officer_levels_id',
     ];
     /*
         1 (OfficerPosition) : M (Officer)
@@ -21,6 +23,17 @@ class OfficerPosition extends Model
     {
         return $this->hasMany(Officer::class, 'officer_positions_id', 'id');
     }
+
+    public function service()
+    {
+        return $this->belongsTo(OfficerService::class, 'officer_services_id');
+    }
+
+    public function level()
+    {
+        return $this->belongsTo(OfficerLevel::class, 'officer_levels_id');
+    }
+
 }
 
 

@@ -28,7 +28,7 @@ abstract class TranscriptOptions
     public static function create(
         
         string $customerKey = Values::NONE,
-        \DateTime $mediaStartTime = null
+        ?\DateTime $mediaStartTime = null
 
     ): CreateTranscriptOptions
     {
@@ -39,20 +39,6 @@ abstract class TranscriptOptions
     }
 
 
-    /**
-     * @param bool $redacted Grant access to PII Redacted/Unredacted Transcript. The default is `true` to access redacted Transcript.
-     * @return FetchTranscriptOptions Options builder
-     */
-    public static function fetch(
-        
-        bool $redacted = Values::BOOL_NONE
-
-    ): FetchTranscriptOptions
-    {
-        return new FetchTranscriptOptions(
-            $redacted
-        );
-    }
 
     /**
      * @param string $serviceSid The unique SID identifier of the Service.
@@ -101,7 +87,7 @@ class CreateTranscriptOptions extends Options
     public function __construct(
         
         string $customerKey = Values::NONE,
-        \DateTime $mediaStartTime = null
+        ?\DateTime $mediaStartTime = null
 
     ) {
         $this->options['customerKey'] = $customerKey;
@@ -145,42 +131,6 @@ class CreateTranscriptOptions extends Options
 }
 
 
-class FetchTranscriptOptions extends Options
-    {
-    /**
-     * @param bool $redacted Grant access to PII Redacted/Unredacted Transcript. The default is `true` to access redacted Transcript.
-     */
-    public function __construct(
-        
-        bool $redacted = Values::BOOL_NONE
-
-    ) {
-        $this->options['redacted'] = $redacted;
-    }
-
-    /**
-     * Grant access to PII Redacted/Unredacted Transcript. The default is `true` to access redacted Transcript.
-     *
-     * @param bool $redacted Grant access to PII Redacted/Unredacted Transcript. The default is `true` to access redacted Transcript.
-     * @return $this Fluent Builder
-     */
-    public function setRedacted(bool $redacted): self
-    {
-        $this->options['redacted'] = $redacted;
-        return $this;
-    }
-
-    /**
-     * Provide a friendly representation
-     *
-     * @return string Machine friendly representation
-     */
-    public function __toString(): string
-    {
-        $options = \http_build_query(Values::of($this->options), '', ' ');
-        return '[Twilio.Intelligence.V2.FetchTranscriptOptions ' . $options . ']';
-    }
-}
 
 class ReadTranscriptOptions extends Options
     {
