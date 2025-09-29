@@ -22,6 +22,15 @@ Route::post('/siteComplainAdd', [\App\Http\Controllers\ComplainController::class
 Route::get('/siteComplainsView', [\App\Http\Controllers\ComplainController::class, 'siteIndex']);
 Route::get('/siteComplainActionsView', [\App\Http\Controllers\ComplainActionController::class, 'siteIndex']);
 
+// Public gallery and downloads routes
+Route::get('/gallery', [\App\Http\Controllers\GalleryController::class, 'index']);
+Route::get('/gallery/{id}', [\App\Http\Controllers\GalleryController::class, 'show']);
+Route::get('/downloadReport', [\App\Http\Controllers\DownloadCommitteeReportController::class, 'index']);
+Route::get('/downloadReport/{id}', [\App\Http\Controllers\DownloadCommitteeReportController::class, 'show']);
+Route::get('/downloadActs', [\App\Http\Controllers\DownloadActsController::class, 'index']);
+Route::get('/downloadActs/{id}', [\App\Http\Controllers\DownloadActsController::class, 'show']);
+Route::get('/downloadApplications', [\App\Http\Controllers\DownloadApplicationController::class, 'index']);
+Route::get('/downloadApplications/{id}', [\App\Http\Controllers\DownloadApplicationController::class, 'show']);
 
     // Authentication-related routes
 Route::post('/register', [\App\Http\Controllers\AuthController::class, 'register']);
@@ -189,9 +198,23 @@ Route::middleware('auth:sanctum')->group(function () {
      // Officer and Admin routes
     Route::middleware('role:officer|admin')->group(function () {
         Route::apiResource('/news', \App\Http\Controllers\NewsController::class);
-        Route::apiResource('/downloadActs', \App\Http\Controllers\DownloadActsController::class);
-        Route::apiResource('/downloadReport', \App\Http\Controllers\DownloadCommitteeReportController::class);
-        Route::apiResource('/gallery', \App\Http\Controllers\GalleryController::class);
+        // Modified resource routes to exclude GET methods that are now public
+        Route::post('/downloadActs', [\App\Http\Controllers\DownloadActsController::class, 'store']);
+        Route::put('/downloadActs/{id}', [\App\Http\Controllers\DownloadActsController::class, 'update']);
+        Route::delete('/downloadActs/{id}', [\App\Http\Controllers\DownloadActsController::class, 'destroy']);
+        
+        Route::post('/downloadReport', [\App\Http\Controllers\DownloadCommitteeReportController::class, 'store']);
+        Route::put('/downloadReport/{id}', [\App\Http\Controllers\DownloadCommitteeReportController::class, 'update']);
+        Route::delete('/downloadReport/{id}', [\App\Http\Controllers\DownloadCommitteeReportController::class, 'destroy']);
+
+        // Applications management (POST/PUT/DELETE are protected, GET is public above)
+        Route::post('/downloadApplications', [\App\Http\Controllers\DownloadApplicationController::class, 'store']);
+        Route::put('/downloadApplications/{id}', [\App\Http\Controllers\DownloadApplicationController::class, 'update']);
+        Route::delete('/downloadApplications/{id}', [\App\Http\Controllers\DownloadApplicationController::class, 'destroy']);
+        
+        Route::post('/gallery', [\App\Http\Controllers\GalleryController::class, 'store']);
+        Route::put('/gallery/{id}', [\App\Http\Controllers\GalleryController::class, 'update']);
+        Route::delete('/gallery/{id}', [\App\Http\Controllers\GalleryController::class, 'destroy']);
         
         // Gallery Image Management Routes
         Route::delete('/gallery-images/{id}', [\App\Http\Controllers\GalleryImageController::class, 'destroy']);

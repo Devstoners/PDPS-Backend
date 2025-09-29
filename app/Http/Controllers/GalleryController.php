@@ -8,7 +8,12 @@ use Illuminate\Http\Request;
 use App\Repositories\AlbumGalleryRepository;
 use Illuminate\Support\Facades\Validator;
 
-
+/**
+ * @OA\Tag(
+ *     name="Gallery",
+ *     description="API Endpoints for Gallery management"
+ * )
+ */
 class GalleryController extends Controller
 {
     private $repository;
@@ -16,10 +21,27 @@ class GalleryController extends Controller
     {
         $this->repository = $repository;
     }
+
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @OA\Get(
+     *     path="/gallery",
+     *     summary="Get all galleries",
+     *     tags={"Gallery"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of all galleries",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="galleries", type="array", @OA\Items(
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="topic_en", type="string"),
+     *                 @OA\Property(property="topic_si", type="string"),
+     *                 @OA\Property(property="topic_ta", type="string"),
+     *                 @OA\Property(property="images", type="array", @OA\Items(type="object"))
+     *             ))
+     *         )
+     *     )
+     * )
      */
     public function index()
     {
@@ -37,10 +59,35 @@ class GalleryController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @OA\Post(
+     *     path="/api/gallery",
+     *     summary="Create a new gallery",
+     *     tags={"Gallery"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="topicEn", type="string"),
+     *             @OA\Property(property="topicSi", type="string"),
+     *             @OA\Property(property="topicTa", type="string"),
+     *             @OA\Property(property="images", type="array", @OA\Items(type="string", format="binary"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Gallery created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer"),
+     *             @OA\Property(property="topic_en", type="string"),
+     *             @OA\Property(property="topic_si", type="string"),
+     *             @OA\Property(property="topic_ta", type="string"),
+     *             @OA\Property(property="images", type="array", @OA\Items(type="object"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
      */
     public function store(Request $request)
     {
@@ -76,10 +123,33 @@ class GalleryController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Gallery  $gallery
-     * @return \Illuminate\Http\Response
+     * @OA\Get(
+     *     path="/gallery/{id}",
+     *     summary="Get specific gallery by ID",
+     *     tags={"Gallery"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Gallery ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Gallery details",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer"),
+     *             @OA\Property(property="topic_en", type="string"),
+     *             @OA\Property(property="topic_si", type="string"),
+     *             @OA\Property(property="topic_ta", type="string"),
+     *             @OA\Property(property="images", type="array", @OA\Items(type="object"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Gallery not found"
+     *     )
+     * )
      */
     public function show($id)
     {
@@ -98,11 +168,46 @@ class GalleryController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Gallery  $gallery
-     * @return \Illuminate\Http\Response
+     * @OA\Put(
+     *     path="/api/gallery/{id}",
+     *     summary="Update an existing gallery",
+     *     tags={"Gallery"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Gallery ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="topicEn", type="string"),
+     *             @OA\Property(property="topicSi", type="string"),
+     *             @OA\Property(property="topicTa", type="string"),
+     *             @OA\Property(property="images", type="array", @OA\Items(type="string", format="binary"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Gallery updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer"),
+     *             @OA\Property(property="topic_en", type="string"),
+     *             @OA\Property(property="topic_si", type="string"),
+     *             @OA\Property(property="topic_ta", type="string"),
+     *             @OA\Property(property="images", type="array", @OA\Items(type="object"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Gallery not found"
+     *     )
+     * )
      */
     public function update(Request $request, $id)
     {
@@ -135,12 +240,27 @@ class GalleryController extends Controller
         }
     }
 
-
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Gallery  $gallery
-     * @return \Illuminate\Http\Response
+     * @OA\Delete(
+     *     path="/api/gallery/{id}",
+     *     summary="Delete a gallery",
+     *     tags={"Gallery"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Gallery ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Gallery deleted successfully"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Gallery not found"
+     *     )
+     * )
      */
     public function destroy($id)
     {

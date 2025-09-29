@@ -9,6 +9,12 @@ use App\Http\Requests\UpdateDownloadActsRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @OA\Tag(
+ *     name="Downloads - Acts",
+ *     description="API Endpoints for Acts downloads"
+ * )
+ */
 class DownloadActsController extends Controller
 {
 
@@ -19,6 +25,31 @@ class DownloadActsController extends Controller
     }
     /**
      * Display a listing of the resource.
+     */
+    /**
+     * @OA\Get(
+     *     path="/downloadActs",
+     *     summary="Get all Acts",
+     *     tags={"Downloads - Acts"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of all Acts",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="AllActs", type="array", @OA\Items(
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="number", type="string"),
+     *                 @OA\Property(property="issue_date", type="string"),
+     *                 @OA\Property(property="name_en", type="string"),
+     *                 @OA\Property(property="name_si", type="string"),
+     *                 @OA\Property(property="name_ta", type="string"),
+     *                 @OA\Property(property="file_path_en", type="string"),
+     *                 @OA\Property(property="file_path_si", type="string"),
+     *                 @OA\Property(property="file_path_ta", type="string")
+     *             ))
+     *         )
+     *     )
+     * )
      */
     public function index()
     {
@@ -99,9 +130,43 @@ class DownloadActsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(DownloadActs $downloadActs)
+    /**
+     * @OA\Get(
+     *     path="/downloadActs/{id}",
+     *     summary="Get a specific Act by ID",
+     *     tags={"Downloads - Acts"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Act ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Act details",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer"),
+     *             @OA\Property(property="number", type="string"),
+     *             @OA\Property(property="issue_date", type="string"),
+     *             @OA\Property(property="name_en", type="string"),
+     *             @OA\Property(property="name_si", type="string"),
+     *             @OA\Property(property="name_ta", type="string"),
+     *             @OA\Property(property="file_path_en", type="string"),
+     *             @OA\Property(property="file_path_si", type="string"),
+     *             @OA\Property(property="file_path_ta", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Act not found")
+     * )
+     */
+    public function show($id)
     {
-        //
+        $act = DownloadActs::select('id', 'number','issue_date','name_en','name_si','name_ta','file_path_en','file_path_si','file_path_ta')->find($id);
+        if (!$act) {
+            return response()->json(['error' => 'Act not found.'], 404);
+        }
+        return response()->json($act, 200);
     }
 
     /**

@@ -9,6 +9,12 @@ use App\Http\Requests\UpdateDownloadCommitteeReportRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
+/**
+ * @OA\Tag(
+ *     name="Downloads - Committee Reports",
+ *     description="API Endpoints for Committee Report downloads"
+ * )
+ */
 class DownloadCommitteeReportController extends Controller
 {
     private $repository;
@@ -18,6 +24,31 @@ class DownloadCommitteeReportController extends Controller
     }
     /**
      * Display a listing of the resource.
+     */
+    /**
+     * @OA\Get(
+     *     path="/downloadReport",
+     *     summary="Get all committee reports",
+     *     tags={"Downloads - Committee Reports"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of all committee reports",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="AllReports", type="array", @OA\Items(
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="report_year", type="string"),
+     *                 @OA\Property(property="report_month", type="string"),
+     *                 @OA\Property(property="name_en", type="string"),
+     *                 @OA\Property(property="name_si", type="string"),
+     *                 @OA\Property(property="name_ta", type="string"),
+     *                 @OA\Property(property="file_path_en", type="string"),
+     *                 @OA\Property(property="file_path_si", type="string"),
+     *                 @OA\Property(property="file_path_ta", type="string")
+     *             ))
+     *         )
+     *     )
+     * )
      */
     public function index()
     {
@@ -97,9 +128,43 @@ class DownloadCommitteeReportController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(DownloadCommitteeReport $downloadCommitteeReport)
+    /**
+     * @OA\Get(
+     *     path="/downloadReport/{id}",
+     *     summary="Get a specific committee report by ID",
+     *     tags={"Downloads - Committee Reports"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Report ID",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Report details",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer"),
+     *             @OA\Property(property="report_year", type="string"),
+     *             @OA\Property(property="report_month", type="string"),
+     *             @OA\Property(property="name_en", type="string"),
+     *             @OA\Property(property="name_si", type="string"),
+     *             @OA\Property(property="name_ta", type="string"),
+     *             @OA\Property(property="file_path_en", type="string"),
+     *             @OA\Property(property="file_path_si", type="string"),
+     *             @OA\Property(property="file_path_ta", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Report not found")
+     * )
+     */
+    public function show($id)
     {
-        //
+        $report = DownloadCommitteeReport::select('id', 'report_year','report_month','name_en','name_si','name_ta','file_path_en','file_path_si','file_path_ta')->find($id);
+        if (!$report) {
+            return response()->json(['error' => 'Report not found.'], 404);
+        }
+        return response()->json($report, 200);
     }
 
     /**
