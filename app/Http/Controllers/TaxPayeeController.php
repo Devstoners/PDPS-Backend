@@ -191,4 +191,40 @@ class TaxPayeeController extends Controller
 
         return response()->json($payee);
     }
+
+    /**
+     * Verify taxpayer by NIC
+     */
+    public function verify(Request $request): JsonResponse
+    {
+        $request->validate([
+            'nic' => 'required|string|max:12'
+        ]);
+
+        $payee = TaxPayee::where('nic', $request->nic)->first();
+
+        if (!$payee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Taxpayer not found',
+                'data' => null
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Taxpayer verified successfully',
+            'data' => [
+                'id' => $payee->id,
+                'title' => $payee->title,
+                'name' => $payee->name,
+                'nic' => $payee->nic,
+                'email' => $payee->email,
+                'tel' => $payee->tel,
+                'address' => $payee->address,
+                'created_at' => $payee->created_at,
+                'updated_at' => $payee->updated_at,
+            ]
+        ]);
+    }
 }

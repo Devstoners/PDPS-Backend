@@ -41,6 +41,14 @@ Route::post('/activate', [\App\Http\Controllers\AuthController::class, 'activate
 Route::get('/officers/directory', [\App\Http\Controllers\OfficerController::class, 'directory']);
 Route::get('/members/directory', [\App\Http\Controllers\MemberController::class, 'directory']);
 
+
+
+    // Public Taxpayer Verification Route (No authentication required) 
+Route::post('/taxpayers/verify', [\App\Http\Controllers\TaxPayeeController::class, 'verify']);
+// Public Tax System Routes (No authentication required for demo)   
+Route::get('/tax-properties/payee/{payeeId}', [\App\Http\Controllers\TaxPropertyController::class, 'getByPayee']);
+Route::get('/tax-assessments/payee/{payeeId}', [\App\Http\Controllers\TaxAssessmentController::class, 'getByPayee']);
+Route::post('/stripe/create-checkout-session', [\App\Http\Controllers\StripePaymentController::class, 'createCheckoutSession']);
 // Protected Routes with Sanctum Middleware
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -235,12 +243,10 @@ Route::middleware('auth:sanctum')->group(function () {
         
         // Tax Property Management
         Route::apiResource('/tax-properties', \App\Http\Controllers\TaxPropertyController::class);
-        Route::get('/tax-properties/payee/{payeeId}', [\App\Http\Controllers\TaxPropertyController::class, 'getByPayee']);
         Route::get('/tax-properties/types', [\App\Http\Controllers\TaxPropertyController::class, 'getPropertyTypes']);
         
         // Tax Assessment Management
         Route::apiResource('/tax-assessments', \App\Http\Controllers\TaxAssessmentController::class);
-        Route::get('/tax-assessments/payee/{payeeId}', [\App\Http\Controllers\TaxAssessmentController::class, 'getByPayee']);
         Route::put('/tax-assessments/{id}/mark-overdue', [\App\Http\Controllers\TaxAssessmentController::class, 'markOverdue']);
         
         // Tax Payment Management
@@ -262,7 +268,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Tax Customer Routes
     Route::middleware('role:customerTax')->group(function () {
         Route::get('/tax-payees/search/nic', [\App\Http\Controllers\TaxPayeeController::class, 'searchByNic']);
-        Route::get('/tax-assessments/payee/{payeeId}', [\App\Http\Controllers\TaxAssessmentController::class, 'getByPayee']);
         Route::post('/tax-payments/online/{assessmentId}', [\App\Http\Controllers\TaxPaymentController::class, 'processOnlinePayment']);
         Route::get('/tax-payments/history', [\App\Http\Controllers\TaxPaymentController::class, 'index']);
     });
@@ -290,8 +295,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/sms/account-info', [\App\Http\Controllers\SmsNotificationController::class, 'getAccountInfo']);
     });
 
+    // Stripe Payment Routes (Status and Details - require authentication)
+    Route::prefix('stripe')->group(function () {
+        Route::get('/payments/{paymentId}/status', [\App\Http\Controllers\StripePaymentController::class, 'getPaymentStatus']);
+        Route::get('/payments/{paymentId}/details', [\App\Http\Controllers\StripePaymentController::class, 'getPaymentDetails']);
+        Route::get('/payments', [\App\Http\Controllers\StripePaymentController::class, 'index']);
+        Route::post('/payments/{paymentId}/cancel', [\App\Http\Controllers\StripePaymentController::class, 'cancelPayment']);
+    });
+
     // Get authenticated user
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
 });
+
+// Stripe Webhook Route (No authentication required)
+Route::post('/webhooks/stripe', [\App\Http\Controllers\StripeWebhookController::class, 'handleWebhook']);

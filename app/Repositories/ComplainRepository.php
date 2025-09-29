@@ -3,128 +3,124 @@
 namespace App\Repositories;
 
 use App\Models\Complain;
-use App\Models\ComplainAction;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use App\Repositories\BaseRepository;
+use Illuminate\Database\Eloquent\Collection;
 
-class ComplainRepository
+class ComplainRepository extends BaseRepository
 {
-
-
-    public function addComplain($data)
+    /**
+     * Specify Model class name
+     * @return string
+     */
+    public function model(): string
     {
-        // Create the complain record first
-        $complain = Complain::create([
+        return Complain::class;
+    }
+
+    /**
+     * Create a new complain
+     * @param array $data
+     * @return Complain
+     */
+    public function createComplain(array $data): Complain
+    {
+        return $this->create([
             'cname' => $data['cname'],
             'tele' => $data['tele'],
             'complain' => $data['complain'],
+            'complain_date' => $data['complain_date'],
+            'img1' => $data['img1'] ?? null,
+            'img2' => $data['img2'] ?? null,
+            'img3' => $data['img3'] ?? null,
         ]);
-
-        // Handle the uploaded images if available
-        if ($data->hasFile('imageList')) {
-            $images = $data->file('imageList'); // Get the array of uploaded images
-
-            // Store each image and associate it with the complain record
-            foreach ($images as $index => $image) {
-                $imagePath = $image->store('complains', 'public'); // Store the image in the 'complains' folder under 'storage/app/public'
-
-                // Update the complain record for each image (img1, img2, img3)
-                $complain->update([
-                    'img' . ($index + 1) => $imagePath,
-                ]);
-            }
-        }
-
-        // Return the response
-        $response = [
-            'Complain' => $complain,
-        ];
-
-        return $response;
     }
 
-
-    public function getComplain()
+    /**
+     * Get complains by date range
+     * @param string $startDate
+     * @param string $endDate
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
+     */
+    public function getComplainsByDateRange(string $startDate, string $endDate, array $columns = ['*'], array $relations = []): Collection
     {
-        $complain = Complain::select('id', 'created_at', 'cname', 'tele', 'complain', 'img1', 'img2', 'img3')
-        ->with('complainAction:id,complain_id,action,created_at')
-        ->get();
-
-        $response = [
-            "AllComplains" => $complain,
-        ];
-
-        return response($response, 200);
+        return $this->where_callback(function($query) use ($startDate, $endDate) {
+            return $query->whereBetween('complain_date', [$startDate, $endDate]);
+        })->getQuery()->with($relations)->get($columns);
     }
 
-    public function addAction($request) {
-
-        $complainAction = new complainAction();
-        $complainAction->complain_id = $request->id;
-        $complainAction->action = $request->action;
-        $complainAction->save();
-        // Return response
-        $response = [
-            'complainAction' => $complainAction,
-        ];
-        return response($response, 201);
-    }
-
-    public function updateAction($id, $request)
+    /**
+     * Get complains by phone number
+     * @param string $phone
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
+     */
+    public function getComplainsByPhone(string $phone, array $columns = ['*'], array $relations = []): Collection
     {
-        $existAction = ComplainAction::where('complain_id', $id)->firstOrFail();
-
-        $existAction->update([
-            'action' => $request['action'],
-        ]);
-
-        return response(['message' => 'Complain action updated successfully.'], 200);
+        return $this->findByCriteria(['tele' => $phone], $columns, $relations);
     }
 
-    public function deleteComplain($id)
+    /**
+     * Get complains by customer name
+     * @param string $name
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
+     */
+    public function getComplainsByCustomerName(string $name, array $columns = ['*'], array $relations = []): Collection
     {
-
-        \Log::info('xxxx: ' . $id);
-        \Log::info('All Complains:', Complain::all()->toArray());
-        $complain = Complain::find($id);
-        \Log::info('xxxx2: ' . $complain);
-        if ($complain) {
-            try{
-                DB::beginTransaction();
-
-                $imagePath1 = $complain->img1;
-                if($imagePath1!==null){
-                    $imagePath1 = str_replace('/storage/', '', $imagePath1);
-                    Storage::disk('public')->delete($imagePath1);
-                }
-
-                $imagePath2 = $complain->img2;
-                if($imagePath2!==null){
-                    $imagePath2 = str_replace('/storage/', '', $imagePath2);
-                    Storage::disk('public')->delete($imagePath2);
-                }
-
-                $imagePath3 = $complain->img3;
-                if($imagePath3!==null){
-                    $imagePath3 = str_replace('/storage/', '', $imagePath3);
-                    Storage::disk('public')->delete($imagePath3);
-                }
-
-                // $complain->complainAction()->detach();
-                $complain->complainAction->delete();
-                $complain->delete();
-                DB::commit();
-                return true;
-            }catch(\Exception $e){
-                DB::rollBack();
-                return false;
-            }
-        }
-        return false;
+        return $this->where_callback(function($query) use ($name) {
+            return $query->where('cname', 'LIKE', "%{$name}%");
+        })->getQuery()->with($relations)->get($columns);
     }
 
+    /**
+     * Get recent complains
+     * @param int $limit
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
+     */
+    public function getRecentComplains(int $limit = 10, array $columns = ['*'], array $relations = []): Collection
+    {
+        return $this->latest($limit, $columns, $relations);
+    }
+
+    /**
+     * Get total complains count
+     * @return int
+     */
+    public function getTotalComplainsCount(): int
+    {
+        return $this->count();
+    }
+
+    /**
+     * Get complains count by date
+     * @param string $date
+     * @return int
+     */
+    public function getComplainsCountByDate(string $date): int
+    {
+        return $this->count(['complain_date' => $date]);
+    }
+
+    /**
+     * Search complains by content
+     * @param string $searchTerm
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
+     */
+    public function searchComplains(string $searchTerm, array $columns = ['*'], array $relations = []): Collection
+    {
+        return $this->where_callback(function($query) use ($searchTerm) {
+            return $query->where('complain', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('cname', 'LIKE', "%{$searchTerm}%");
+        })->getQuery()->with($relations)->get($columns);
+    }
 }
 
 

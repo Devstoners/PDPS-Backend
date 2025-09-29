@@ -1,124 +1,213 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Repositories\Repository;
+
+use App\Services\UserService;
 use Illuminate\Http\Request;
-use App\Models\User;
-use OpenApi\Annotations as OA;
+
+use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    private UserService $userService;
 
-    private $repository;
-
-    public function __construct(Repository $repository)
+    public function __construct(UserService $userService)
     {
-        $this->repository = $repository;
+        $this->userService = $userService;
     }
 
-
     /**
-     * @OA\Post(
-     *     path="/register",
-     *     tags={"Authentication"},
-     *     summary="Register a new user",
-     *     description="Register a new user in the system",
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"requesttype"},
-     *             @OA\Property(property="requesttype", type="integer", example=1, description="Request type: 1 for Admin"),
-     *             @OA\Property(property="email", type="string", format="email", example="admin@example.com"),
-     *             @OA\Property(property="password", type="string", example="password123"),
-     *             @OA\Property(property="status", type="string", example="active"),
-     *             @OA\Property(property="type", type="string", example="admin"),
-     *             @OA\Property(property="name", type="string", example="John Doe"),
-     *             @OA\Property(property="nic", type="string", example="123456789V"),
-     *             @OA\Property(property="mobileNo", type="string", example="+94771234567")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="User registered successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="User registered successfully"),
-     *             @OA\Property(property="user", type="object")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
-     *             @OA\Property(property="errors", type="object")
-     *         )
-     *     )
-     * )
+     * Register a new user
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function register(Request $request){
-
-        define("Admin", 1);
-        define("GS", 2);
-
-        $fields = $request->validate([
-            'requesttype' => 'required'
-        ]);
-
-        if($fields['requesttype'] == Admin){
-
-            $additionalFields = $request->validate([
-                'email' => 'required|string|unique:users,email',
-                'password' => 'string|confirmed',
-                'status' => 'required',
-                'type' => 'required',
-                'name' => 'required',
-                'nic' => 'required',
-                'mobileNo' => 'required'
+    public function register(Request $request): JsonResponse
+    {
+        try {
+            // Validate request type first
+            $request->validate([
+                'requesttype' => 'required|in:1,2,3,4,5'
             ]);
-            
-            // Merge the requesttype with additional fields
-            $fields = array_merge($fields, $additionalFields);
-            $response = $this->repository->registerNew($fields);
-          //  $response = $this->teacherRepository->updatePassword($id, $fields, $request);
-            return response($response, 201);
 
+            // Define constants for better readability
+            $ADMIN = 1;
+            $GRAMASEWAKA = 2;
+            $CUSTOMER = 3;
+            $MEMBER = 4;
+            $OFFICER = 5;
+
+            $requestType = $request->input('requesttype');
+
+            // Validate based on request type
+            $validationRules = [
+                'email' => 'required|string|email|unique:users,email',
+                'name' => 'required|string|max:255',
+                'nic' => 'required|string|max:20',
+                'status' => 'required|integer|in:0,1',
+                'type' => 'required|string',
+                'requesttype' => 'required|in:1,2,3,4,5'
+            ];
+
+            // Add password validation for admin
+            if ($requestType == $ADMIN) {
+                $validationRules['password'] = 'required|string|min:8|confirmed';
+            }
+
+            $fields = $request->validate($validationRules);
+
+            // Register user through service
+            $response = $this->userService->registerUser($fields);
+
+            return response()->json($response, 201);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Registration failed',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
+
     /**
-     * @OA\Post(
-     *     path="/login",
-     *     tags={"Authentication"},
-     *     summary="User login",
-     *     description="Authenticate user and return access token",
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"email", "password"},
-     *             @OA\Property(property="email", type="string", format="email", example="admin@example.com"),
-     *             @OA\Property(property="password", type="string", example="password123")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Login successful",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Login successful"),
-     *             @OA\Property(property="token", type="string", example="1|abcdef123456"),
-     *             @OA\Property(property="user", type="object")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Invalid credentials",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Invalid credentials")
-     *         )
-     *     )
-     * )
+     * Authenticate user login
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function login(Request $request){
-      //  return $request;
-        $response = $this->repository->login($request);
-        return response($response, 201);
+    public function login(Request $request): JsonResponse
+    {
+        try {
+            $credentials = $request->validate([
+                'email' => 'required|string|email',
+                'password' => 'required|string',
+            ]);
+
+            $response = $this->userService->authenticateUser($credentials);
+
+            return response()->json($response, 200);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Authentication failed',
+                'error' => $e->getMessage()
+            ], 401);
+        }
+    }
+
+    /**
+     * Activate user account
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function activate(Request $request): JsonResponse
+    {
+        try {
+            $fields = $request->validate([
+                'username' => 'required|string|email',
+                'password' => 'required|string|min:8',
+            ]);
+
+            $user = $this->userService->activateUserAccount($fields);
+
+            return response()->json([
+                'message' => 'Account activated successfully',
+                'user' => $user
+            ], 200);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Account activation failed',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    /**
+     * Logout user (revoke token)
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function logout(Request $request): JsonResponse
+    {
+        try {
+            $request->user()->currentAccessToken()->delete();
+
+            return response()->json([
+                'message' => 'Logged out successfully'
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Logout failed',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get authenticated user
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function user(Request $request): JsonResponse
+    {
+        return response()->json([
+            'user' => $request->user()->load('roles')
+        ], 200);
+    }
+
+    /**
+     * Change password
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function changePassword(Request $request): JsonResponse
+    {
+        try {
+            $fields = $request->validate([
+                'current_password' => 'required|string',
+                'new_password' => 'required|string|min:8|confirmed',
+            ]);
+
+            $user = $request->user();
+            
+            if (!\Hash::check($fields['current_password'], $user->password)) {
+                return response()->json([
+                    'message' => 'Current password is incorrect'
+                ], 400);
+            }
+
+            $this->userService->changeUserPassword($user->id, $fields['new_password']);
+
+            return response()->json([
+                'message' => 'Password changed successfully'
+            ], 200);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Password change failed',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
