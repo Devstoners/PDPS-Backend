@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\DownloadCommitteeReport;
 use App\Models\DownloadActs;
+use App\Models\DownloadApplication;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Illuminate\Support\Facades\Storage;
@@ -288,6 +289,118 @@ class DownloadRepository
         $countAct = DownloadActs::count();
         $countReport = DownloadCommitteeReport::count();
         return [$countAct, $countReport];
+    }
+
+    // ----------------- Applications -----------------
+    public function addApplication($request)
+    {
+        $filePathEn = null;
+        if ($request->hasFile('applicationFileEn')) {
+            $file = $request->file('applicationFileEn');
+            $fileName = time() . '_en.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('applications', $fileName, 'public');
+            $filePathEn = str_replace('storage/', '', $path);
+        }
+
+        $filePathSi = null;
+        if ($request->hasFile('applicationFileSi')) {
+            $file = $request->file('applicationFileSi');
+            $fileName = time() . '_si.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('applications', $fileName, 'public');
+            $filePathSi = str_replace('storage/', '', $path);
+        }
+
+        $filePathTa = null;
+        if ($request->hasFile('applicationFileTa')) {
+            $file = $request->file('applicationFileTa');
+            $fileName = time() . '_ta.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('applications', $fileName, 'public');
+            $filePathTa = str_replace('storage/', '', $path);
+        }
+
+        $application = DownloadApplication::create([
+            'application_year' => $request['applicationYear'],
+            'application_month' => $request['applicationMonth'],
+            'name_en' => $request['nameEn'],
+            'name_si' => $request['nameSi'],
+            'name_ta' => $request['nameTa'],
+            'file_path_en' => $filePathEn,
+            'file_path_si' => $filePathSi,
+            'file_path_ta' => $filePathTa,
+        ]);
+
+        return response(['application' => $application], 201);
+    }
+
+    public function updateApplication($id, $request)
+    {
+        $existing = DownloadApplication::findOrFail($id);
+
+        if ($request->hasFile('applicationFileEn')) {
+            Storage::delete('public/' . $existing->file_path_en);
+        }
+        if ($request->hasFile('applicationFileSi')) {
+            Storage::delete('public/' . $existing->file_path_si);
+        }
+        if ($request->hasFile('applicationFileTa')) {
+            Storage::delete('public/' . $existing->file_path_ta);
+        }
+
+        if ($request->hasFile('applicationFileEn')) {
+            $enName = 'applications/' . time() . '_en.' . $request->file('applicationFileEn')->getClientOriginalExtension();
+            $request->file('applicationFileEn')->storeAs('public', $enName);
+            $request->merge(['applicationFileEn' => $enName]);
+        } else {
+            $request->merge(['applicationFileEn' => $existing->file_path_en]);
+        }
+
+        if ($request->hasFile('applicationFileSi')) {
+            $siName = 'applications/' . time() . '_si.' . $request->file('applicationFileSi')->getClientOriginalExtension();
+            $request->file('applicationFileSi')->storeAs('public', $siName);
+            $request->merge(['applicationFileSi' => $siName]);
+        } else {
+            $request->merge(['applicationFileSi' => $existing->file_path_si]);
+        }
+
+        if ($request->hasFile('applicationFileTa')) {
+            $taName = 'applications/' . time() . '_ta.' . $request->file('applicationFileTa')->getClientOriginalExtension();
+            $request->file('applicationFileTa')->storeAs('public', $taName);
+            $request->merge(['applicationFileTa' => $taName]);
+        } else {
+            $request->merge(['applicationFileTa' => $existing->file_path_ta]);
+        }
+
+        $existing->update([
+            'application_year' => $request->input('applicationYear'),
+            'application_month' => $request->input('applicationMonth'),
+            'name_en' => $request->input('nameEn'),
+            'name_si' => $request->input('nameSi'),
+            'name_ta' => $request->input('nameTa'),
+            'file_path_en' => $request->input('applicationFileEn'),
+            'file_path_si' => $request->input('applicationFileSi'),
+            'file_path_ta' => $request->input('applicationFileTa'),
+        ]);
+
+        return response(['message' => 'Application updated successfully.'], 200);
+    }
+
+    public function deleteApplication($id)
+    {
+        $application = DownloadApplication::find($id);
+        if ($application) {
+            if ($application->file_path_en) {
+                Storage::disk('public')->delete($application->file_path_en);
+            }
+            if ($application->file_path_si) {
+                Storage::disk('public')->delete($application->file_path_si);
+            }
+            if ($application->file_path_ta) {
+                Storage::disk('public')->delete($application->file_path_ta);
+            }
+            $application->delete();
+            return response()->noContent();
+        }
+        return response()->noContent()->setStatusCode(404);
     }
 
 }
