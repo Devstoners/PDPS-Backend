@@ -317,10 +317,10 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
     /**
      * Update member
      */
-    public function updateMember(int $id, array $data): bool
-    {
-        return $this->update($id, $data);
-    }
+    // public function updateMember(int $id, array $data): bool
+    // {
+    //     return $this->update($id, $data);
+    // }
 
     /**
      * Get members by division
