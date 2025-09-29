@@ -4,65 +4,122 @@ namespace App\Repositories;
 
 use App\Models\Complain;
 use App\Repositories\BaseRepository;
-use App\Repositories\Contracts\ComplainRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class ComplainRepository extends BaseRepository implements ComplainRepositoryInterface
+class ComplainRepository extends BaseRepository
 {
-    public function __construct(Complain $model)
+    /**
+     * Specify Model class name
+     * @return string
+     */
+    public function model(): string
     {
-        parent::__construct($model);
+        return Complain::class;
     }
 
     /**
-     * Add a new complaint
+     * Create a new complain
+     * @param array $data
+     * @return Complain
      */
-    public function addComplain(array $data): array
+    public function createComplain(array $data): Complain
     {
-        $complain = $this->create([
+        return $this->create([
             'cname' => $data['cname'],
             'tele' => $data['tele'],
             'complain' => $data['complain'],
             'complain_date' => $data['complain_date'],
+            'img1' => $data['img1'] ?? null,
+            'img2' => $data['img2'] ?? null,
+            'img3' => $data['img3'] ?? null,
         ]);
-
-        return [
-            'Complain' => $complain,
-        ];
     }
 
     /**
-     * Get complaints by status
+     * Get complains by date range
+     * @param string $startDate
+     * @param string $endDate
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
      */
-    public function getComplaintsByStatus(string $status): Collection
+    public function getComplainsByDateRange(string $startDate, string $endDate, array $columns = ['*'], array $relations = []): Collection
     {
-        return $this->model->where('status', $status)->get();
+        return $this->where_callback(function($query) use ($startDate, $endDate) {
+            return $query->whereBetween('complain_date', [$startDate, $endDate]);
+        })->getQuery()->with($relations)->get($columns);
     }
 
     /**
-     * Get complaints by date range
+     * Get complains by phone number
+     * @param string $phone
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
      */
-    public function getComplaintsByDateRange(string $startDate, string $endDate): Collection
+    public function getComplainsByPhone(string $phone, array $columns = ['*'], array $relations = []): Collection
     {
-        return $this->model->whereBetween('complain_date', [$startDate, $endDate])->get();
+        return $this->findByCriteria(['tele' => $phone], $columns, $relations);
     }
 
     /**
-     * Update complaint status
+     * Get complains by customer name
+     * @param string $name
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
      */
-    public function updateComplaintStatus(int $id, string $status): bool
+    public function getComplainsByCustomerName(string $name, array $columns = ['*'], array $relations = []): Collection
     {
-        return $this->update($id, ['status' => $status]);
+        return $this->where_callback(function($query) use ($name) {
+            return $query->where('cname', 'LIKE', "%{$name}%");
+        })->getQuery()->with($relations)->get($columns);
     }
 
     /**
-     * Get complaint count
+     * Get recent complains
+     * @param int $limit
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
      */
-    public function getComplaintCount(): int
+    public function getRecentComplains(int $limit = 10, array $columns = ['*'], array $relations = []): Collection
+    {
+        return $this->latest($limit, $columns, $relations);
+    }
+
+    /**
+     * Get total complains count
+     * @return int
+     */
+    public function getTotalComplainsCount(): int
     {
         return $this->count();
+    }
+
+    /**
+     * Get complains count by date
+     * @param string $date
+     * @return int
+     */
+    public function getComplainsCountByDate(string $date): int
+    {
+        return $this->count(['complain_date' => $date]);
+    }
+
+    /**
+     * Search complains by content
+     * @param string $searchTerm
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
+     */
+    public function searchComplains(string $searchTerm, array $columns = ['*'], array $relations = []): Collection
+    {
+        return $this->where_callback(function($query) use ($searchTerm) {
+            return $query->where('complain', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('cname', 'LIKE', "%{$searchTerm}%");
+        })->getQuery()->with($relations)->get($columns);
     }
 }
 

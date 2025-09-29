@@ -1,84 +1,113 @@
 <?php
 
 namespace App\Repositories;
+
 use App\Models\Project;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
+use App\Repositories\BaseRepository;
+use Illuminate\Database\Eloquent\Collection;
 
-class ProjectRepository
+class ProjectRepository extends BaseRepository
 {
-    public function addProject($request)
+    /**
+     * Specify Model class name
+     * @return string
+     */
+    public function model(): string
     {
-        $startDate = Carbon::parse($request['startDate'])->toDateString();
-        $endDate = Carbon::parse($request['endDate'])->toDateString();
-
-        $project = Project::create([
-            'name_en' => $request['nameEn'],
-            'name_si' => $request['nameSi'],
-            'name_ta' => $request['nameTa'],
-            'description_si' => $request['descriptionEn'],
-            'description_en' => $request['descriptionSi'],
-            'description_ta' => $request['descriptionTa'],
-            'executor_si' => $request['executorEn'],
-            'executor_en' => $request['executorSi'],
-            'executor_ta' => $request['executorTa'],
-            'budget' => $request['budget'],
-            'status' => $request->input('status'),
-            'start_date' => $startDate,
-            'finish_date' => $endDate,
-        ]);
-        return response([
-            'acts' => $project
-        ], 200);
-
+        return Project::class;
     }
 
-
-    public function updateProject($id, $request)
+    /**
+     * Get projects with locales
+     * @param array $columns
+     * @return Collection
+     */
+    public function getWithLocales(array $columns = ['*']): Collection
     {
-        $startDate = Carbon::parse($request['startDate'])->toDateString();
-        $endDate = Carbon::parse($request['endDate'])->toDateString();
-
-        $existProject = Project::findOrFail($id);
-        $existProject->update([
-            'name_en' => $request->input('nameEn'),
-            'name_si' => $request->input('nameSi'),
-            'name_ta' => $request->input('nameTa'),
-            'description_si' => $request->input('descriptionEn'),
-            'description_en' => $request->input('descriptionSi'),
-            'description_ta' => $request->input('descriptionTa'),
-            'executor_si' => $request->input('executorEn'),
-            'executor_en' => $request->input('executorSi'),
-            'executor_ta' => $request->input('executorTa'),
-            'start_date' => $startDate,
-            'finish_date' => $endDate,
-            'budget' => $request->input('budget'),
-            'status' => $request->input('status'),
-
-        ]);
-
-        return response(['message' => 'Project updated successfully.'], 200);
+        return $this->all($columns, ['locales']);
     }
 
-
-
-    public function deleteProject($id)
+    /**
+     * Get active projects
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
+     */
+    public function getActiveProjects(array $columns = ['*'], array $relations = []): Collection
     {
-        $project = Project::find($id);
-
-        if ($project) {
-            $project->delete();
-            return response()->noContent(); // Send 204 upon successful delete
-        }
-        return response()->noContent()->setStatusCode(404);
+        return $this->findByCriteria(['status' => 'active'], $columns, $relations);
     }
 
-    public function getCount()
+    /**
+     * Get completed projects
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
+     */
+    public function getCompletedProjects(array $columns = ['*'], array $relations = []): Collection
     {
-        return Project::count();
+        return $this->findByCriteria(['status' => 'completed'], $columns, $relations);
+    }
+
+    /**
+     * Search projects by title
+     * @param string $title
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
+     */
+    public function searchByTitle(string $title, array $columns = ['*'], array $relations = []): Collection
+    {
+        return $this->where_callback(function($query) use ($title) {
+            return $query->where('title', 'LIKE', "%{$title}%");
+        })->getQuery()->with($relations)->get($columns);
+    }
+
+    /**
+     * Get projects by date range
+     * @param string $startDate
+     * @param string $endDate
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
+     */
+    public function getByDateRange(string $startDate, string $endDate, array $columns = ['*'], array $relations = []): Collection
+    {
+        return $this->where_callback(function($query) use ($startDate, $endDate) {
+            return $query->whereBetween('created_at', [$startDate, $endDate]);
+        })->getQuery()->with($relations)->get($columns);
+    }
+
+    /**
+     * Get recent projects
+     * @param int $limit
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
+     */
+    public function getRecentProjects(int $limit = 10, array $columns = ['*'], array $relations = []): Collection
+    {
+        return $this->latest($limit, $columns, $relations);
+    }
+
+    /**
+     * Get projects count by status
+     * @param string $status
+     * @return int
+     */
+    public function getCountByStatus(string $status): int
+    {
+        return $this->count(['status' => $status]);
+    }
+
+    /**
+     * Update project status
+     * @param int $projectId
+     * @param string $status
+     * @return Project
+     */
+    public function updateStatus(int $projectId, string $status): Project
+    {
+        return $this->update($projectId, ['status' => $status]);
     }
 }
-
-

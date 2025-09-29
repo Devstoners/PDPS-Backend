@@ -1,301 +1,143 @@
 <?php
+
 namespace App\Repositories;
 
-use App\Models\User;
 use App\Models\Member;
 use App\Models\Division;
 use App\Models\MemberParty;
 use App\Models\MemberPosition;
-use App\Models\MembersMemberPosition;
+use App\Models\User;
 use App\Repositories\BaseRepository;
-use App\Repositories\Contracts\MemberRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\Request;
 
-class MemberRepository extends BaseRepository implements MemberRepositoryInterface
+class MemberRepository extends BaseRepository
 {
-    public function __construct(Member $model)
-    {
-        parent::__construct($model);
-    }
-//-----------------Division--------------------------------------------------------------------
     /**
-     * Add division
+     * Specify Model class name
+     * @return string
      */
-    public function addDivision(array $data): array
+    public function model(): string
     {
-        $division = Division::create([
-            'division_en' => $data['divisionEn'],
-            'division_si' => $data['divisionSi'],
-            'division_ta' => $data['divisionTa'],
-            'updated_at' => now(),
-            'created_at' => now(),
-        ]);
-        return [
-            'division' => $division
-        ];
+        return Member::class;
     }
-
-    /**
-     * Delete division
-     */
-    public function deleteDivision(int $id): bool
-    {
-        $division = Division::find($id);
-
-        if ($division) {
-            $division->delete();
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Update division
-     */
-    public function updateDivision(int $id, array $data): array
-    {
-        $division = Division::find($id);
-        $division->update([
-            'division_en' => $data['divisionEn'],
-            'division_si' => $data['divisionSi'],
-            'division_ta' => $data['divisionTa'],
-            'updated_at' => now(),
-        ]);
-        return ['message' => 'Division updated successfully.'];
-    }
-
-//-----------------Party--------------------------------------------------------------------
-    /**
-     * Add party
-     */
-    public function addParty(array $data): array
-    {
-        $party = MemberParty::create([
-            'party_en' => $data['partyEn'],
-            'party_si' => $data['partySi'],
-            'party_ta' => $data['partyTa'],
-            'updated_at' => now(),
-            'created_at' => now(),
-        ]);
-        return [
-            'party' => $party
-        ];
-    }
-
-    /**
-     * Update party
-     */
-    public function updateParty(int $id, array $data): array
-    {
-        $party = MemberParty::find($id);
-        $party->update([
-            'party_en' => $data['partyEn'],
-            'party_si' => $data['partySi'],
-            'party_ta' => $data['partyTa'],
-            'updated_at' => now(),
-        ]);
-        return ['message' => 'Party updated successfully.'];
-    }
-
-    /**
-     * Delete party
-     */
-    public function deleteParty(int $id): bool
-    {
-        $party = MemberParty::find($id);
-
-        if ($party) {
-            $party->delete();
-            return true;
-        }
-        return false;
-    }
-
-    //-----------------Position--------------------------------------------------------------------
-    /**
-     * Add position
-     */
-    public function addPosition(array $data): array
-    {
-        $position = MemberPosition::create([
-            'position_en' => $data['positionEn'],
-            'position_si' => $data['positionSi'],
-            'position_ta' => $data['positionTa'],
-            'updated_at' => now(),
-            'created_at' => now(),
-        ]);
-        return [
-            'position' => $position
-        ];
-    }
-
-    /**
-     * Update position
-     */
-    public function updatePosition(int $id, array $data): array
-    {
-        $position = MemberPosition::find($id);
-        $position->update([
-            'position_en' => $data['positionEn'],
-            'position_si' => $data['positionSi'],
-            'position_ta' => $data['positionTa'],
-            'updated_at' => now(),
-        ]);
-        return ['message' => 'Position updated successfully.'];
-    }
-
-    /**
-     * Delete position
-     */
-    public function deletePosition(int $id): bool
-    {
-        $position = MemberPosition::find($id);
-
-        if ($position) {
-            $position->delete();
-            return true;
-        }
-        return false;
-    }
-
-    //-----------------Member--------------------------------------------------------------------
 
     /**
      * Get all members with relationships
+     * @param array $columns
+     * @return Collection
      */
-    public function getMembers(): Collection
+    public function getAllMembersWithRelations(array $columns = ['*']): Collection
     {
-        return $this->model->with([
-            'memberDivision' => function ($query) {
-                $query->select('id', 'division_en');
-            },
-            'memberParty' => function ($query) {
-                $query->select('id', 'party_en');
-            },
-            'memberPositions' => function ($query) {
-                $query->select('member_positions.id', 'position_en');
-            },
-            'user' => function ($query) {
-                $query->select('id', 'email', 'status');
-            }
-        ])
-            ->select('members.id', 'title','name_en', 'name_si','name_ta', 'image', 'tel', 'divisions_id', 'member_parties_id', 'user_id')
+        return $this->getQuery()
+            ->with([
+                'memberDivision:id,division_en',
+                'memberParty:id,party_en',
+                'memberPositions:id,position_en',
+                'user:id,email,status'
+            ])
+            ->select('members.id', 'name_en', 'name_si', 'name_ta', 'image', 'tel', 'member_divisions_id', 'member_parties_id', 'user_id')
             ->get();
     }
 
-
     /**
-     * Create a new member
+     * Create member with user account
+     * @param array $data
+     * @param array $positionIds
+     * @return array
      */
-    public function createMember(Request $request): array
+    public function createMemberWithUser(array $data, array $positionIds = []): array
     {
-        $user = User::create([
-            'email' => $request->email,
-        ]);
-        $user->assignRole('member');
+        return DB::transaction(function () use ($data, $positionIds) {
+            // Create user account
+            $user = User::create([
+                'email' => $data['email'],
+                'status' => 0, // Inactive by default
+            ]);
+            $user->assignRole('member');
 
-        // Handle image upload
-        $imgPath = null;
-        if($request->hasFile('img') && $request->file('img')->isValid()) {
-            $image = $request->file('img');
-            $imageName = time().'.'.$image->getClientOriginalExtension();
-            $path = $image->storeAs('images/member', $imageName, 'public');
-//            $imagePath = str_replace('storage/', '', $path);
-            $imagePath = Storage::url($path);
-        }
+            // Handle image upload
+            $imgPath = null;
+            if (isset($data['image']) && $data['image']) {
+                $imgPath = $this->handleImageUpload($data['image']);
+            }
 
-        // Create member
-        $member = $this->create([
-            'user_id' => $user->id,
-            'name_en' => $request->nameEn,
-            'name_si' => $request->nameSi,
-            'name_ta' => $request->nameTa,
-            'tel' => $request->tel,
-            'member_divisions_id' => $request->division,
-            'member_parties_id' => $request->party,
-            'image' => $imgPath,
-        ]);
+            // Create member
+            $member = $this->create([
+                'user_id' => $user->id,
+                'name_en' => $data['nameEn'] ?? $data['name_en'],
+                'name_si' => $data['nameSi'] ?? $data['name_si'],
+                'name_ta' => $data['nameTa'] ?? $data['name_ta'],
+                'tel' => $data['tel'],
+                'member_divisions_id' => $data['division'] ?? $data['member_divisions_id'],
+                'member_parties_id' => $data['party'] ?? $data['member_parties_id'],
+                'image' => $imgPath,
+            ]);
 
-        // Handle positions
-        if ($request->has('position')) {
-            $positionIds = is_array($request->input('position'))
-                ? $request->input('position')
-                : [$request->input('position')];
-            $member->memberPositions()->sync($positionIds);
-        }
+            // Sync positions
+            if (!empty($positionIds)) {
+                $member->memberPositions()->sync($positionIds);
+            }
 
-        return [
-            'user' => $user,
-            'member' => $member,
-        ];
+            return [
+                'user' => $user,
+                'member' => $member->load(['memberDivision', 'memberParty', 'memberPositions']),
+            ];
+        });
     }
 
-    public  function  updateMember($id, $request)
+    /**
+     * Update member information
+     * @param int $memberId
+     * @param array $data
+     * @param array $positionIds
+     * @return Member
+     */
+    public function updateMemberWithPositions(int $memberId, array $data, array $positionIds = []): Member
     {
-       $existMember = Member::findOrFail($id);
+        return DB::transaction(function () use ($memberId, $data, $positionIds) {
+            $member = $this->findOrFail($memberId);
 
-       // Delete existing member image if a new image uploaded
-       if ($request->hasFile('img')) {
-            // Storage::delete('public/' . $existMember->image);
-            $imagePath = $existMember->image;
-            $imagePath = str_replace('/storage/', '', $imagePath);
-            Storage::disk('public')->delete($imagePath);
+            // Handle image upload if provided
+            if (isset($data['image']) && $data['image']) {
+                // Delete old image if exists
+                if ($member->image) {
+                    $this->deleteImage($member->image);
+                }
+                $data['image'] = $this->handleImageUpload($data['image']);
+            }
 
-            $image = $request->file('img');
-            $imageName = time().'.'.$image->getClientOriginalExtension();
-            $path = $image->storeAs('images/member', $imageName, 'public');
-            $imagePathNew = Storage::url($path);
-        }else{
-            $imagePathNew = $existMember->image;
-        }
+            // Update member
+            $updatedMember = $this->update($memberId, $data);
 
-        $existMember->update([
-            'title' => $request['title'],
-            'name_en' => $request['nameEn'],
-            'name_si' => $request['nameSi'],
-            'name_ta' => $request['nameTa'],
-            'tel' => $request['tel'],
-            'divisions_id' => $request['division'],
-            'member_parties_id' => $request['party'],
-            'image' => $imagePathNew
-        ]);
+            // Sync positions if provided
+            if (!empty($positionIds)) {
+                $updatedMember->memberPositions()->sync($positionIds);
+            }
 
-        if ($request->has('position')) {
-            $positionIds = $request->input('position');
-            $existMember->memberPositions()->sync($positionIds);
-        }
-
-        $user = User::findOrFail($existMember->user_id);
-        $user->update([
-            // 'email' => $request['email'],
-            'status' => $request['status']
-        ]);
-
-        return response(['message' => 'Member updated successfully.'], 200);
-
+            return $updatedMember->load(['memberDivision', 'memberParty', 'memberPositions']);
+        });
     }
 
     /**
      * Delete member and associated user
+     * @param int $memberId
+     * @return bool
      */
-    public function deleteMember(int $id): bool
+    public function deleteMemberWithUser(int $memberId): bool
     {
-        $member = $this->find($id);
+        return DB::transaction(function () use ($memberId) {
+            $member = $this->findOrFail($memberId);
+            $userId = $member->user_id;
 
-        if (!$member) {
-            return false;
-        }
-
-        $userId = $member->user_id;
-
-        try {
-            DB::beginTransaction();
+            // Delete member image if exists
+            if ($member->image) {
+                $this->deleteImage($member->image);
+            }
 
             // Delete member
-            $member->delete();
+            $this->delete($memberId);
 
             // Delete associated user
             $user = User::find($userId);
@@ -306,54 +148,203 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                 $user->delete();
             }
 
-            DB::commit();
             return true;
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return false;
-        }
+        });
     }
 
     /**
-     * Update member
-     */
-    // public function updateMember(int $id, array $data): bool
-    // {
-    //     return $this->update($id, $data);
-    // }
-
-    /**
      * Get members by division
+     * @param int $divisionId
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
      */
-    public function getMembersByDivision(int $divisionId): Collection
+    public function getMembersByDivision(int $divisionId, array $columns = ['*'], array $relations = []): Collection
     {
-        return $this->model->where('member_divisions_id', $divisionId)->get();
+        return $this->findByCriteria(['member_divisions_id' => $divisionId], $columns, $relations);
     }
 
     /**
      * Get members by party
+     * @param int $partyId
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
      */
-    public function getMembersByParty(int $partyId): Collection
+    public function getMembersByParty(int $partyId, array $columns = ['*'], array $relations = []): Collection
     {
-        return $this->model->where('member_parties_id', $partyId)->get();
+        return $this->findByCriteria(['member_parties_id' => $partyId], $columns, $relations);
     }
 
     /**
      * Get members by position
+     * @param int $positionId
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
      */
-    public function getMembersByPosition(int $positionId): Collection
+    public function getMembersByPosition(int $positionId, array $columns = ['*'], array $relations = []): Collection
     {
-        return $this->model->whereHas('memberPositions', function ($query) use ($positionId) {
-            $query->where('member_positions.id', $positionId);
-        })->get();
+        return $this->where_callback(function($query) use ($positionId) {
+            return $query->whereHas('memberPositions', function($q) use ($positionId) {
+                $q->where('member_positions.id', $positionId);
+            });
+        })->getQuery()->with($relations)->get($columns);
     }
 
-
-    public function getCount()
+    /**
+     * Search members by name
+     * @param string $searchTerm
+     * @param string $language
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
+     */
+    public function searchMembersByName(string $searchTerm, string $language = 'en', array $columns = ['*'], array $relations = []): Collection
     {
-        return Member::count();
+        $nameColumn = "name_{$language}";
+        return $this->where_callback(function($query) use ($nameColumn, $searchTerm) {
+            return $query->where($nameColumn, 'LIKE', "%{$searchTerm}%");
+        })->getQuery()->with($relations)->get($columns);
     }
 
+    /**
+     * Get active members (users with status = 1)
+     * @param array $columns
+     * @param array $relations
+     * @return Collection
+     */
+    public function getActiveMembers(array $columns = ['*'], array $relations = []): Collection
+    {
+        return $this->where_callback(function($query) {
+            return $query->whereHas('user', function($q) {
+                $q->where('status', 1);
+            });
+        })->getQuery()->with($relations)->get($columns);
+    }
+
+    /**
+     * Handle image upload
+     * @param $image
+     * @return string
+     */
+    private function handleImageUpload($image): string
+    {
+        $imageName = time() . '.' . $image->getClientOriginalExtension();
+        $path = $image->storeAs('images', $imageName, 'public');
+        return Storage::url($path);
+    }
+
+    /**
+     * Delete image file
+     * @param string $imagePath
+     * @return bool
+     */
+    private function deleteImage(string $imagePath): bool
+    {
+        $relativePath = str_replace('/storage/', '', $imagePath);
+        return Storage::disk('public')->delete($relativePath);
+    }
+
+    /**
+     * Get member statistics
+     * @return array
+     */
+    public function getMemberStatistics(): array
+    {
+        return [
+            'total_members' => $this->count(),
+            'active_members' => $this->getActiveMembers()->count(),
+            'by_division' => MemberDivision::withCount('members')->get(),
+            'by_party' => MemberParty::withCount('members')->get(),
+            'by_position' => MemberPosition::withCount('members')->get(),
+        ];
+    }
 }
 
+/**
+ * Division Repository Methods
+ */
+class MemberDivisionRepository extends BaseRepository
+{
+    public function model(): string
+    {
+        return MemberDivision::class;
+    }
 
+    public function createDivision(array $data): MemberDivision
+    {
+        return $this->create([
+            'division_en' => $data['divisionEn'] ?? $data['division_en'],
+            'division_si' => $data['divisionSi'] ?? $data['division_si'],
+            'division_ta' => $data['divisionTa'] ?? $data['division_ta'],
+        ]);
+    }
+
+    public function updateDivision(int $divisionId, array $data): MemberDivision
+    {
+        return $this->update($divisionId, [
+            'division_en' => $data['divisionEn'] ?? $data['division_en'],
+            'division_si' => $data['divisionSi'] ?? $data['division_si'],
+            'division_ta' => $data['divisionTa'] ?? $data['division_ta'],
+        ]);
+    }
+}
+
+/**
+ * Party Repository Methods
+ */
+class MemberPartyRepository extends BaseRepository
+{
+    public function model(): string
+    {
+        return MemberParty::class;
+    }
+
+    public function createParty(array $data): MemberParty
+    {
+        return $this->create([
+            'party_en' => $data['partyEn'] ?? $data['party_en'],
+            'party_si' => $data['partySi'] ?? $data['party_si'],
+            'party_ta' => $data['partyTa'] ?? $data['party_ta'],
+        ]);
+    }
+
+    public function updateParty(int $partyId, array $data): MemberParty
+    {
+        return $this->update($partyId, [
+            'party_en' => $data['partyEn'] ?? $data['party_en'],
+            'party_si' => $data['partySi'] ?? $data['party_si'],
+            'party_ta' => $data['partyTa'] ?? $data['party_ta'],
+        ]);
+    }
+}
+
+/**
+ * Position Repository Methods
+ */
+class MemberPositionRepository extends BaseRepository
+{
+    public function model(): string
+    {
+        return MemberPosition::class;
+    }
+
+    public function createPosition(array $data): MemberPosition
+    {
+        return $this->create([
+            'position_en' => $data['positionEn'] ?? $data['position_en'],
+            'position_si' => $data['positionSi'] ?? $data['position_si'],
+            'position_ta' => $data['positionTa'] ?? $data['position_ta'],
+        ]);
+    }
+
+    public function updatePosition(int $positionId, array $data): MemberPosition
+    {
+        return $this->update($positionId, [
+            'position_en' => $data['positionEn'] ?? $data['position_en'],
+            'position_si' => $data['positionSi'] ?? $data['position_si'],
+            'position_ta' => $data['positionTa'] ?? $data['position_ta'],
+        ]);
+    }
+}

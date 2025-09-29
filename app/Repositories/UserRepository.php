@@ -4,147 +4,137 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\Repositories\BaseRepository;
-use App\Repositories\Contracts\UserRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class UserRepository extends BaseRepository implements UserRepositoryInterface
+class UserRepository extends BaseRepository
 {
-    public function __construct(User $model)
+    /**
+     * Specify Model class name
+     * @return string
+     */
+    public function model(): string
     {
-        parent::__construct($model);
+        return User::class;
     }
 
     /**
      * Find user by email
+     * @param string $email
+     * @return User|null
      */
     public function findByEmail(string $email): ?User
     {
-        return $this->model->where('email', $email)->first();
+        return $this->findFirstByCriteria(['email' => $email]);
     }
 
     /**
-     * Find user by email with roles
+     * Find user by NIC
+     * @param string $nic
+     * @return User|null
      */
-    public function findByEmailWithRoles(string $email): ?User
+    public function findByNic(string $nic): ?User
     {
-        return $this->model->where('email', $email)->with('roles')->first();
+        return $this->findFirstByCriteria(['nic' => $nic]);
+    }
+
+    /**
+     * Create user with role
+     * @param array $data
+     * @param string $role
+     * @return User
+     */
+    public function createWithRole(array $data, string $role): User
+    {
+        $user = $this->create($data);
+        $user->assignRole($role);
+        return $user;
     }
 
     /**
      * Activate user account
+     * @param string $email
+     * @param string $password
+     * @return User|null
      */
-    public function activate(string $email, string $password): bool
+    public function activateUser(string $email, string $password): ?User
     {
         $user = $this->findByEmail($email);
-        
+
         if (!$user) {
-            return false;
+            throw new NotFoundHttpException('Your email address is not available. Please contact the administrator');
         }
 
-        if ($user->status == 0) {
-            $user->status = 1;
-            $user->password = bcrypt($password);
-            return $user->save();
+        if ($user->status == 1) {
+            throw new UnauthorizedHttpException('', 'Your account is already activated.');
         }
 
-        return false;
-    }
-
-    /**
-     * Register new user
-     */
-    public function registerNew(array $data): array
-    {
-        $user = $this->create([
-            'nic' => $data['nic'],
-            'email' => $data['email'],
-            'name' => $data['name'],
-            'status' => $data['status'],
-            'type' => $data['type'],
-            'requesttype' => $data['requesttype'],
+        $user->update([
+            'status' => 1,
+            'password' => Hash::make($password)
         ]);
 
-        $token = $user->createToken('apptoken')->plainTextToken;
-        
-        // Assign role based on request type
-        $this->assignRoleByRequestType($user, $data['requesttype']);
-
-        return [
-            'user' => $user,
-            'token' => $token,
-        ];
+        return $user;
     }
 
     /**
-     * Login user
+     * Get active users
+     * @param array $columns
+     * @param array $relations
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function login(array $credentials): array
+    public function getActiveUsers(array $columns = ['*'], array $relations = []): \Illuminate\Database\Eloquent\Collection
     {
-        $user = $this->findByEmailWithRoles($credentials['email']);
+        return $this->findByCriteria(['status' => 1], $columns, $relations);
+    }
 
-        if (!$user || !Hash::check($credentials['password'], $user->password)) {
-            throw new NotFoundHttpException('Please check email or Password !');
-        }
-
-        if ($user->status === 0) {
-            throw new UnauthorizedHttpException(
-                "Account Is Disabled! Please Contact Administrator.",
-                "Account Is Disabled! Please Contact Administrator."
-            );
-        }
-
-        $token = $user->createToken('apptoken')->plainTextToken;
-
-        return [
-            'user' => $user,
-            'token' => $token,
-        ];
+    /**
+     * Get inactive users
+     * @param array $columns
+     * @param array $relations
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getInactiveUsers(array $columns = ['*'], array $relations = []): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->findByCriteria(['status' => 0], $columns, $relations);
     }
 
     /**
      * Get users by role
+     * @param string $role
+     * @param array $columns
+     * @param array $relations
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getUsersByRole(string $role): Collection
+    public function getUsersByRole(string $role, array $columns = ['*'], array $relations = []): \Illuminate\Database\Eloquent\Collection
     {
-        return $this->model->role($role)->get();
+        return $this->where_callback(function($query) use ($role) {
+            return $query->role($role);
+        })->getQuery()->with($relations)->get($columns);
     }
 
     /**
-     * Update user status
+     * Update user password
+     * @param int $userId
+     * @param string $password
+     * @return User
      */
-    public function updateStatus(int $id, int $status): bool
+    public function updatePassword(int $userId, string $password): User
     {
-        return $this->update($id, ['status' => $status]);
+        return $this->update($userId, ['password' => Hash::make($password)]);
     }
 
     /**
-     * Assign role based on request type
+     * Toggle user status
+     * @param int $userId
+     * @return User
      */
-    private function assignRoleByRequestType(User $user, string $requestType): void
+    public function toggleStatus(int $userId): User
     {
-        switch ($requestType) {
-            case '1':
-                $user->assignRole('admin');
-                break;
-            case '5':
-                $user->assignRole('officer');
-                break;
-            case '2':
-                $user->assignRole('gramasewaka');
-                break;
-            case '4':
-                $user->assignRole('member');
-                break;
-            case '3':
-                $user->assignRole('customer');
-                break;
-            default:
-                // Handle any other cases or throw an exception if needed
-                break;
-        }
+        $user = $this->findOrFail($userId);
+        $newStatus = $user->status == 1 ? 0 : 1;
+        return $this->update($userId, ['status' => $newStatus]);
     }
 }
 
