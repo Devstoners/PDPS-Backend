@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Complain;
 use App\Models\ComplainAction;
 use App\Repositories\ComplainRepository;
 use Illuminate\Support\Facades\Validator;
@@ -23,6 +24,11 @@ class ComplainActionController extends Controller
         return $this->repository->getComplain();
         // return Complain::all();
 
+    }
+
+    public function siteIndex()
+    {
+        return $this->repository->getComplain();
     }
 
     /**

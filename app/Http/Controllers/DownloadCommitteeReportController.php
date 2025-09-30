@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\DownloadCommitteeReport;
 use App\Repositories\DownloadRepository;
-use App\Http\Requests\StoreDownloadCommitteeReportRequest;
-use App\Http\Requests\UpdateDownloadCommitteeReportRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -16,29 +14,17 @@ class DownloadCommitteeReportController extends Controller
     {
         $this->repository = $repository;
     }
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
-        $reports = DownloadCommitteeReport::select('id', 'report_year','report_month','name_en','name_si','name_ta','file_path_en','file_path_si','file_path_ta')->get();
-        $response = [
-            "AllReports" => $reports,
-        ];
-        return response($response, 200);
+        return DownloadCommitteeReport::select('id','report_year','report_month','name_en','name_si','name_ta','file_path_en','file_path_si','file_path_ta')->get();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
 //        \Log::info('Data received for update:', $request->all());
@@ -94,25 +80,20 @@ class DownloadCommitteeReportController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(DownloadCommitteeReport $downloadCommitteeReport)
+    public function show($id)
     {
-        //
+        $report = DownloadCommitteeReport::select('id', 'report_year','report_month','name_en','name_si','name_ta','file_path_en','file_path_si','file_path_ta')->find($id);
+        if (!$report) {
+            return response()->json(['error' => 'Report not found.'], 404);
+        }
+        return response()->json($report, 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(DownloadCommitteeReport $downloadCommitteeReport)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
         $customMessages = [
@@ -167,9 +148,6 @@ class DownloadCommitteeReportController extends Controller
         return response()->json($response, 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
         $response = $this->repository->deleteReport($id);

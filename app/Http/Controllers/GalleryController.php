@@ -3,69 +3,48 @@
 namespace App\Http\Controllers;
 
 use App\Models\Gallery;
-use App\Models\GalleryImage;
+use App\Repositories\GalleryRepository;
 use Illuminate\Http\Request;
-use App\Repositories\AlbumGalleryRepository;
 use Illuminate\Support\Facades\Validator;
-
 
 class GalleryController extends Controller
 {
     private $repository;
-    public function __construct(AlbumGalleryRepository $repository)
+
+    public function __construct(GalleryRepository $repository)
     {
         $this->repository = $repository;
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
         return $this->repository->getAllGalleries();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $customMessages = [
-            'topicEn.required' => 'The topic in English field is required.',
-            'topicSi.required' => 'The topic in Sinhala field is required.',
-            'topicTa.required' => 'The topic in Tamil field is required.',
-            'image_*.*.required' => 'Please upload at least one image.',
-            'image_*.*.image' => 'The file must be an image.',
-            'image_*.*.mimes' => 'The image must be a JPEG file.',
-            'image_*.*.max' => 'The image must be less than 10MB in size.',
+            'topicEn.required' => 'The Topic English is compulsory',
+            'topicSi.required' => 'The Topic Sinhala is compulsory',
+            'topicTa.required' => 'The Topic Tamil is compulsory',
+            'imageList.required' => 'At least one image is required',
+            'imageList.*.image' => 'Each file must be an image',
+            'imageList.*.mimes' => 'Each file must be a JPEG image',
+            'imageList.*.max' => 'Each image may not be greater than 10 MB',
         ];
 
-        $rules = [
+        $validator = Validator::make($request->all(), [
             'topicEn' => 'required',
             'topicSi' => 'required',
             'topicTa' => 'required',
-        ];
-
-        // Dynamically add rules for each image
-        foreach ($request->file() as $key => $files) {
-            $rules[$key . '.*'] = 'required|image|mimes:jpeg,jpg|max:10240'; // Validate each image separately
-        }
-
-        $validator = Validator::make($request->all(), $rules, $customMessages);
+            'imageList' => 'required|array|min:1',
+            'imageList.*' => 'required|image|mimes:jpeg|max:10240',
+        ], $customMessages);
 
         if ($validator->fails()) {
             $errors = $validator->errors()->all();
@@ -75,57 +54,44 @@ class GalleryController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Gallery  $gallery
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
-        return $this->repository->getGalleryById($id);
+        $gallery = Gallery::with('images')->find($id);
+        if (!$gallery) {
+            return response()->json(['error' => 'Gallery not found'], 404);
+        }
+        return response()->json($gallery);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Gallery  $gallery
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Gallery $gallery)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Gallery  $gallery
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         $customMessages = [
-            'topicEn.required' => 'The topic in English field is required.',
-            'topicSi.required' => 'The topic in Sinhala field is required.',
-            'topicTa.required' => 'The topic in Tamil field is required.',
+            'topicEn.required' => 'The Topic English is compulsory',
+            'topicSi.required' => 'The Topic Sinhala is compulsory',
+            'topicTa.required' => 'The Topic Tamil is compulsory',
         ];
 
-        $rules = [
+        $baseRules = [
             'topicEn' => 'required',
             'topicSi' => 'required',
             'topicTa' => 'required',
         ];
 
-        // Add validation for new images if provided
-        foreach ($request->file() as $key => $file) {
-            if (strpos($key, 'new_image_') === 0) {
-                $rules[$key] = 'image|mimes:jpeg,jpg|max:10240';
-            }
+        if ($request->hasFile('imageList')) {
+            $customMessages['imageList.*.image'] = 'Each file must be an image';
+            $customMessages['imageList.*.mimes'] = 'Each file must be a JPEG image';
+            $customMessages['imageList.*.max'] = 'Each image may not be greater than 10 MB';
+
+            $baseRules['imageList'] = 'array|min:1';
+            $baseRules['imageList.*'] = 'image|mimes:jpeg|max:10240';
         }
 
-        $validator = Validator::make($request->all(), $rules, $customMessages);
+        $validator = Validator::make($request->all(), $baseRules, $customMessages);
 
         if ($validator->fails()) {
             $errors = $validator->errors()->all();
@@ -135,15 +101,13 @@ class GalleryController extends Controller
         }
     }
 
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Gallery  $gallery
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        return $this->repository->deleteGallery($id);
+        $result = $this->repository->deleteGallery($id);
+
+        if ($result) {
+            return response()->json(['message' => 'Gallery deleted successfully.']);
+        }
+        return response()->json(['message' => 'Gallery not found.'], 404);
     }
 }

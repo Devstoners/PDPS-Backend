@@ -14,29 +14,23 @@ class ComplainController extends Controller
     public function __construct(ComplainRepository $repository)
     {
         $this->repository = $repository;
-        //$this->middleware('auth:sanctum')->except(['store']);
     }
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         return $this->repository->getComplain();
-        // return Complain::all();
-
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    public function siteIndex()
+    {
+        return $this->repository->getComplain();
+    }
+
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $customMessages = [
@@ -71,34 +65,21 @@ class ComplainController extends Controller
         }
     }
 
-
-    /**
-     * Display the specified resource.
-     */
     public function show(Complain $Complain)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Complain $Complain)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
 
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
         $result = $this->repository->deleteComplain($id);
