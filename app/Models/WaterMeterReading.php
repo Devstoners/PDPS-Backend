@@ -15,6 +15,7 @@ class WaterMeterReading extends Model
         'current_reading',
         'previous_reading',
         'units_consumed',
+        'submitted',
     ];
 
     protected $casts = [

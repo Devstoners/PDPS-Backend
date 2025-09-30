@@ -140,6 +140,14 @@ class WaterBillController extends Controller
     }
 
     /**
+     * Generate next account number for a water scheme
+     */
+    public function generateAccountNumber($waterSchemeId)
+    {
+        return $this->repository->generateAccountNumber($waterSchemeId);
+    }
+
+    /**
      * Update the specified water customer
      */
     public function updateWaterCustomer(Request $request, $id)
@@ -200,6 +208,41 @@ class WaterBillController extends Controller
     }
 
     /**
+     * Get all meter readers
+     */
+    public function getMeterReaders()
+    {
+        return $this->repository->getMeterReaders();
+    }
+
+    /**
+     * Update meter reader
+     */
+    public function updateMeterReader(Request $request, $id)
+    {
+        $rules = [
+            'officer_id' => 'required|exists:officers,id',
+            'water_schemes_id' => 'required|exists:water_schemes,id',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()->all()], 422);
+        }
+
+        return $this->repository->updateMeterReader($id, $request);
+    }
+
+    /**
+     * Delete meter reader
+     */
+    public function deleteMeterReader($id)
+    {
+        return $this->repository->deleteMeterReader($id);
+    }
+
+    /**
      * Get meter readers for water scheme
      */
     public function getMeterReadersByScheme($schemeId)
@@ -249,11 +292,59 @@ class WaterBillController extends Controller
     }
 
     /**
+     * Get all meter readings
+     */
+    public function getAllMeterReadings()
+    {
+        return $this->repository->getAllMeterReadings();
+    }
+
+    /**
+     * Get unsubmitted meter readings (drafts)
+     */
+    public function getUnsubmittedMeterReadings()
+    {
+        return $this->repository->getUnsubmittedMeterReadings();
+    }
+
+    /**
+     * Submit meter reading (mark as submitted)
+     */
+    public function submitMeterReading($id)
+    {
+        return $this->repository->submitMeterReading($id);
+    }
+
+    /**
+     * Submit all unsubmitted meter readings and create water bills
+     */
+    public function submitAllMeterReadings()
+    {
+        return $this->repository->submitAllMeterReadings();
+    }
+
+    /**
      * Get meter readings for customer
      */
     public function getCustomerMeterReadings($customerId)
     {
         return $this->repository->getCustomerMeterReadings($customerId);
+    }
+
+    /**
+     * Get previous reading for customer
+     */
+    public function getPreviousReading($customerId)
+    {
+        return $this->repository->getPreviousReading($customerId);
+    }
+
+    /**
+     * Delete meter reading
+     */
+    public function deleteMeterReading($id)
+    {
+        return $this->repository->deleteMeterReading($id);
     }
 
     // ==================== WATER BILL MANAGEMENT ====================
@@ -273,9 +364,9 @@ class WaterBillController extends Controller
     {
         $rules = [
             'water_customer_id' => 'required|exists:water_customers,id',
-            'meter_reader_id' => 'required|exists:water_meter_readers,id',
+            'meter_reader_id' => 'nullable|exists:water_meter_readers,id',
             'billing_month' => 'required|date',
-            'due_date' => 'required|date|after:billing_month',
+            'due_date' => 'nullable|date|after:billing_month',
             'amount_due' => 'required|numeric|min:0',
             'status' => 'nullable|integer|in:1,2,3',
         ];
