@@ -11,7 +11,7 @@ class UpdateWaterSchemeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,9 @@ class UpdateWaterSchemeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string|max:255',
+            'division_id' => 'required|integer|exists:divisions,id',
+            'start_date' => 'required|date',
         ];
     }
 }

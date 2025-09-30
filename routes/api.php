@@ -80,28 +80,47 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/reservations/{id}/payments', [\App\Http\Controllers\HallController::class, 'getReservationPayments']);
         
         // Water Bill Management Routes (OfficerWaterBill)
-        Route::get('/water-schemes', [\App\Http\Controllers\WaterBillController::class, 'getWaterSchemes']);
-        Route::post('/water-schemes', [\App\Http\Controllers\WaterBillController::class, 'addWaterScheme']);
-        Route::get('/water-schemes/{id}', [\App\Http\Controllers\WaterBillController::class, 'getWaterScheme']);
-        Route::put('/water-schemes/{id}', [\App\Http\Controllers\WaterBillController::class, 'updateWaterScheme']);
-        Route::delete('/water-schemes/{id}', [\App\Http\Controllers\WaterBillController::class, 'deleteWaterScheme']);
+        // Water schemes routes moved to WaterSchemeController with proper permissions
         
         // Water Customer Management
         Route::get('/water-customers', [\App\Http\Controllers\WaterBillController::class, 'getWaterCustomers']);
         Route::post('/water-customers', [\App\Http\Controllers\WaterBillController::class, 'addWaterCustomer']);
         Route::get('/water-customers/{id}', [\App\Http\Controllers\WaterBillController::class, 'getWaterCustomer']);
         Route::get('/water-customers/account/{accountNo}', [\App\Http\Controllers\WaterBillController::class, 'getWaterCustomerByAccount']);
+        Route::get('/water-customers/generate-account/{water_scheme_id}', [\App\Http\Controllers\WaterBillController::class, 'generateAccountNumber']);
         Route::put('/water-customers/{id}', [\App\Http\Controllers\WaterBillController::class, 'updateWaterCustomer']);
         Route::delete('/water-customers/{id}', [\App\Http\Controllers\WaterBillController::class, 'deleteWaterCustomer']);
         
         // Meter Reader Management
-        Route::post('/meter-readers', [\App\Http\Controllers\WaterBillController::class, 'addMeterReader']);
+        Route::get('/water-meter-readers', [\App\Http\Controllers\WaterBillController::class, 'getMeterReaders']);
+        Route::post('/water-meter-readers', [\App\Http\Controllers\WaterBillController::class, 'addMeterReader']);
+        Route::put('/water-meter-readers/{id}', [\App\Http\Controllers\WaterBillController::class, 'updateMeterReader']);
+        Route::delete('/water-meter-readers/{id}', [\App\Http\Controllers\WaterBillController::class, 'deleteMeterReader']);
         Route::get('/water-schemes/{schemeId}/meter-readers', [\App\Http\Controllers\WaterBillController::class, 'getMeterReadersByScheme']);
+        
+        // Meter Reading Management
+        Route::get('/water-meter-readings', [\App\Http\Controllers\WaterBillController::class, 'getAllMeterReadings']);
+        Route::get('/water-meter-readings/unsubmitted', [\App\Http\Controllers\WaterBillController::class, 'getUnsubmittedMeterReadings']);
+        Route::post('/water-meter-readings', [\App\Http\Controllers\WaterBillController::class, 'addMeterReading']);
+        Route::put('/water-meter-readings/{id}', [\App\Http\Controllers\WaterBillController::class, 'updateMeterReading']);
+        Route::put('/water-meter-readings/{id}/submit', [\App\Http\Controllers\WaterBillController::class, 'submitMeterReading']);
+        Route::post('/water-meter-readings/submit-all', [\App\Http\Controllers\WaterBillController::class, 'submitAllMeterReadings']);
+        Route::delete('/water-meter-readings/{id}', [\App\Http\Controllers\WaterBillController::class, 'deleteMeterReading']);
+        Route::get('/water-meter-readings/previous-reading/{customerId}', [\App\Http\Controllers\WaterBillController::class, 'getPreviousReading']);
+        Route::get('/water-customers/{customerId}/meter-readings', [\App\Http\Controllers\WaterBillController::class, 'getCustomerMeterReadings']);
         
         // Water Bill Management
         Route::apiResource('/water-bills', \App\Http\Controllers\WaterBillController::class);
         Route::get('/water-bills/customer/{customerId}', [\App\Http\Controllers\WaterBillController::class, 'getCustomerBills']);
         Route::get('/water-bills/account/{accountNo}', [\App\Http\Controllers\WaterBillController::class, 'getBillsByAccount']);
+        
+        // Water Bill Rates Management
+        Route::get('/water-bill-rates', [\App\Http\Controllers\WaterBillRateController::class, 'index']);
+        Route::post('/water-bill-rates', [\App\Http\Controllers\WaterBillRateController::class, 'store']);
+        Route::put('/water-bill-rates/{id}', [\App\Http\Controllers\WaterBillRateController::class, 'update']);
+        Route::delete('/water-bill-rates/{id}', [\App\Http\Controllers\WaterBillRateController::class, 'destroy']);
+        Route::get('/water-schemes', [\App\Http\Controllers\WaterBillRateController::class, 'getWaterSchemes']);
+        Route::get('/divisions/{divisionId}', [\App\Http\Controllers\WaterBillRateController::class, 'getDivision']);
         Route::put('/water-bills/{id}/status', [\App\Http\Controllers\WaterBillController::class, 'updateBillStatus']);
         
         // Water Payment Management
@@ -259,6 +278,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/payments', [\App\Http\Controllers\StripePaymentController::class, 'index']);
         Route::post('/payments/{paymentId}/cancel', [\App\Http\Controllers\StripePaymentController::class, 'cancelPayment']);
     });
+
+    // Water Scheme Routes (Protected with permissions)
+    Route::apiResource('/water-schemes', \App\Http\Controllers\WaterSchemeController::class);
 
     // Get authenticated user
     Route::get('/user', function (Request $request) {

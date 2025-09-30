@@ -13,14 +13,12 @@ class WaterBill extends Model
         'water_customer_id',
         'meter_reader_id',
         'billing_month',
-        'due_date',
         'amount_due',
         'status',
     ];
 
     protected $casts = [
         'billing_month' => 'date',
-        'due_date' => 'date',
         'amount_due' => 'decimal:2',
     ];
     public function waterCustomer()

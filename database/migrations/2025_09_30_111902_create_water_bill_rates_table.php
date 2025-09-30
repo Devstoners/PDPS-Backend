@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('water_bills', function (Blueprint $table) {
+        Schema::create('water_bill_rates', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->integer('water_customer_id');
-            $table->integer('meter_reader_id ');
-            $table->date('billing_month ');
-            $table->decimal('amount_due',10,2);
-            $table->enum('status', ['unpaid', 'paid', 'overdue'])->default('unpaid');
+            $table->integer('water_schemes_id');
+            $table->decimal('units_0_1', 10, 2);
+            $table->decimal('units_1_5', 10, 2);
+            $table->decimal('units_above_5', 10, 2);
+            $table->decimal('service', 10, 2);
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('water_bills');
+        Schema::dropIfExists('water_bill_rates');
     }
 };

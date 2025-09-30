@@ -17,7 +17,7 @@ class WaterCustomer extends Model
         'tel',
         'address',
         'email',
-        'dateJoin',
+        'con_date',
         'water_schemes_id',
     ];
     public function waterScheme()

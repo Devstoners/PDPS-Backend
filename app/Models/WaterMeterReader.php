@@ -10,7 +10,7 @@ class WaterMeterReader extends Model
     use HasFactory;
     protected $table = 'water_meter_readers';
     protected $fillable = [
-        'officer_id',
+        'user_id',
         'water_schemes_id',
     ];
     public function waterScheme()
@@ -20,7 +20,7 @@ class WaterMeterReader extends Model
 
     public function officer()
     {
-        return $this->belongsTo(Officer::class, 'officer_id');
+        return $this->belongsTo(Officer::class, 'user_id');
     }
 
     public function waterBills()

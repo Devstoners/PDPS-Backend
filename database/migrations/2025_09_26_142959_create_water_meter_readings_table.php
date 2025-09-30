@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('current_reading', 10, 2);
             $table->decimal('previous_reading', 10, 2);
             $table->decimal('units_consumed', 10, 2);
+            $table->boolean('submitted')->default(false);
             $table->timestamps();
 
             $table->foreign('water_customer_id')->references('id')->on('water_customers')->onDelete('cascade');
